@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cvičebnice</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#f3f5f8;--card:#fff;--fg:#1c2331;--muted:#5d6678;--rule:#dfe6f0;--line:#cfd8e6;
+  --red:#c42a3c;--blue:#1d5fc4;--green:#1b8450;--soft:#e9eef7;
+  --f-display:'Caveat','Segoe Print','Bradley Hand',cursive;
+  --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111620;--card:#192030;--fg:#e7ebf3;--muted:#9aa5ba;--rule:#202a3c;--line:#33415a;
+  --red:#ff7f8c;--blue:#80aaff;--green:#58d28e;--soft:#222c40;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111620;--card:#192030;--fg:#e7ebf3;--muted:#9aa5ba;--rule:#202a3c;--line:#33415a;
+  --red:#ff7f8c;--blue:#80aaff;--green:#58d28e;--soft:#222c40;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--fg);font:16px/1.55 var(--f-body);
+  padding-inline:16px;padding-block:48px;
+  background-image:linear-gradient(var(--rule) 1px,transparent 1px);background-size:100% 32px}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1{font:700 3.2rem/1 var(--f-display);color:var(--red);margin:0}
+.sub{margin:6px 0 0;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+a.card{display:flex;flex-direction:column;gap:10px;text-decoration:none;color:inherit;background:var(--card);
+  border:1.5px solid var(--line);border-radius:14px;padding:22px;transition:border-color .15s,transform .15s}
+a.card:hover{border-color:var(--blue);transform:translateY(-2px)}
+a.card:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.tag{align-self:flex-start;background:var(--soft);color:var(--blue);font-size:.75rem;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:99px}
+h2{font:700 2.2rem/1.05 var(--f-display);color:var(--green);margin:0}
+.card p{margin:0;color:var(--muted);font-size:.95rem}
+.go{margin-top:auto;padding-top:6px;font-weight:600;color:var(--blue)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Cvičebnice</h1>
+    <p class="sub">Vyber predmet. Každý príklad sa generuje nový, s kontrolou odpovede a postupom riešenia.</p>
+  </header>
+  <main class="grid">
+    <a class="card" href="amd/">
+      <span class="tag">ADM</span>
+      <h2>Cvičebnica ADM</h2>
+      <p>Matice, sústavy lineárnych rovníc, Gaussova eliminácia, inverzná matica a determinanty. Teória je k dispozícii popri cvičení.</p>
+      <span class="go">Otvoriť →</span>
+    </a>
+    <a class="card" href="ppi/">
+      <span class="tag">PPI</span>
+      <h2>Cvičebnica PPI</h2>
+      <p>Booleove funkcie, Karnaughove mapy, logické obvody, automaty, preklápacie obvody a syntéza.</p>
+      <span class="go">Otvoriť →</span>
+    </a>
+  </main>
+</div>
+</body>
+</html>
