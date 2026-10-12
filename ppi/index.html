@@ -1,0 +1,984 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Cvičebnica PPI</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: ľavý panel s témami, vpravo karta s príkladom. Farby skupín v mape sú tokeny --g1 až --g6 */
+:root{
+  --bg:#f3f5f8; --card:#ffffff; --fg:#1c2331; --muted:#5d6678; --rule:#dfe6f0; --line:#cfd8e6;
+  --red:#c42a3c; --blue:#1d5fc4; --green:#1b8450; --amber:#b86e00;
+  --ok-bg:#e3f4ea; --bad-bg:#fbe6e8; --soft:#e9eef7;
+  --g1:#d6336c; --g2:#12875a; --g3:#d9730d; --g4:#6a4fd1; --g5:#0f86c4; --g6:#9a7b00; --wire:#44506a;
+  --f-display:'Caveat','Segoe Print','Bradley Hand',cursive; --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif; --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111620; --card:#192030; --fg:#e7ebf3; --muted:#9aa5ba; --rule:#202a3c; --line:#33415a;
+  --red:#ff7f8c; --blue:#80aaff; --green:#58d28e; --amber:#f0b14a;
+  --ok-bg:#16382a; --bad-bg:#44212a; --soft:#222c40; --g1:#ff7ab0; --g2:#4fd69e; --g3:#ffa94d; --g4:#a99bff; --g5:#5cc6ff; --g6:#e6c24a; --wire:#9fb0cf; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111620; --card:#192030; --fg:#e7ebf3; --muted:#9aa5ba; --rule:#202a3c; --line:#33415a;
+  --red:#ff7f8c; --blue:#80aaff; --green:#58d28e; --amber:#f0b14a;
+  --ok-bg:#16382a; --bad-bg:#44212a; --soft:#222c40; --g1:#ff7ab0; --g2:#4fd69e; --g3:#ffa94d; --g4:#a99bff; --g5:#5cc6ff; --g6:#e6c24a; --wire:#9fb0cf; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.55 var(--f-body);padding-inline:16px;padding-block:20px 40px;
+  background-image:linear-gradient(var(--rule) 1px,transparent 1px);background-size:100% 32px}
+.app{max-width:1060px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font:700 2.6rem/1 var(--f-display);color:var(--red);margin:0;letter-spacing:.01em}
+.top{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:flex-end;justify-content:space-between}
+.sub{margin:4px 0 0;color:var(--muted);font-size:.95rem}
+.score{display:flex;gap:18px;font-variant-numeric:tabular-nums}
+.score div{display:flex;flex-direction:column;line-height:1.2}
+.score b{font:600 1.4rem var(--f-body)}
+.score span{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:20px;align-items:start}
+nav.topics{display:flex;flex-direction:column;gap:8px;position:sticky;top:16px}
+.tbtn{all:unset;box-sizing:border-box;cursor:pointer;display:block;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;transition:border-color .15s,background .15s}
+.tbtn:hover{border-color:var(--blue)}
+.tbtn:focus-visible,.btn:focus-visible,.opt:focus-visible,summary:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.tbtn[aria-pressed="true"]{border-color:var(--blue);background:var(--soft)}
+.tbtn .n{display:flex;justify-content:space-between;gap:8px;font-weight:600;font-size:.95rem}
+.tbtn .n em{font-style:normal;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums;font-size:.85rem}
+.tbtn .s{font-size:.8rem;color:var(--muted)}
+.bar{height:4px;border-radius:2px;background:var(--rule);margin-top:7px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green);width:0}
+.reset{all:unset;cursor:pointer;font-size:.8rem;color:var(--muted);text-decoration:underline;padding:4px 2px}
+.reset:focus-visible{outline:3px solid var(--blue)}
+main{display:flex;flex-direction:column;gap:14px;min-width:0}
+details.theory{background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:0}
+details.theory summary{cursor:pointer;padding:10px 14px;font:700 1.35rem var(--f-display);color:var(--green);list-style:none}
+details.theory summary::before{content:"＋ ";font-family:var(--f-body);font-size:.9rem}
+details.theory[open] summary::before{content:"− "}
+details.theory .in{padding:0 16px 12px;font-size:.93rem}
+details.theory ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:5px}
+.card{scroll-margin-top:12px;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:20px 20px 22px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.meta{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;color:var(--muted);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase}
+.chip{background:var(--soft);color:var(--blue);padding:3px 10px;border-radius:99px;font-weight:600}
+.prompt{font-size:1.05rem;min-width:0}
+.prompt p{margin:.5em 0}.muted{color:var(--muted);font-size:.88rem}
+.eq{margin:10px 0;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;overflow-x:auto;max-width:100%;padding-block:4px}
+.gap{display:inline-block;width:14px}
+.lbl{color:var(--blue);font-weight:600;white-space:nowrap}
+.sys{display:inline-flex;flex-direction:column;gap:2px;margin:8px 0;padding:4px 0 4px 14px;border-left:3px solid var(--blue);font-size:1.1rem;font-variant-numeric:tabular-nums}
+.op{display:inline-block;background:var(--soft);color:var(--red);padding:1px 8px;border-radius:6px;font-family:var(--f-mono);font-size:.88em;white-space:nowrap}
+.mx{display:inline-block;position:relative;padding:4px 10px;margin:0 3px;vertical-align:middle}
+.mx::before,.mx::after{content:"";position:absolute;top:0;bottom:0;width:7px;border:2px solid currentColor}
+.mx::before{left:0;border-right:0}.mx::after{right:0;border-left:0}
+.mx table{border-collapse:collapse}
+.mx td{padding:3px 9px;text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mx td.aug{border-left:2px solid currentColor}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:.82em;line-height:1.1;margin:0 .1em}
+.fr i{font-style:normal;padding:0 .2em}.fr i:first-child{border-bottom:1.5px solid currentColor}
+.answer{display:flex;flex-direction:column;gap:10px;align-items:flex-start;padding:14px 16px;background:var(--soft);border-radius:10px;max-width:100%;overflow-x:auto}
+.answer .lbl2{font:700 1.25rem var(--f-display);color:var(--red)}
+.cell{font:500 1rem var(--f-mono);width:4.6em;padding:6px 6px;text-align:center;border:1.5px solid var(--line);border-radius:7px;background:var(--card);color:var(--fg)}
+.cell:focus{outline:3px solid var(--blue);outline-offset:0;border-color:var(--blue)}
+.cell.ok{border-color:var(--green);background:var(--ok-bg)}.cell.bad{border-color:var(--red);background:var(--bad-bg)}
+.cell:read-only{cursor:default}
+.ln{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
+.ln .t{white-space:nowrap}
+.mx.in td{padding:3px 4px}
+.opts{display:flex;flex-direction:column;gap:8px;align-items:stretch;width:100%;max-width:520px}
+.opt{all:unset;box-sizing:border-box;cursor:pointer;border:1.5px solid var(--line);background:var(--card);border-radius:9px;padding:10px 14px;display:block}
+.opt:hover{border-color:var(--blue)}
+.opt[aria-checked="true"]{border-color:var(--blue);background:var(--soft)}
+.opt.ok{border-color:var(--green);background:var(--ok-bg)}.opt.bad{border-color:var(--red);background:var(--bad-bg)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{all:unset;box-sizing:border-box;cursor:pointer;padding:10px 18px;border-radius:9px;font-weight:600;border:1.5px solid var(--line);background:var(--card);color:var(--fg)}
+.btn:hover{border-color:var(--blue)}
+.btn.main{background:var(--blue);border-color:var(--blue);color:#fff}
+:root[data-theme="dark"] .btn.main{color:#0d1424}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.main{color:#0d1424}}
+.btn[disabled]{opacity:.45;cursor:default}
+.fb{padding:10px 14px;border-radius:9px;font-weight:500}
+.fb.ok{background:var(--ok-bg);color:var(--green)}.fb.bad{background:var(--bad-bg);color:var(--red)}.fb.warn{background:var(--soft);color:var(--amber)}
+.sol{border-top:2px dashed var(--line);padding-top:12px}
+.sol h3{font:700 1.4rem var(--f-display);color:var(--green);margin:0 0 4px}
+.sol p{margin:.4em 0}.sol ul{margin:.4em 0;padding-left:1.2em}
+.steps{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.st{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;overflow-x:auto;max-width:100%}
+.st .op{min-width:8.5em}
+kbd{font:500 .8em var(--f-mono);background:var(--soft);padding:1px 6px;border-radius:5px}
+
+.tabs{display:flex;flex-wrap:wrap;gap:6px;border-bottom:2px solid var(--line)}
+.tab{all:unset;box-sizing:border-box;cursor:pointer;padding:9px 16px;font-weight:600;color:var(--muted);border:2px solid transparent;border-bottom:0;border-radius:9px 9px 0 0;margin-bottom:-2px}
+.tab:hover{color:var(--fg)}
+.tab[aria-selected="true"]{color:var(--blue);background:var(--card);border-color:var(--line)}
+.tab:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.split{display:flex;flex-direction:column;gap:14px;min-width:0}
+.tpane{display:none;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:6px 20px 18px;min-width:0}
+.tpane h3{font:700 2rem/1.1 var(--f-display);color:var(--red);margin:12px 0 0}
+.tsec{padding-top:14px}
+.tsec h4{font:700 1.45rem/1.1 var(--f-display);color:var(--green);margin:0 0 4px}
+.tsec p{margin:.4em 0}.tsec ul,.tsec ol{margin:.4em 0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+.tex{border-left:3px solid var(--blue);background:var(--soft);border-radius:0 8px 8px 0;padding:6px 12px;margin:8px 0;overflow-x:auto;max-width:100%}
+.tex p{margin:.3em 0}
+.app[data-view="theory"]{max-width:1320px}
+.app[data-view="theory"] details.theory{display:none}
+.app[data-view="theory"] .tpane{display:block}
+@media (min-width:1100px){
+  .app[data-view="theory"] .split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;gap:18px}
+  .app[data-view="theory"] .card{position:sticky;top:16px;max-height:calc(100vh - 32px);overflow-y:auto}
+}
+
+/* --- PPI: tabuľky, mapy, schémy, výrazy --- */
+/* Karnaughova mapa: zátvorky premenných, zaoblené bunky, skupiny farbou */
+.kmap{display:flex;flex-direction:column;gap:2px;width:max-content;padding:2px}
+.kgrid{display:grid;gap:2px;width:max-content}
+.kb-top{border-bottom:2px solid var(--fg);display:flex;align-items:flex-end;justify-content:center;padding-bottom:2px;height:22px;font-size:13px;color:var(--muted)}
+.kb-left{border-right:2px solid var(--fg);display:flex;align-items:center;justify-content:flex-end;padding-right:4px;font-size:13px;color:var(--muted);writing-mode:vertical-rl}
+.kh{font:500 12px var(--f-mono);color:var(--muted);text-align:center;padding-top:6px}
+.krh{font:500 12px var(--f-mono);color:var(--muted);display:flex;align-items:center}
+.kc{width:42px;height:42px;border:.5px solid var(--line);border-radius:6px;display:flex;align-items:center;justify-content:center;font:500 15px var(--f-mono);position:relative;font-variant-numeric:tabular-nums}
+.kc.zero{color:var(--muted)}.kc.dc{color:var(--amber)}
+.kc i{position:absolute;right:4px;bottom:1px;font:500 .6rem var(--f-mono);color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0}
+.swi{display:inline-flex;align-items:center;gap:6px}
+.sw{width:11px;height:11px;border-radius:3px;background:var(--c);display:inline-block}
+.sw.ring{background:transparent;border:2px solid var(--c)}
+
+sub{font-size:.72em;line-height:0}
+.ov{text-decoration:overline;text-decoration-thickness:1.5px;text-underline-offset:0}
+.ttwrap{overflow-x:auto;max-width:100%;margin:8px 0}
+.tt{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:.92rem}
+.tt th,.tt td{border:1px solid var(--line);padding:3px 10px;text-align:center}
+.tt th{background:var(--soft);font-weight:600}
+.tt td.de{color:var(--muted)}
+.tt td.o.one{color:var(--blue);font-weight:600}
+.tt.tl td,.tt.tl th{text-align:left}
+.duo{display:flex;flex-wrap:wrap;gap:6px 24px;align-items:flex-start}
+.circ-box{margin-top:8px}
+svg.circ{display:block;max-width:none;height:auto}
+svg.circ .wire path,svg.circ path.wire{stroke:var(--wire);stroke-width:1.6;fill:none}
+svg.circ .gate{fill:var(--card);stroke:var(--fg);stroke-width:1.6}
+svg.circ .bub{fill:var(--card);stroke:var(--fg);stroke-width:1.6}
+svg.circ .gt{fill:var(--fg);font:600 13px var(--f-mono)}
+svg.circ .in{fill:var(--blue);font:600 14px var(--f-body)}
+svg.circ .zl{fill:var(--muted);font:500 10px var(--f-mono)}
+svg.circ .dot{fill:var(--wire)}
+details.gl{margin:4px 0}details.gl summary{cursor:pointer;color:var(--muted);font-size:.85rem}
+details.gl ul,ul.gl2{margin:4px 0;padding-left:0;list-style:none;display:flex;flex-wrap:wrap;gap:2px 22px}
+.cell.wide{width:11em;text-align:left}
+.cell.expr{width:min(100%,26em);text-align:left;font-size:1.05rem}
+.cell.warn{border-color:var(--amber)}
+.insbar{display:flex;gap:6px;flex-wrap:wrap}
+.ib{all:unset;box-sizing:border-box;cursor:pointer;min-width:2.4rem;text-align:center;padding:5px 10px;border:1.5px solid var(--line);border-radius:7px;background:var(--card);font:500 1rem var(--f-mono)}
+.ib:hover{border-color:var(--blue)}.ib:focus-visible{outline:3px solid var(--blue)}
+.rowsq{display:flex;flex-direction:column;gap:10px}
+.rq{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:8px}
+.rl{flex:1 1 18em;min-width:0}
+.ro{display:flex;gap:6px}
+.opt.sm{padding:6px 12px;font-size:.9rem;white-space:nowrap}
+code.w{font:500 1rem var(--f-mono);background:var(--soft);padding:1px 8px;border-radius:6px;letter-spacing:.1em}
+.mx.in th{font:500 .8rem var(--f-mono);color:var(--muted);padding:2px 6px}
+.cell{width:3.6em}
+.ln .cell.expr{width:min(100%,26em)}
+@media (max-width:820px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  nav.topics{flex-direction:row;overflow-x:auto;position:static;padding-bottom:6px;gap:8px}
+  .tbtn{flex:0 0 auto;min-width:170px}
+  .tbtn .s{display:none}
+  h1{font-size:2.2rem}.card{padding:16px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<div class="app" id="app" data-view="practice">
+  <header class="top">
+    <div>
+      <h1>Cvičebnica PPI</h1>
+      <p class="sub">Booleove funkcie, normálne formy, logické obvody, automaty a preklápacie obvody. Každý príklad je nový.</p>
+    </div>
+    <div class="score" id="score"></div>
+  </header>
+  <div class="tabs" role="tablist" aria-label="Zobrazenie"><button class="tab" role="tab" id="tab-practice" aria-selected="true" data-v="practice">Cvičenie</button><button class="tab" role="tab" id="tab-theory" aria-selected="false" data-v="theory">Teória + cvičenie</button></div>
+  <div class="layout">
+    <nav class="topics" id="nav" aria-label="Témy"></nav>
+    <main>
+      <details class="theory" id="theory"><summary></summary><div class="in"></div></details>
+      <div class="split"><article class="tpane" id="tpane" aria-label="Teória"></article><section class="card" id="card" aria-live="off"></section></div>
+    </main>
+  </div>
+</div>
+<script>
+'use strict';
+/* ================= náhoda a pomôcky ================= */
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[R(0,a.length-1)];
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=R(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+const SUBD='₀₁₂₃₄₅₆₇₈₉';
+const dispName=n=>String(n).replace(/(\D)(\d+)/,(m,a,d)=>a+'<sub>'+d+'</sub>');
+const bitsOf=(i,n)=>Array.from({length:n},(_,j)=>(i>>(n-1-j))&1);
+const popc=x=>{let c=0;while(x){c+=x&1;x>>=1}return c};
+const bstr=(i,n)=>bitsOf(i,n).join('');
+const uniq=a=>[...new Set(a)];
+const ov=h=>`<span class="ov">${h}</span>`;
+const lit=(n,neg)=>neg?ov(dispName(n)):dispName(n);
+
+/* ================= výrazy: parser, vyhodnotenie, tvary ================= */
+function tokenize(s){
+  s=s.replace(/[₀-₉]/g,c=>String(SUBD.indexOf(c))).replace(/[’′`´]/g,"'").replace(/[−–]/g,'-');
+  const out=[];let i=0;
+  while(i<s.length){const c=s[i];
+    if(/\s/.test(c)){i++;continue}
+    if(/[A-Za-z]/.test(c)){let j=i+1;while(j<s.length&&/\d/.test(s[j]))j++;out.push({t:'id',v:s.slice(i,j).toLowerCase()});i=j;continue}
+    if(c==='0'||c==='1'){out.push({t:'const',v:+c});i++;continue}
+    if(c==='+'||c==='|'){out.push({t:'+'});i++;continue}
+    if('*.·×∙⋅&'.includes(c)){out.push({t:'*'});i++;continue}
+    if(c==='^'||c==='⊕'){out.push({t:'^'});i++;continue}
+    if(c==="'"){out.push({t:"'"});i++;continue}
+    if('!~¬'.includes(c)){out.push({t:'!'});i++;continue}
+    if(c==='('||c===')'){out.push({t:c});i++;continue}
+    throw new Error(`Neznámy znak „${c}“.`)}
+  return out}
+function parseExpr(str,allowed){
+  if(!str||!str.trim())throw new Error('Napíš výraz.');
+  const tk=tokenize(str);let p=0;const peek=()=>tk[p];
+  const orE=()=>{const a=[xorE()];while(peek()&&peek().t==='+'){p++;a.push(xorE())}return a.length>1?{t:'or',args:a}:a[0]};
+  const xorE=()=>{const a=[andE()];while(peek()&&peek().t==='^'){p++;a.push(andE())}return a.length>1?{t:'xor',args:a}:a[0]};
+  const andE=()=>{const a=[un()];while(peek()){const k=peek().t;if(k==='*'){p++;a.push(un())}else if(k==='id'||k==='const'||k==='('||k==='!'){a.push(un())}else break}return a.length>1?{t:'and',args:a}:a[0]};
+  const un=()=>{const t=peek();if(!t)throw new Error('Výraz je neúplný.');if(t.t==='!'){p++;return{t:'not',a:un()}}return post()};
+  const post=()=>{let a=prim();while(peek()&&peek().t==="'"){p++;a={t:'not',a}}return a};
+  const prim=()=>{const t=peek();if(!t)throw new Error('Výraz je neúplný.');p++;
+    if(t.t==='id'){if(allowed&&!allowed.includes(t.v))throw new Error(`Premenná „${t.v}“ sa v úlohe nevyskytuje (použi: ${allowed.join(', ')}).`);return{t:'var',n:t.v}}
+    if(t.t==='const')return{t:'const',v:t.v};
+    if(t.t==='('){const e=orE();if(!peek()||peek().t!==')')throw new Error('Chýba zatvorka ).');p++;return e}
+    throw new Error('Zápis výrazu nie je správny.')};
+  const e=orE();if(p<tk.length)throw new Error('Zápis výrazu nie je správny (skontroluj zátvorky a operátory).');return e}
+function evalAst(a,env){switch(a.t){
+  case'var':return env[a.n];case'const':return a.v;case'not':return 1-evalAst(a.a,env);
+  case'and':return a.args.every(x=>evalAst(x,env))?1:0;case'or':return a.args.some(x=>evalAst(x,env))?1:0;
+  case'xor':return a.args.reduce((s,x)=>s^evalAst(x,env),0)}}
+const flat=a=>{if(a.t==='and'||a.t==='or'){const args=[];for(const x of a.args){const f=flat(x);if(f.t===a.t)args.push(...f.args);else args.push(f)}return{t:a.t,args}}if(a.t==='not')return{t:'not',a:flat(a.a)};return a};
+const isLit=a=>a.t==='var'||(a.t==='not'&&a.a.t==='var');
+const isProd=a=>isLit(a)||(a.t==='and'&&a.args.every(isLit));
+const isSum=a=>isLit(a)||(a.t==='or'&&a.args.every(isLit));
+const isDNF=a=>{a=flat(a);return a.t==='const'||isProd(a)||(a.t==='or'&&a.args.every(isProd))};
+const isKNF=a=>{a=flat(a);return a.t==='const'||isSum(a)||(a.t==='and'&&a.args.every(isSum))};
+const litCount=a=>a.t==='var'?1:a.t==='const'?0:a.t==='not'?litCount(a.a):a.args.reduce((s,x)=>s+litCount(x),0);
+const onlyVarNeg=a=>a.t==='var'||a.t==='const'||(a.t==='not'?a.a.t==='var':a.args.every(onlyVarNeg));
+function exprHtml(a,pp=0){switch(a.t){
+  case'var':return dispName(a.n);case'const':return String(a.v);
+  case'not':return a.a.t==='var'?ov(dispName(a.a.n)):ov(exprHtml(a.a,0));
+  case'and':{const s=a.args.map(x=>exprHtml(x,3)).join('·');return pp>3?`(${s})`:s}
+  case'or':{const s=a.args.map(x=>exprHtml(x,1)).join(' + ');return pp>1?`(${s})`:s}
+  case'xor':{const s=a.args.map(x=>exprHtml(x,2)).join(' ⊕ ');return pp>2?`(${s})`:s}}}
+function exprTxt(a,pp=0){switch(a.t){
+  case'var':return a.n;case'const':return String(a.v);
+  case'not':return a.a.t==='var'?a.a.n+"'":'('+exprTxt(a.a,0)+")'";
+  case'and':{const s=a.args.map(x=>exprTxt(x,3)).join('*');return pp>3?`(${s})`:s}
+  case'or':{const s=a.args.map(x=>exprTxt(x,1)).join('+');return pp>1?`(${s})`:s}
+  case'xor':{const s=a.args.map(x=>exprTxt(x,2)).join('^');return pp>2?`(${s})`:s}}}
+const V=n=>({t:'var',n}),NOT=a=>({t:'not',a}),AND=(...a)=>a.length===1?a[0]:({t:'and',args:a}),OR=(...a)=>a.length===1?a[0]:({t:'or',args:a}),XOR=(...a)=>({t:'xor',args:a});
+const astVec=(a,names)=>{const n=names.length;return Array.from({length:1<<n},(_,i)=>{const env={};names.forEach((nm,j)=>env[nm]=(i>>(n-1-j))&1);return evalAst(a,env)})};
+
+/* ================= minimalizácia (Quine–McCluskey, presné pokrytie) ================= */
+function primesOf(ones,dcs){
+  let cur=new Map();for(const i of [...ones,...dcs])cur.set(i+':0',{b:i,m:0});const primes=[];
+  while(cur.size){const next=new Map(),used=new Set(),arr=[...cur.values()];
+    for(let i=0;i<arr.length;i++)for(let j=i+1;j<arr.length;j++){const a=arr[i],b=arr[j];if(a.m!==b.m)continue;const d=a.b^b.b;
+      if(d&&(d&(d-1))===0){const c={b:a.b&b.b,m:a.m|d};next.set(c.b+':'+c.m,c);used.add(i);used.add(j)}}
+    arr.forEach((c,i)=>{if(!used.has(i))primes.push(c)});cur=next}
+  return primes}
+const covers=(c,i)=>((i&~c.m)===c.b);
+function minCover(n,primes,ones){
+  if(!ones.length)return[];const cost=c=>n-popc(c.m);let best=null,bc=Infinity,bn=Infinity;
+  const rec=(unc,chosen,cs)=>{if(cs>bc)return;
+    if(!unc.length){if(cs<bc||(cs===bc&&chosen.length<bn)){best=chosen.slice();bc=cs;bn=chosen.length}return}
+    const t=unc[0];for(const p of primes.filter(p=>covers(p,t))){chosen.push(p);rec(unc.filter(x=>!covers(p,x)),chosen,cs+cost(p));chosen.pop()}};
+  rec(ones,[],0);return best}
+function minimize(vals,dual=false){
+  const N=vals.length,n=Math.log2(N)|0,tgt=dual?0:1;
+  const ones=[],dcs=[];vals.forEach((v,i)=>{if(v===tgt)ones.push(i);else if(v==='x')dcs.push(i)});
+  const primes=primesOf(ones,dcs);const cubes=minCover(n,primes,ones);
+  return{cubes,primes,cost:cubes.reduce((s,c)=>s+n-popc(c.m),0),n,dual}}
+function cubeAst(c,names,dual){const n=names.length;const ls=[];
+  for(let j=0;j<n;j++){const bit=n-1-j;if((c.m>>bit)&1)continue;const b=(c.b>>bit)&1;const pos=dual?!b:!!b;ls.push(pos?V(names[j]):NOT(V(names[j])))}
+  return ls}
+function minAst(mz,names){const dual=mz.dual;
+  if(!mz.cubes.length)return{t:'const',v:dual?1:0};
+  if(mz.cubes.some(c=>c.m===(1<<names.length)-1))return{t:'const',v:dual?0:1};
+  const parts=mz.cubes.map(c=>{const ls=cubeAst(c,names,dual);return dual?OR(...ls):AND(...ls)});
+  return dual?AND(...parts):OR(...parts)}
+const cubeHtml=(c,names,dual)=>{const ls=cubeAst(c,names,dual);if(!ls.length)return dual?'0':'1';return exprHtml(dual?OR(...ls):AND(...ls))};
+
+/* kontrola užívateľovho výrazu proti funkcii (vals: 0/1/'x') */
+function checkExpr(text,o){
+  let ast;try{ast=parseExpr(text,o.names)}catch(e){return{ok:false,msg:e.message,hold:true}}
+  const n=o.names.length;
+  for(let i=0;i<o.vals.length;i++){if(o.vals[i]==='x')continue;const env={};o.names.forEach((nm,j)=>env[nm]=(i>>(n-1-j))&1);const v=evalAst(ast,env);
+    if(v!==o.vals[i])return{ok:false,msg:`Výraz nesedí: pre ${o.names.map(dispName).join('')} = ${bstr(i,n)} dáva ${v}, správne je ${o.vals[i]}.`}}
+  if(o.form==='dnf'&&!isDNF(ast))return{ok:false,hold:true,msg:'Funkcia sedí, ale výraz nie je v tvare DNF (súčet súčinov písmen).'};
+  if(o.form==='knf'&&!isKNF(ast))return{ok:false,hold:true,msg:'Funkcia sedí, ale výraz nie je v tvare KNF (súčin súčtov písmen).'};
+  if(o.varNegOnly&&!onlyVarNeg(flat(ast)))return{ok:false,hold:true,msg:'Funkcia sedí, ale negácia sa nesmie nachádzať nad zátvorkou, iba nad jednotlivými premennými.'};
+  if(o.noConst&&ast.t==='const'&&false)return{ok:false,msg:''};
+  const L=litCount(ast);
+  if(o.minLit!=null&&L>o.minLit)return{ok:false,hold:true,msg:`Funkcia sedí, ale výraz nie je minimálny. Má ${L} písmen, minimum je ${o.minLit}.`};
+  return{ok:true}}
+
+/* ================= vykresľovanie: tabuľky, mapy ================= */
+function ttable(names,cols,o={}){
+  const n=names.length,N=1<<n;let h=`<div class="ttwrap"><table class="tt"><thead><tr>${o.de===false?'':'<th>DE</th>'}${names.map(x=>`<th>${dispName(x)}</th>`).join('')}${cols.map(c=>`<th class="o">${c.h}</th>`).join('')}</tr></thead><tbody>`;
+  for(let i=0;i<N;i++){h+=`<tr>${o.de===false?'':`<td class="de">${i}</td>`}${bitsOf(i,n).map(b=>`<td>${b}</td>`).join('')}${cols.map(c=>`<td class="o ${c.vals[i]===1?'one':''}">${c.vals[i]}</td>`).join('')}</tr>`}
+  return h+'</tbody></table></div>'}
+const GRAY=k=>k===1?[0,1]:[0,1,3,2];
+const gcol=k=>`var(--g${k%6+1})`,gmix=(k,p)=>`color-mix(in srgb,${gcol(k)} ${p}%,transparent)`;
+function kmap(vals,names,o={}){
+  const n=names.length,rv=n===2?1:n===3?1:2,cv=n-rv;const rs=GRAY(rv),cs=GRAY(cv);const cubes=o.cubes||[],dual=!!o.dual;
+  const cols=cs.length,rows=rs.length;
+  const tpl=`${'24px '.repeat(rv)}34px repeat(${cols},42px)`;
+  let top='';
+  for(let vi=0;vi<cv;vi++){let cells='<div></div>'.repeat(rv+1),c=0;
+    while(c<cols){const bit=(cs[c]>>(cv-1-vi))&1;
+      if(!bit){cells+='<div></div>';c++}
+      else{const s=c;while(c<cols&&((cs[c]>>(cv-1-vi))&1))c++;cells+=`<div class="kb-top" style="grid-column:span ${c-s}">${dispName(names[rv+vi])}</div>`}}
+    top+=`<div class="kgrid" style="grid-template-columns:${tpl}">${cells}</div>`}
+  let g=`<div class="kgrid" style="grid-template-columns:${tpl};grid-template-rows:auto repeat(${rows},42px)">`;
+  for(let vi=0;vi<rv;vi++){let r=0;
+    while(r<rows){const bit=(rs[r]>>(rv-1-vi))&1;
+      if(!bit){r++;continue}
+      const s=r;while(r<rows&&((rs[r]>>(rv-1-vi))&1))r++;
+      g+=`<div class="kb-left" style="grid-column:${vi+1};grid-row:${s+2} / span ${r-s}">${dispName(names[vi])}</div>`}}
+  cs.forEach((cc,j)=>{g+=`<div class="kh" style="grid-column:${rv+2+j};grid-row:1">${bstr(cc,cv)}</div>`});
+  rs.forEach((r,i)=>{
+    g+=`<div class="krh" style="grid-column:${rv+1};grid-row:${i+2}">${bstr(r,rv)}</div>`;
+    cs.forEach((cc,j)=>{const idx=(r<<cv)|cc,v=vals[idx];const cov=[];cubes.forEach((cu,k)=>{if(covers(cu,idx))cov.push(k)});
+      let st='';
+      if(cov.length){
+        if(!dual){st=cov.length===1?`background:${gmix(cov[0],30)}`:`background:linear-gradient(135deg,${cov.map((k,m)=>`${gmix(k,38)} ${m*100/cov.length}% ${(m+1)*100/cov.length}%`).join(',')})`}
+        else{st=`box-shadow:inset 0 0 0 2px ${gcol(cov[0])},${cov.map(k=>`0 0 6px 1px ${gmix(k,70)}`).join(',')}`}}
+      g+=`<div class="kc ${v===1?'one':v==='x'?'dc':'zero'}" style="grid-column:${rv+2+j};grid-row:${i+2};${st}">${v}${o.idx?`<i>${idx}</i>`:''}</div>`})});
+  g+='</div>';
+  let h=`<div class="ttwrap"><div class="kmap">${top}${g}</div></div>`;
+  if(cubes.length&&o.legend!==false)h+=`<div class="chips">${cubes.map((cu,k)=>`<span class="swi"><span class="sw ${dual?'ring':''}" style="--c:${gcol(k)}"></span>${cubeHtml(cu,names,dual)}</span>`).join('')}</div>`;
+  return h}
+const vecStr=v=>'('+v.join('')+')';
+const setStr=a=>a.length?a.join(', '):'∅';
+
+/* ================= náhodné funkcie ================= */
+const NAMESETS={2:[['x1','x2'],['a','b']],3:[['x1','x2','x3'],['a','b','c']],4:[['a','b','c','d']]};
+const namesFor=n=>pick(NAMESETS[n]);
+function randVals(n,o={}){
+  for(let t=0;t<500;t++){const N=1<<n;const p1=o.p1??.5,pd=o.dc?.18:0;
+    const v=Array.from({length:N},()=>{const r=Math.random();return r<pd?'x':Math.random()<p1?1:0});
+    const ones=v.filter(x=>x===1).length,zeros=v.filter(x=>x===0).length;
+    if(ones<(o.minOnes??2)||zeros<(o.minZeros??2))continue;
+    if(o.minLit){const mz=minimize(v);if(mz.cost<o.minLit)continue}
+    if(o.maxLit&&(minimize(v).cost>o.maxLit||minimize(v,true).cost>o.maxLit))continue
+    return v}
+  return Array.from({length:1<<n},(_,i)=>i%3===0?1:0)}
+const idxOf=(v,t)=>v.map((x,i)=>x===t?i:-1).filter(i=>i>=0);
+
+/* ================= logické obvody (hradlá) ================= */
+const GT={AND:{n:'&',f:(a,b)=>a&b,s:(a,b)=>`${a}·${b}`,bub:0},OR:{n:'≥1',f:(a,b)=>a|b,s:(a,b)=>`${a} + ${b}`,bub:0},
+  NAND:{n:'&',f:(a,b)=>1-(a&b),s:(a,b)=>ov(`${a}·${b}`),bub:1},NOR:{n:'≥1',f:(a,b)=>1-(a|b),s:(a,b)=>ov(`${a} + ${b}`),bub:1},
+  XOR:{n:'=1',f:(a,b)=>a^b,s:(a,b)=>`${a} ⊕ ${b}`,bub:0},NOT:{n:'1',f:a=>1-a,s:a=>ov(a),bub:1}};
+function genCircuit(nIn,nG,types){
+  const names=['a','b','c','d'].slice(0,nIn);
+  for(let t=0;t<400;t++){const gates=[];const fan={};names.forEach(x=>fan[x]=0);
+    for(let k=1;k<=nG;k++){const id='Z'+k;const ty=pick(types);const ar=ty==='NOT'?1:2;
+      const pool=[...names,...gates.map(g=>g.id)];const unused=shuf(pool.filter(x=>fan[x]===0));const ins=[];
+      while(ins.length<ar){let c;if(unused.length&&Math.random()<.85)c=unused.pop();else c=pick(pool);if(ins.includes(c)&&pool.length>1&&Math.random()<.9)continue;ins.push(c);if(ins.length===2&&ins[0]===ins[1]&&pool.length>1)ins.pop()}
+      ins.forEach(x=>fan[x]++);fan[id]=0;gates.push({id,type:ty,ins})}
+    const last=gates[gates.length-1].id;
+    if(names.some(x=>fan[x]===0))continue;if(gates.some(g=>g.id!==last&&fan[g.id]===0))continue;
+    const val={};const vec=[];
+    const ev=i=>{const env={};names.forEach((x,j)=>env[x]=(i>>(nIn-1-j))&1);gates.forEach(g=>{const a=g.ins.map(x=>env[x]);env[g.id]=GT[g.type].f(...a)});return env};
+    const envs=Array.from({length:1<<nIn},(_,i)=>ev(i));
+    const F=envs.map(e=>e[last]);if(F.every(x=>x===F[0]))continue;
+    const ones=F.filter(x=>x).length;if(ones<2||ones>(1<<nIn)-2)continue;
+    return{names,gates,out:last,vec:F,envs}}
+  return null}
+const gateList=c=>c.gates.map(g=>{const a=g.ins.map(x=>dispName(x));return`<li><b>${g.id===c.out?'F':g.id}</b> = ${GT[g.type].s(...a)}</li>`}).join('');
+function circuitSvg(c){
+  const layer={};c.names.forEach(x=>layer[x]=0);const byId={};
+  c.gates.forEach(g=>{byId[g.id]=g;layer[g.id]=1+Math.max(...g.ins.map(x=>layer[x]))});
+  const L=Math.max(...c.gates.map(g=>layer[g.id])),XS=70,GW=44,GH=34,DY=56,X0=46;
+  const y={};c.names.forEach((x,i)=>y[x]=28+i*DY*0.8);
+  for(let l=1;l<=L;l++){const gs=c.gates.filter(g=>layer[g.id]===l).map(g=>({g,m:g.ins.reduce((s,x)=>s+y[x],0)/g.ins.length})).sort((a,b)=>a.m-b.m);
+    let prev=-1e9;gs.forEach(o=>{const yy=Math.max(o.m,prev+DY);y[o.g.id]=yy;prev=yy})}
+  const H=Math.max(...Object.values(y))+30,W=X0+L*(GW+XS)+60;
+  const gx=id=>X0+(layer[id]-1)*(GW+XS)+XS*0.7;
+  let wires='',boxes='';
+  const outPt=id=>c.names.includes(id)?[24,y[id]]:[gx(id)+GW+(GT[byId[id].type].bub?8:0),y[id]];
+  c.gates.forEach(g=>{const n=g.ins.length;g.ins.forEach((s,k)=>{const [x1,y1]=outPt(s);const x2=gx(g.id),y2=y[g.id]+(n===1?0:(k?9:-9));const xm=x2-14-(k?0:4);
+    wires+=`<path d="M${x1} ${y1}H${xm}V${y2}H${x2}" />`})});
+  c.names.forEach(x=>{boxes+=`<text x="4" y="${y[x]+4}" class="in">${x}</text><circle cx="24" cy="${y[x]}" r="2.5" class="dot"/>`});
+  c.gates.forEach(g=>{const x=gx(g.id),yy=y[g.id];const t=GT[g.type];
+    boxes+=`<rect x="${x}" y="${yy-GH/2}" width="${GW}" height="${GH}" rx="3" class="gate"/><text x="${x+GW/2}" y="${yy+5}" text-anchor="middle" class="gt">${t.n}</text>`;
+    if(t.bub)boxes+=`<circle cx="${x+GW+4}" cy="${yy}" r="4" class="bub"/>`;
+    if(g.id===c.out)boxes+=`<path d="M${x+GW+(t.bub?8:0)} ${yy}h22" class="wire"/><text x="${x+GW+(t.bub?8:0)+26}" y="${yy+5}" class="in">F</text>`;
+    else boxes+=`<text x="${x+GW/2}" y="${yy-GH/2-4}" text-anchor="middle" class="zl">${g.id}</text>`});
+  return`<div class="ttwrap"><svg class="circ" viewBox="0 0 ${W} ${H}" width="${W}" role="img" aria-label="Schéma logického obvodu"><g class="wire" fill="none">${wires}</g>${boxes}</svg></div>`}
+const circuitTable=c=>ttable(c.names,[...c.gates.filter(g=>g.id!==c.out).map(g=>({h:g.id,vals:c.envs.map(e=>e[g.id])})),{h:'F',vals:c.vec}]);
+
+/* ================= formy NF s hradlami NAND/NOR ================= */
+const mkLit=(n,neg)=>({n,neg});
+function termsRand(){const vs=shuf(['a','b','c','d','e']);const nt=pick([2,3]);const used=[];const terms=[];
+  for(let i=0;i<nt;i++){const len=terms.length&&Math.random()<.35?1:2;const t=[];for(let k=0;k<len;k++){t.push(mkLit(vs[(i*2+k)%5],Math.random()<.45))}terms.push(t)}
+  if(terms.every(t=>t.length===1))terms[0].push(mkLit(vs[4],false));
+  return terms}
+const lh=l=>lit(l.n,l.neg),lhN=l=>lit(l.n,!l.neg);
+function nfStr(terms,form,o={}){ // form: dnf-nand, dnf-nor, knf-nor, knf-nand
+  const inner={'dnf-nand':'↑','dnf-nor':'↓','knf-nor':'↓','knf-nand':'↑'}[form];const outer={'dnf-nand':' ↑ ','dnf-nor':' + ','knf-nor':' ↓ ','knf-nand':'·'}[form];
+  const negIn={'dnf-nand':false,'dnf-nor':true,'knf-nor':false,'knf-nand':true}[form];
+  const inI=o.inner||inner,outO=o.outer||outer,nI=o.negIn!==undefined?o.negIn:negIn;
+  const parts=terms.map(t=>{if(t.length===1){return o.singleWrong?lh(t[0]):(['dnf-nand','knf-nor'].includes(form)?lhN(t[0]):lh(t[0]))}
+    return'('+t.map(l=>nI?lhN(l):lh(l)).join(inI)+')'});
+  return parts.join(outO)}
+function plainNF(terms,dnf){const g=t=>t.map(lh).join(dnf?'·':' + ');return terms.map(t=>t.length>1?(dnf?g(t):'('+g(t)+')'):g(t)).join(dnf?' + ':'·').replace(/\(\)/g,'')}
+function dnfStr(terms){return terms.map(t=>t.map(lh).join('·')).join(' + ')}
+function knfStr(terms){return terms.map(t=>t.length>1?'('+t.map(lh).join(' + ')+')':lh(t[0])).join('·')}
+
+'use strict';
+/* ================= pomocné konštruktory vstupov ================= */
+const NUL=null,TK={m:'tok'},SET={m:'set'};
+const linesIn=l=>({t:'lines',lines:l});
+const gridIn=(r,c,m='num')=>({t:'grid',r,c,m});
+const mcq=(opts,cor)=>{const o=shuf(opts);return{input:{t:'choice',opts:o},answer:[o.indexOf(cor)]}};
+const mcq3=(cor,wrong)=>mcq([cor,...shuf(uniq(wrong).filter(x=>x!==cor)).slice(0,3)],cor);
+const sg=n=>n<0?'−'+(-n):''+n;
+const pw=(a,b)=>Math.pow(a,b);
+const bank=(arr)=>()=>{const [q,c,w,e]=pick(arr);return{kind:'Teória',prompt:q,...mcq3(c,w),solution:`<p>${e||c}</p>`}};
+
+/* ================= 1. Architektúry a základy ================= */
+const B1=[
+ ['Kde je uložený program a spracúvané údaje vo von Neumannovej (princetonskej) architektúre?','V tej istej pamäti',['V oddelených pamätiach s oddeleným adresovým priestorom','Program v riadiacej jednotke, údaje v pamäti','Program vo vstupnej jednotke, údaje vo výstupnej jednotke'],'Program aj údaje sú v jednej pamäti a prístup k nim je rovnaký.'],
+ ['Čo je typické pre harvardskú architektúru?','Oddelený adresový priestor pre programy a údaje',['Spoločná pamäť pre inštrukcie aj údaje','Riadenie tokom údajov','Používa sa iba jedna zbernica pre všetko'],'Harvardská architektúra (1944, Mark 1, Howard Aiken) má oddelený adresový priestor pre programy a údaje.'],
+ ['Kto navrhol architektúru počítača riadeného postupnosťou inštrukcií a v ktorom roku?','John von Neumann, 1946',['Howard Aiken, 1946','John von Neumann, 1966','George Boole, 1946'],'John von Neumann, 1946 (univerzita Princeton). Rok 1966 patrí Flynnovej klasifikácii.'],
+ ['Ktorý počítač z roku 1944 je spojený s harvardskou architektúrou?','MARK 1 (Howard Aiken)',['ENIAC (John von Neumann)','Altair 8800','IBM PC'],'MARK 1, Howard Aiken, 1944.'],
+ ['Ktorá jednotka vo von Neumannovej architektúre vyberá inštrukcie z pamäte?','Riadiaca jednotka',['Aritmetická jednotka','Vstupná jednotka','Výstupná jednotka'],'Riadiaca jednotka vyberá inštrukcie, aritmetická vykonáva operácie nad údajmi.'],
+ ['Ktorá číselná sústava sa používa vo von Neumannovej architektúre?','Dvojková',['Desiatková','Šestnástková','Trojková'],'Používa sa dvojková číselná sústava.'],
+ ['Podľa čoho Flynn klasifikuje počítače (1966)?','Podľa počtu súčasne spracúvaných tokov inštrukcií a tokov údajov',['Podľa kapacity hlavnej pamäte','Podľa výrobcu procesora','Podľa dĺžky inštrukcie'],'Flynnova klasifikácia: počet tokov inštrukcií × počet tokov údajov, štyri triedy.'],
+ ['Ktorá Flynnova trieda zodpovedá klasickému sériovému jednoprocesorovému PC?','SISD',['SIMD','MISD','MIMD'],'SISD (single instruction, single data), PC von Neumannovej architektúry, mainframe.'],
+ ['Ktorá Flynnova trieda zodpovedá maticovému počítaču a výpočtom na grafických kartách?','SIMD',['SISD','MISD','MIMD'],'SIMD: jedna inštrukcia nad viacerými tokmi údajov.'],
+ ['Ktorá Flynnova trieda sa používa pri prúdovom spracovaní s vysokou spoľahlivosťou (vesmírne technológie)?','MISD',['SISD','SIMD','MIMD'],'MISD: viac inštrukcií nad tými istými údajmi, rovnaké dáta musia dať rovnaký výsledok.'],
+ ['Ktorá Flynnova trieda zodpovedá viacprocesorovým paralelným a distribuovaným počítačom?','MIMD',['SISD','SIMD','MISD'],'MIMD: viac tokov inštrukcií aj údajov.'],
+ ['Ako je riadený počítač von Neumannovho typu?','Tokom inštrukcií (control flow)',['Tokom údajov (data flow)','Tokom požiadaviek (demand flow)','Tokom prerušení'],'Von Neumannov typ = control flow.'],
+ ['Čo znamená skratka RISC?','Reduced Instruction Set Computer',['Reliable Instruction Set Computer','Remote Instruction Set Controller','Reduced Internal Signal Circuit'],'RISC = Reduced Instruction Set Computer, CISC = Complex Instruction Set Computer.'],
+ ['Čo znamená skratka NISC?','No Instruction Set Computer',['New Instruction Set Computer','Non-Integrated System Computer','Network Instruction Set Controller'],'NISC = No Instruction Set Computer.'],
+ ['Ktorá trojica zodpovedá klasifikácii počítačov podľa aplikačného určenia?','Univerzálne, problémovo orientované, špecializované',['SISD, SIMD, MIMD','Princetonské, harvardské, flynnovské','Sériové, paralelné, distribuované'],'Podľa aplikačného určenia: univerzálne, problémovo orientované, špecializované.'],
+ ['Kto preformuloval výrokovú logiku do tvaru algebry?','George Boole (1815–1864)',['John von Neumann','Howard Aiken','Claude Shannon'],'George Boole. Logika sa tým stala algebraickou disciplínou.'],
+ ['Ktoré sú základné operátory Booleovej algebry?','OR, AND, NOT',['NAND, NOR, XOR','AND, XOR, NOT','OR, NAND, NOT'],'Základné operátory: súčet (OR), súčin (AND), negácia (NOT). Ostatné sa z nich dajú odvodiť.'],
+ ['V ktorom roku bol vynájdený tranzistor?','1947',['1936','1956','1971'],'Tranzistor 1947, Nobelova cena za fyziku 1956 (Bardeen, Brattain, Shockley).'],
+ ['Čo platí v kladnej logike?','Log. 1 zodpovedá úrovni H, log. 0 úrovni L',['Log. 1 zodpovedá úrovni L, log. 0 úrovni H','Log. 1 zodpovedá zápornému napätiu','Log. 0 a log. 1 majú rovnakú úroveň'],'Kladná logika: 1 ⇔ H, 0 ⇔ L. Záporná logika je opačne.'],
+ ['Kedy je výstup hradla AND v log. 1?','Iba ak sú oba vstupy v log. 1',['Ak je aspoň jeden vstup v log. 1','Ak sú vstupy rôzne','Ak sú oba vstupy v log. 0'],'AND je pravdivý len vtedy, ak sú pravdivé oba vstupy. OR je pravdivý, ak je pravdivý aspoň jeden.'],
+ ['Ktorý typ logických obvodov má pamäť a jeho výstup závisí aj od histórie vstupov?','Sekvenčné',['Kombinačné','Asynchrónne','Programovateľné'],'Sekvenčný obvod uchováva stav, ktorý vyjadruje minulosť na vstupe.'],
+ ['Ktorá z úloh pri práci s logickými obvodmi nemá vo všeobecnosti jednoznačné riešenie?','Syntéza',['Analýza','Simulácia','Diagnostika'],'Analýza (poznáme štruktúru, hľadáme správanie) má vždy jednoznačné riešenie. Syntéza nie.'],
+ ['Čo je cieľom analýzy kombinačného logického obvodu?','Zo známej štruktúry zistiť správanie obvodu',['Zo správania navrhnúť štruktúru obvodu','Otestovať obvod po výrobe','Minimalizovať počet tranzistorov'],'Analýza: štruktúra je známa, hľadáme (opisujeme) správanie.'],
+ ['Z čoho sa spravidla vyrába základná platnička (wafer) integrovaných obvodov?','Z kremíka (kremičitý piesok → ingot)',['Z medi','Z hliníka','Z kremíka a železa v pomere 1:1'],'Kremičitý piesok sa rafinuje na monokryštál, vznikne kremíková tyč (ingot) a z nej plátky.'],
+ ['Čo vyjadruje skratka IC (IO)?','Integrated Circuit (integrovaný obvod)',['Internal Controller','Input Channel','Instruction Counter'],'Integrovaný obvod obsahuje v jednom puzdre mnoho tranzistorov, diód, rezistorov a kondenzátorov.'],
+ ['Aký je prístup k pamäti pre inštrukcie a údaje vo von Neumannovej architektúre?','Rovnaký',['Rôzny, inštrukcie majú vlastnú zbernicu','Údaje sa čítajú iba z ROM','Inštrukcie sa čítajú len sekvenčne'],'Používajú sa tie isté adresové, údajové a riadiace signály.'],
+ ['Do ktorej skupiny patrí tranzistor ako súčiastka pre logické obvody?','Elektronický spínač',['Zdroj napätia','Kondenzátor','Cievka'],'Tranzistor nahrádza mechanický spínač, otvorený alebo zatvorený podľa napätia na hradle G.']
+];
+const STMT=[
+ ['−2·3 + 3² > 24',1],['Streda je prvý deň v týždni.',1],['Počkaj na mňa!',0],['Obsah kruhu s polomerom r je 2πr.',1],
+ ['Je možné vypočítať obsah obdĺžnika so stranami a, b pomocou vzťahu S = a·b?',0],['Dobré ráno.',0],['Obsah obdĺžnika so stranami a, b určíme vzťahom S = a·b.',1],
+ ['Bratislava je hlavné mesto Slovenska.',1],['Koľko je hodín?',0],['5 + 3 = 9',1],['Zatvor okno!',0],['Číslo 7 je prvočíslo.',1],['Aký je dnes deň?',0],['Každý štvorec je obdĺžnik.',1],['x + 2 = 5',0]
+];
+function g1stmt(){const items=shuf(STMT).slice(0,5);const opts=['Je výrok','Nie je výrok'];
+  return{kind:'Výrok',prompt:'Rozhodni, ktoré z viet sú výroky. Výrok má práve jednu pravdivostnú hodnotu (pravda alebo nepravda).',input:{t:'rows',rows:items.map(i=>({label:i[0],opts}))},answer:items.map(i=>i[1]?0:1),
+  solution:`<p>Výrok je oznamovacia veta, ktorej má zmysel priradiť pravdu alebo nepravdu. Otázky, rozkazy, zvolania a neúplné vety výrokmi nie sú. Rovnica s neznámou (x + 2 = 5) tiež nie je výrok, kým nepoznáme x.</p><ul>${items.map(i=>`<li>${i[0]}: <b>${i[1]?'výrok':'nie je výrok'}</b></li>`).join('')}</ul>`}}
+const G1=[bank(B1),bank(B1),g1stmt];
+
+/* ================= 2. Booleovské funkcie a zápisy ================= */
+const FN2=[
+ ['AND (logický súčin) x₁·x₂',[0,0,0,1]],['OR (logický súčet) x₁ + x₂',[0,1,1,1]],['NAND (Shefferova funkcia) x₁ ↑ x₂',[1,1,1,0]],['NOR (Peirceova funkcia) x₁ ↓ x₂',[1,0,0,0]],
+ ['XOR (nonekvivalencia) x₁ ⊕ x₂',[0,1,1,0]],['XNOR (ekvivalencia) x₁ ≡ x₂',[1,0,0,1]],['implikácia x₁ → x₂ (x̄₁ + x₂)',[1,1,0,1]],['inhibícia (zábrana) x̄₁·x₂',[0,1,0,0]],['negácia x₁',[1,1,0,0]],['opakovanie x₂',[0,1,0,1]]];
+const G2=[
+ ()=>{const n=pick([3,4]),names=namesFor(n),i=R(0,(1<<n)-1);const b=bitsOf(i,n);
+  return{kind:'Desiatkový ekvivalent',prompt:`Vypočítaj desiatkový ekvivalent (DE) vstupu ${names.map(dispName).join('')} = ${b.join('')}. Prvá premenná má najvyššiu váhu.`,input:linesIn([['DE =',NUL]]),answer:[i],
+   solution:`<p>DE = ${b.map((x,j)=>`${x}·2<sup>${n-1-j}</sup>`).join(' + ')} = ${i}</p>`}},
+ ()=>{const n=pick([1,2,3]),full=Math.random()<.5;const a=full?pw(2,pw(2,n)):pw(3,pw(2,n));
+  return{kind:'Počet funkcií',prompt:`Koľko existuje ${full?'úplne definovaných':'neúplne definovaných (s hodnotou x)'} Booleovských funkcií ${n} ${n===1?'premennej':'premenných'}?`,input:linesIn([['počet =',NUL]]),answer:[a],
+   solution:`<p>Funkcia ${n} premenných má 2<sup>${n}</sup> = ${pw(2,n)} vstupných bodov. Každý bod nadobúda ${full?'hodnotu 0 alebo 1 (2 možnosti)':'hodnotu 0, 1 alebo x (3 možnosti)'}.</p><p>Počet funkcií = ${full?'2':'3'}<sup>2<sup>${n}</sup></sup> = ${full?'2':'3'}<sup>${pw(2,n)}</sup> = ${a}</p>`}},
+ ()=>{const n=3,names=namesFor(3),v=randVals(3);
+  return{kind:'Vektorový zápis',prompt:`Zapíš funkciu vektorovým zápisom (stĺpec výstupov v poradí vstupov podľa DE).${ttable(names,[{h:'y',vals:v}])}`,input:gridIn(1,8,'tok'),answer:v.map(String),
+   solution:`<p>Vektorový zápis je stĺpec výstupov pre vstupy v poradí 0 až 7.</p><div class="eq">y = ${vecStr(v)}</div>`}},
+ ()=>{const n=pick([3,3,4]),names=namesFor(n),k=Math.random()<.5;const v=randVals(n);const o=idxOf(v,1),z=idxOf(v,0);
+  return{kind:'Číselný zápis',prompt:`Funkcia má vektorový zápis y = ${vecStr(v)} pre premenné ${names.map(dispName).join(', ')}. Napíš číselný zápis ${k?'D(…), teda body, v ktorých y = 1':'K(…), teda body, v ktorých y = 0'}. Čísla oddeľ čiarkou.`,input:linesIn([[k?'D(':'K(',SET,')']]),answer:[k?o:z],
+   solution:`<p>Poradové číslo bodu je jeho desiatkový ekvivalent (začína sa nulou).</p><div class="eq">y = D(${setStr(o)}) = K(${setStr(z)})</div>`}},
+ ()=>{const n=3,v=randVals(3,{dc:true});const vv=v.map(x=>x);if(!vv.includes('x'))vv[R(0,7)]='x';
+  const o=idxOf(vv,1),d=idxOf(vv,'x');
+  return{kind:'Neúplne definovaná funkcia',prompt:`Neúplne definovaná funkcia má vektorový zápis y = ${vecStr(vv)} (x = nedefinovaná hodnota). Zapíš ju ako D(1-body ; {x-body}).`,input:linesIn([['D(',SET,'; {',SET,'})']]),answer:[o,d],
+   solution:`<div class="eq">y = D(${setStr(o)} ; {${setStr(d)}})</div><p>Pred bodkočiarkou sú body s hodnotou 1, v zátvorke body, v ktorých funkcia nie je definovaná.</p>`}},
+ ()=>{const [nm,v]=pick(FN2);const w=shuf(FN2.filter(f=>f[0]!==nm)).slice(0,3).map(f=>f[0]);
+  return{kind:'Funkcia dvoch premenných',prompt:`Funkcia f(x₁, x₂) má vektorový zápis f = ${vecStr(v)}. Ktorá funkcia to je?`,...mcq([nm,...w],nm),
+   solution:`<p>${ttable(['x1','x2'],[{h:'f',vals:v}])}</p><p>Je to <b>${nm}</b>.</p>`}},
+ ()=>{const n=pick([3,4,5]);const b=Array.from({length:n},()=>R(0,1));const par=b.reduce((s,x)=>s^x,0);const nm=Array.from({length:n},(_,i)=>`x${i+1}`);
+  return{kind:'XOR viacerých premenných',prompt:`Vypočítaj hodnotu výrazu ${nm.map(dispName).join(' ⊕ ')} pre ${nm.map((x,i)=>`${dispName(x)} = ${b[i]}`).join(', ')}.`,input:linesIn([['výsledok =',NUL]]),answer:[par],
+   solution:`<p>XOR viacerých premenných je 1 práve vtedy, ak je jednotiek <b>nepárny</b> počet. Tu je jednotiek ${b.filter(x=>x).length}, výsledok ${par}.</p>`}},
+ ()=>{const names=namesFor(3),v=randVals(3);const k=Math.random()<.5;const set=idxOf(v,k?1:0);const i=R(0,7);const val=v[i];
+  return{kind:'Hodnota z číselného zápisu',prompt:`Funkcia je daná zápisom y = ${k?'D':'K'}(${setStr(set)}). Aká je hodnota y pre ${names.map(dispName).join('')} = ${bstr(i,3)}?`,input:linesIn([['y =',NUL]]),answer:[val],
+   solution:`<p>Vstup ${bstr(i,3)} má DE = ${i}. ${k?'D(…) obsahuje body s hodnotou 1':'K(…) obsahuje body s hodnotou 0'}, takže ${i} ${set.includes(i)?'je':'nie je'} v zozname, a preto y = ${val}.</p>`}},
+ ()=>{const n=pick([3,4]),names=namesFor(n),v=randVals(n);
+  return{kind:'Čítanie z mapy',prompt:`Z mapy prečítaj číselný zápis D(…), teda poradové čísla (DE) všetkých štvorčekov s hodnotou 1.<br>${kmap(v,names)}`,input:linesIn([['D(',SET,')']]),answer:[idxOf(v,1)],
+   solution:`<p>Poradové číslo štvorčeka je DE jeho vstupu. Pozor na Grayov poradok popisov stĺpcov a riadkov (00, 01, 11, 10).</p>${kmap(v,names,{idx:true})}<div class="eq">D(${setStr(idxOf(v,1))})</div>`}}
+];
+
+/* ================= 3. Booleova algebra ================= */
+function rexpr(names,d){if(d===0||Math.random()<.2){const v=V(pick(names));return Math.random()<.35?NOT(v):v}
+  const op=pick(['and','or','and','or','xor']);const a=rexpr(names,d-1),b=rexpr(names,d-1);
+  const e=op==='and'?AND(a,b):op==='or'?OR(a,b):XOR(a,b);return Math.random()<.15&&d>1?NOT(e):e}
+const cmp=l=>l.t==='not'?l.a:NOT(l);
+const TEMPL=[
+ (A,B,C)=>({e:OR(A,AND(A,B)),r:A,law:'absorpcia A + A·B = A'}),
+ (A,B,C)=>({e:AND(A,OR(A,B)),r:A,law:'absorpcia A·(A + B) = A'}),
+ (A,B,C)=>({e:OR(A,AND(cmp(A),B)),r:OR(A,B),law:'pravidlo A + Ā·B = A + B'}),
+ (A,B,C)=>({e:AND(A,OR(cmp(A),B)),r:AND(A,B),law:'pravidlo A·(Ā + B) = A·B'}),
+ (A,B,C)=>({e:OR(AND(A,B),AND(A,cmp(B))),r:A,law:'spojovanie A·B + A·B̄ = A'}),
+ (A,B,C)=>({e:AND(OR(A,B),OR(A,cmp(B))),r:A,law:'spojovanie (A + B)·(A + B̄) = A'}),
+ (A,B,C)=>({e:OR(AND(A,B),AND(cmp(A),C),AND(B,C)),r:OR(AND(A,B),AND(cmp(A),C)),law:'konsenzus A·B + Ā·C + B·C = A·B + Ā·C'}),
+ (A,B,C)=>({e:AND(OR(A,B),OR(cmp(A),C),OR(B,C)),r:AND(OR(A,B),OR(cmp(A),C)),law:'konsenzus (A + B)(Ā + C)(B + C) = (A + B)(Ā + C)'}),
+ (A,B,C)=>({e:OR(AND(A,B),AND(A,cmp(B)),AND(cmp(A),B)),r:OR(A,B),law:'spojovanie a potom A + Ā·B = A + B'}),
+ (A,B,C)=>({e:AND(OR(A,B),OR(A,C),OR(A,cmp(B))),r:A,law:'distributívnosť a spojovanie'}),
+ (A,B,C)=>({e:OR(AND(A,B,C),AND(A,B,cmp(C))),r:AND(A,B),law:'spojovanie A·B·C + A·B·C̄ = A·B'})
+];
+function pushNeg(a,neg){switch(a.t){case'var':return neg?NOT(a):a;case'const':return{t:'const',v:neg?1-a.v:a.v};case'not':return pushNeg(a.a,!neg);
+  case'and':return neg?OR(...a.args.map(x=>pushNeg(x,true))):AND(...a.args.map(x=>pushNeg(x,false)));
+  case'or':return neg?AND(...a.args.map(x=>pushNeg(x,true))):OR(...a.args.map(x=>pushNeg(x,false)));default:return a}}
+const LAWS=[
+ [`A + B = B + A`,'Komutatívnosť'],[`A·B = B·A`,'Komutatívnosť'],[`A + (B + C) = (A + B) + C`,'Asociatívnosť'],[`A·(B + C) = A·B + A·C`,'Distributívnosť'],[`A + B·C = (A + B)·(A + C)`,'Distributívnosť'],
+ [`A + A + … + A = A`,'Idempotencia (viacnásobný súčet)'],[`${ov('A + B')} = ${ov('A')}·${ov('B')}`,'De Morganove pravidlá'],[`${ov('A·B')} = ${ov('A')} + ${ov('B')}`,'De Morganove pravidlá'],
+ [`${ov(ov('A'))} = A`,'Dvojitá negácia'],[`A + ${ov('A')} = 1`,'Pravidlo o komplemente'],[`A·${ov('A')} = 0`,'Pravidlo o komplemente'],[`A + 1 = 1`,'Agresívnosť hodnôt 0 a 1'],[`A·0 = 0`,'Agresívnosť hodnôt 0 a 1'],
+ [`A + 0 = A`,'Neutrálnosť hodnôt 0 a 1'],[`A·1 = A`,'Neutrálnosť hodnôt 0 a 1'],[`(A + B)·(${ov('A')} + B) = B`,'Spojovanie'],[`A·B + ${ov('A')}·B = B`,'Spojovanie'],
+ [`A + A·B = A`,'Absorpcia'],[`A·(A + B) = A`,'Absorpcia'],[`A·B + ${ov('A')}·C + B·C = A·B + ${ov('A')}·C`,'Konsenzus (teorém)']];
+const LAWNAMES=uniq(LAWS.map(l=>l[1]));
+const G3=[
+ ()=>{const names=['a','b','c'];const e=rexpr(names,pick([2,3]));const env={};names.forEach(x=>env[x]=R(0,1));const v=evalAst(e,env);
+  return{kind:'Vyhodnotenie výrazu',prompt:`Vypočítaj hodnotu výrazu pre ${names.map(x=>`${x} = ${env[x]}`).join(', ')}.<div class="eq">${exprHtml(e)}</div>`,input:linesIn([['výsledok =',NUL]]),answer:[v],
+   solution:`<p>Po dosadení vypočítame zátvorky od vnútra: negácia, potom súčin, potom súčet (XOR podľa zápisu).</p><p>Výsledok je <b>${v}</b>.</p>`}},
+ ()=>{const vs=shuf(['a','b','c','d']).slice(0,3);const lits=vs.map(v=>Math.random()<.35?NOT(V(v)):V(v));const t=pick(TEMPL)(lits[0],lits[1],lits[2]);
+  const names=vs.slice().sort();const vals=astVec(t.e,names);const exp=litCount(t.r);
+  return{kind:'Zjednodušenie výrazu',prompt:`Zjednoduš výraz pomocou pravidiel Booleovej algebry. Zapíš čo najkratší výraz.<div class="eq">${exprHtml(t.e)}</div>`,input:{t:'expr',names},answer:[],
+   check:txt=>checkExpr(txt,{names,vals,minLit:exp}),ref:exprHtml(t.r),refTxt:exprTxt(t.r),
+   solution:`<p>Použijeme ${t.law}.</p><div class="eq">${exprHtml(t.e)} = ${exprHtml(t.r)}</div>`}},
+ ()=>{const [f,nm]=pick(LAWS);const w=shuf(LAWNAMES.filter(x=>x!==nm)).slice(0,3);
+  return{kind:'Pravidlo B-algebry',prompt:`Ako sa volá toto pravidlo?<div class="eq">${f}</div>`,...mcq([nm,...w],nm),solution:`<p>${f}</p><p>Je to pravidlo: <b>${nm}</b>.</p>`}},
+ ()=>{const vs=shuf(['a','b','c','d']).slice(0,3);const L=()=>{const v=V(vs.pop());return Math.random()<.4?NOT(v):v};
+  const x=L(),y=L(),z=L();const shapes=[()=>NOT(OR(x,AND(y,z))),()=>NOT(AND(x,OR(y,z))),()=>NOT(AND(OR(x,y),z)),()=>NOT(OR(AND(x,y),z))];
+  const e=pick(shapes)();const names=['a','b','c','d'].filter(n=>JSON.stringify(e).includes(`"n":"${n}"`));const vals=astVec(e,names);const r=pushNeg(e,false);
+  return{kind:'De Morganove pravidlá',prompt:`Uprav výraz tak, aby sa negácia nachádzala iba nad jednotlivými premennými (žiadna negácia nad zátvorkou).<div class="eq">${exprHtml(e)}</div>`,input:{t:'expr',names},answer:[],
+   check:txt=>checkExpr(txt,{names,vals,varNegOnly:true,minLit:litCount(e)}),ref:exprHtml(r),refTxt:exprTxt(r),
+   solution:`<p>De Morgan: ${ov('A + B')} = Ā·B̄ a ${ov('A·B')} = Ā + B̄. Negáciu „posúvame“ dovnútra a operátory sa menia (súčet na súčin a naopak).</p><div class="eq">${exprHtml(e)} = ${exprHtml(r)}</div>`}}
+];
+
+/* ================= 4. Normálne formy a mapy ================= */
+const mapNote=v=>v.includes('x')?'<p class="muted">x je nedefinovaná hodnota, môžeš ju použiť ako 0 alebo 1, ako sa ti hodí.</p>':'';
+function mapMin(dual){return()=>{const n=pick([3,4,4]),names=namesFor(n);const v=randVals(n,{dc:Math.random()<.35,minLit:3,maxLit:n===3?8:12});const mz=minimize(v,dual);const ast=minAst(mz,names);
+  return{kind:dual?'MKNF z mapy':'MDNF z mapy',prompt:`Nájdi minimálnu ${dual?'konjunktívnu normálnu formu (MKNF, súčin súčtov)':'disjunktívnu normálnu formu (MDNF, súčet súčinov)'} funkcie z mapy.<br>${kmap(v,names)}${mapNote(v)}`,input:{t:'expr',names},answer:[],
+   check:txt=>checkExpr(txt,{names,vals:v,form:dual?'knf':'dnf',minLit:mz.cost}),ref:exprHtml(ast),refTxt:exprTxt(ast),
+   solution:dual?`<p>Pokrývame <b>nuly</b> najmenším počtom čo najväčších pravidelných konfigurácií. Každú vyjadríme súčtom (premenná sa píše negovaná, ak má v konfigurácii hodnotu 1) a súčty vynásobíme.</p>${kmap(v,names,{cubes:mz.cubes,dual:true})}<div class="eq">f = ${exprHtml(ast)}</div><p class="muted">Minimálny počet písmen: ${mz.cost}.</p>`
+   :`<p>Pokrývame <b>jednotky</b> najmenším počtom čo najväčších pravidelných konfigurácií (2<sup>s</sup> štvorčekov). Každú vyjadríme súčinom a súčiny sčítame.</p>${kmap(v,names,{cubes:mz.cubes})}<div class="eq">f = ${exprHtml(ast)}</div><p class="muted">Minimálny počet písmen: ${mz.cost}.</p>`}}}
+const G4=[mapMin(false),mapMin(false),mapMin(true),
+ ()=>{const n=pick([3,4]),names=namesFor(n),v=randVals(n);const dual=Math.random()<.5;const k=idxOf(v,dual?0:1).length;
+  return{kind:dual?'Úplná KNF':'Úplná DNF',prompt:`Funkcia ${n} premenných je daná mapou.<br>${kmap(v,names)}<br>Z koľkých elementárnych ${dual?'súčtov':'súčinov'} a koľkých písmen sa skladá jej úplná ${dual?'KNF (UKNF)':'DNF (UDNF)'}?`,input:linesIn([[dual?'počet súčtov =':'počet súčinov =',NUL],['počet písmen =',NUL]]),answer:[k,k*n],
+   solution:`<p>${dual?'UKNF obsahuje jeden súčet (maxterm) pre každú nulu funkcie':'UDNF obsahuje jeden súčin (minterm) pre každú jednotku funkcie'} a každý z nich obsahuje všetkých ${n} premenných.</p><p>${dual?'Núl':'Jednotiek'} je ${k}, preto počet ${dual?'súčtov':'súčinov'} = ${k} a počet písmen = ${k}·${n} = ${k*n}.</p>`}},
+ ()=>{const n=pick([3,4,5]),s=R(0,n-1),K=pw(2,s);
+  return{kind:'Stupeň konfigurácie',prompt:`V mape funkcie ${n} premenných pokrývame jednotky pravidelnou konfiguráciou s <b>${K}</b> ${K===1?'štvorčekom':K<5?'štvorčekmi':'štvorčekmi'}. Urč stupeň konfigurácie s a rád súčinu r, ktorým sa konfigurácia vyjadrí.`,input:linesIn([['s =',NUL],['r =',NUL]]),answer:[s,n-s],
+   solution:`<p>Konfigurácia stupňa s obsahuje 2<sup>s</sup> štvorčekov, takže ${K} = 2<sup>${s}</sup> a s = ${s}.</p><p>Rád súčinu r = n − s = ${n} − ${s} = ${n-s}. Väčšia konfigurácia dáva kratší súčin.</p>`}},
+ ()=>{const n=R(2,5);
+  return{kind:'Vlastnosti mapy',prompt:`Mapa funkcie ${n} premenných. Koľko štvorčekov má mapa a koľko susedných štvorčekov má každý štvorček?`,input:linesIn([['počet štvorčekov =',NUL],['počet susedných =',NUL]]),answer:[pw(2,n),n],
+   solution:`<p>Mapa funkcie n premenných má 2<sup>n</sup> štvorčekov: 2<sup>${n}</sup> = ${pw(2,n)}. Každý štvorček má práve n susedných, ktoré sa líšia v hodnote jednej premennej: ${n}.</p>`}},
+ ()=>{const n=pick([3,4]),names=namesFor(n);let v,c,cls;
+  const want=pick([0,1,2]);
+  for(let t=0;t<400;t++){v=randVals(n,{dc:Math.random()<.2});const mask=R(0,(1<<n)-1);if(mask===(1<<n)-1)continue;const bits=R(0,(1<<n)-1)&~mask;c={b:bits,m:mask};
+    const pts=[];for(let i=0;i<(1<<n);i++)if(covers(c,i))pts.push(i);
+    const imp=pts.every(i=>v[i]!==0);let prime=false;if(imp){prime=true;for(let j=0;j<n;j++){const bit=1<<j;if(c.m&bit)continue;const c2={b:c.b&~bit,m:c.m|bit};const p2=[];for(let i=0;i<(1<<n);i++)if(covers(c2,i))p2.push(i);if(p2.every(i=>v[i]!==0)){prime=false;break}}}
+    cls=!imp?0:prime?2:1;if(cls===want&&pts.length>=2)break}
+  const OPT=['Nie je implikant funkcie','Je implikant, ale nie prostý','Je prostý implikant'];
+  return{kind:'Implikant',prompt:`Je súčin <b>${cubeHtml(c,names,false)}</b> implikantom funkcie f? Implikant má hodnotu 1 v bodoch, kde f = 1 (alebo f nie je definovaná). Prostý implikant sa nedá zjednodušiť vynechaním písmena.<br>${kmap(v,names)}`,input:{t:'choice',opts:OPT},answer:[cls],
+   solution:`<p>Súčin pokrýva v mape označené štvorčeky. ${cls===0?'Aspoň jeden z nich má hodnotu 0, takže to nie je implikant.':cls===1?'Všetky majú hodnotu 1 (alebo x), ale konfiguráciu sa dá rozšíriť, takže implikant nie je prostý.':'Všetky majú hodnotu 1 (alebo x) a konfiguráciu sa už nedá zväčšiť, preto je prostý.'}</p>${kmap(v,names,{cubes:[c]})}`}},
+ ()=>{const n=pick([3,4]),names=namesFor(n),v=randVals(n,{dc:Math.random()<.3,minLit:3,maxLit:n===3?8:12});const mz=minimize(v);
+  return{kind:'Prosté implikanty',prompt:`Funkcia je daná mapou.<br>${kmap(v,names)}${mapNote(v)}Koľko prostých implikantov má funkcia (obsahuje ich SDNF) a koľko písmen má jej minimálna DNF?`,input:linesIn([['počet prostých implikantov =',NUL],['počet písmen MDNF =',NUL]]),answer:[mz.primes.length,mz.cost],
+   solution:`<p>Prosté implikanty sú maximálne pravidelné konfigurácie, ktoré sa už nedajú zväčšiť. SDNF (skrátená DNF) obsahuje všetky.</p>${kmap(v,names,{cubes:mz.primes})}<p>Všetkých je ${mz.primes.length}. MDNF si vyberie iba tie, ktoré pokryjú všetky jednotky: ${exprHtml(minAst(mz,names))} (${mz.cost} písmen).</p>`}}
+];
+
+/* ================= 5. Analýza a syntéza obvodov ================= */
+const ALLG=['AND','OR','NAND','NOR','XOR','NOT'];
+function circ(types,nIn,nG){for(let t=0;t<50;t++){const c=genCircuit(nIn??pick([3,3,4]),nG??pick([4,5]),types);if(c)return c}return genCircuit(3,4,['AND','OR','NAND','NOT'])}
+const cprompt=c=>`<div class="circ-box">${circuitSvg(c)}<details class="gl" open><summary>Zápis hradiel</summary><ul>${gateList(c)}</ul></details></div>`;
+function circL(types,nIn,nG,max){for(let t=0;t<60;t++){const c=circ(types,nIn,nG);if(minimize(c.vec).cost<=max)return c}return circ(types,3,4)}
+const G5=[
+ ()=>{const c=circ(ALLG),n=c.names.length;const i=R(0,(1<<n)-1);const e=c.envs[i];
+  return{kind:'Analýza obvodu',prompt:`Aká je hodnota výstupu F obvodu pre ${c.names.map(x=>`${x} = ${e[x]}`).join(', ')}?${cprompt(c)}`,input:linesIn([['F =',NUL]]),answer:[e[c.out]],
+   solution:`<p>Hodnoty postupne dosadzujeme od vstupov k výstupu:</p><ul>${c.gates.map(g=>`<li>${g.id===c.out?'F':g.id} = ${e[g.id]}</li>`).join('')}</ul>`}},
+ ()=>{const c=circ(ALLG);const n=c.names.length;
+  return{kind:'Číselný zápis obvodu',prompt:`Nájdi číselný zápis F = D(…), teda všetky vstupy ${c.names.join('')} (DE), pre ktoré je F = 1.${cprompt(c)}`,input:linesIn([['F = D(',SET,')']]),answer:[idxOf(c.vec,1)],
+   solution:`<p>Obvod vyhodnotíme pre všetky vstupy a vypíšeme riadky s F = 1:</p>${circuitTable(c)}<div class="eq">F = D(${setStr(idxOf(c.vec,1))})</div>`}},
+ ()=>{const c=circL(ALLG,pick([3,4]),pick([3,4,5]),11);const names=c.names;const mz=minimize(c.vec);const ast=minAst(mz,names);
+  return{kind:'MDNF z obvodu',prompt:`Nájdi minimálnu DNF funkcie F. Premenné píš ako a, b, c…${cprompt(c)}`,input:{t:'expr',names},answer:[],
+   check:txt=>checkExpr(txt,{names,vals:c.vec,form:'dnf',minLit:mz.cost}),ref:exprHtml(ast),refTxt:exprTxt(ast),
+   solution:`<p>Najprv vyjadrenie F pomocou postupnej substitúcie alebo tabuľky, potom minimalizácia mapou.</p>${circuitTable(c)}${kmap(c.vec,names,{cubes:mz.cubes})}<div class="eq">F = ${exprHtml(ast)}</div>`}},
+ ()=>{const c=circL(['NAND','NAND','NAND','NOT'],3,pick([4,5]),9);const names=c.names;const mz=minimize(c.vec);const ast=minAst(mz,names);
+  return{kind:'Obvod z hradiel NAND',prompt:`Obvod je zostavený z hradiel NAND (a invertora). Nájdi minimálnu DNF funkcie F. Využi de Morganove pravidlá.${cprompt(c)}`,input:{t:'expr',names},answer:[],
+   check:txt=>checkExpr(txt,{names,vals:c.vec,form:'dnf',minLit:mz.cost}),ref:exprHtml(ast),refTxt:exprTxt(ast),
+   solution:`<p>NAND: ${ov('A·B')} = Ā + B̄. Vyjadríme hradlá postupne a výraz upravíme alebo vypočítame tabuľku.</p>${circuitTable(c)}${kmap(c.vec,names,{cubes:mz.cubes})}<div class="eq">F = ${exprHtml(ast)}</div>`}},
+ ()=>{let n,names,v,mz,terms;for(let t=0;t<200;t++){n=pick([3,4]);names=namesFor(n);v=randVals(n,{minLit:3});mz=minimize(v);if(mz.cubes.length>=2)break}
+  const ast=minAst(mz,names);const cs=mz.cubes.map(c=>cubeAst(c,names,false));const t2=cs.filter(x=>x.length>=2).length;const k=mz.cubes.length;
+  return{kind:'Počet hradiel NAND',prompt:`Minimálna DNF funkcie je <b>${exprHtml(ast)}</b>. Realizuj ju dvojúrovňovým obvodom NAND/NAND (negované vstupy sú k dispozícii, počet vstupov hradiel nie je obmedzený). Koľko hradiel NAND potrebuješ a koľko vstupov má výstupné hradlo?`,input:linesIn([['počet hradiel NAND =',NUL],['vstupy výstupného hradla =',NUL]]),answer:[t2+1,k],
+   solution:`<p>Každý súčin s aspoň dvoma písmenami nahradí jedno hradlo NAND na 1. úrovni (${t2}). Jednopísmenový súčin sa privedie priamo negovaný. Výstupné hradlo NAND spája všetky ${k} súčiny.</p><p>Spolu ${t2} + 1 = ${t2+1} hradiel, výstupné hradlo má ${k} vstupov.</p>`}},
+ ()=>{const dnf=Math.random()<.5,terms=termsRand();const form=dnf?pick(['dnf-nand','dnf-nor']):pick(['knf-nor','knf-nand']);
+  const src=dnf?dnfStr(terms):knfStr(terms);const cor=nfStr(terms,form);
+  const wrong=dnf?[nfStr(terms,form,{inner:form==='dnf-nand'?'↓':'↑'}),nfStr(terms,form,{outer:form==='dnf-nand'?' ↓ ':' ↑ '}),nfStr(terms,form,{negIn:form!=='dnf-nand'?false:true}),nfStr(terms,form,{singleWrong:true})]
+    :[nfStr(terms,form,{inner:form==='knf-nor'?'↑':'↓'}),nfStr(terms,form,{outer:form==='knf-nor'?'·':' ↓ '}),nfStr(terms,form,{negIn:form==='knf-nor'?true:false}),nfStr(terms,form,{singleWrong:true})];
+  const nm={'dnf-nand':'NF ↑/↑ (Shefferova NF)','dnf-nor':'NF ↓/+','knf-nor':'NF ↓/↓ (Peirceova NF)','knf-nand':'NF ↑/·'}[form];
+  return{kind:'Zmiešané normálne formy',prompt:`Výraz <b>f = ${src}</b> je v ${dnf?'DNF':'KNF'}. Ktorý výraz je jeho normálna forma typu <b>${nm}</b>? (↑ je NAND, ↓ je NOR)`,...mcq3(cor,wrong),
+   solution:`<p>Pravidlá: A·B = ${ov('A')} ↓ ${ov('B')}, A + B = ${ov('A')} ↑ ${ov('B')} a ${ov('A ↑ B')} = A·B, ${ov('A ↓ B')} = A + B.</p><div class="eq">f = ${src} = ${cor}</div>`}}
+];
+
+/* ================= 6. Konečné automaty ================= */
+function makeAut(type,m,k){ // k = vstupy 0/1
+  for(;;){const p=Array.from({length:m},()=>Array.from({length:2},()=>R(1,m)));
+    if(p.every((r,i)=>r[0]===i+1&&r[1]===i+1))continue;if(uniq(p.flat()).length<m)continue;
+    const y=type==='moore'?Array.from({length:m},()=>R(0,1)):Array.from({length:m},()=>[R(0,1),R(0,1)]);
+    if(type==='moore'&&uniq(y).length<2)continue;if(type==='mealy'&&uniq(y.flat()).length<2)continue;
+    return{type,m,p,y}}}
+function autTable(a){const rows=a.p.map((r,i)=>a.type==='moore'?`<tr><td>${i+1}</td><td>${r[0]}</td><td>${r[1]}</td><td class="o">${a.y[i]}</td></tr>`:`<tr><td>${i+1}</td><td>${r[0]}</td><td>${r[1]}</td><td class="o">${a.y[i][0]}</td><td class="o">${a.y[i][1]}</td></tr>`).join('');
+  const head=a.type==='moore'?`<tr><th rowspan="2">S</th><th colspan="2">p: s(t+1)</th><th>v: y(t)</th></tr><tr><th>x=0</th><th>x=1</th><th>y</th></tr>`:`<tr><th rowspan="2">S</th><th colspan="2">p: s(t+1)</th><th colspan="2">v: y(t)</th></tr><tr><th>x=0</th><th>x=1</th><th>x=0</th><th>x=1</th></tr>`;
+  return`<div class="ttwrap"><table class="tt"><thead>${head}</thead><tbody>${rows}</tbody></table></div>`}
+function simulate(a,word,s0){let s=s0;const rows=[];for(let t=0;t<word.length;t++){const x=word[t];const y=a.type==='moore'?a.y[s-1]:a.y[s-1][x];const ns=a.p[s-1][x];rows.push({t,x,s,y,ns});s=ns}return{rows,end:s}}
+const simTable=(a,sim)=>`<div class="ttwrap"><table class="tt"><thead><tr><th>t</th><th>x(t)</th><th>s(t)</th><th>y(t)</th><th>s(t+1)</th></tr></thead><tbody>${sim.rows.map(r=>`<tr><td>${r.t}</td><td>${r.x}</td><td>${r.s}</td><td class="o">${r.y}</td><td>${r.ns}</td></tr>`).join('')}</tbody></table></div>`;
+const B6=[
+ ['Aká je výstupná funkcia konečného automatu typu Moore?','v: S → Y (výstup závisí iba od stavu)',['v: S × X → Y','v: X → Y','v: S × X → S'],'Moore: y(t) = v[s(t)].'],
+ ['Aká je výstupná funkcia konečného automatu typu Mealy?','v: S × X → Y (výstup závisí od stavu a vstupu)',['v: S → Y','v: X → S','v: Y → X'],'Mealy: y(t) = v[s(t), x(t)].'],
+ ['Ktorý automat oneskoruje výstupné slovo o jeden takt?','Moore',['Mealy','Oba rovnako','Žiaden'],'Automat typu Moore oneskoruje výstupné slovo o jeden takt, lebo výstup závisí iba od stavu.'],
+ ['Čo vyjadruje prechodová funkcia p konečného automatu?','p: S × X → S, nasledujúci stav z aktuálneho stavu a vstupu',['p: S → Y, výstup zo stavu','p: X → Y, výstup zo vstupu','p: S → X, vstup zo stavu'],'s(t+1) = p[s(t), x(t)].'],
+ ['Čo musí obsahovať sekvenčný logický obvod?','Pamäť, v ktorej je uchovaný stav',['Iba hradlá AND a OR','Iba preklápacie obvody typu D','Programovateľnú pamäť ROM'],'Stav vyjadruje minulosť (históriu) na vstupe obvodu.'],
+ ['Ako sa v prechodovom grafe znázorňujú stavy a prechody?','Stavy sú vrcholy (uzly), prechody orientované hrany',['Stavy sú hrany, prechody vrcholy','Stavy sú trojuholníky','Stavy sú dvojice vstupov a výstupov'],'Prechodový graf: stavy → uzly, prechody → orientované hrany.'],
+ ['Z koľkých prvkov sa skladá konečný automat A = (X, S, Y, p, v, S₀)?','Zo šiestich: vstupy, stavy, výstupy, prechodová funkcia, výstupná funkcia, začiatočný stav',['Zo štyroch','Zo siedmich','Z ôsmich'],'X – vstupy, S – stavy, Y – výstupy, p – prechodová, v – výstupná funkcia, S₀ – začiatočný stav.']
+];
+const wordHtml=w=>`<code class="w">${w.join(' ')}</code>`;
+const G6=[
+ ()=>{const type=pick(['moore','mealy']),a=makeAut(type,pick([3,4])),n=6;const word=Array.from({length:n},()=>R(0,1));const sim=simulate(a,word,1);
+  return{kind:type==='moore'?'Simulácia automatu Moore':'Simulácia automatu Mealy',prompt:`Konečný automat typu <b>${type==='moore'?'Moore':'Mealy'}</b> je daný tabuľkou. Začiatočný stav S₀ = 1. Na vstup postupne prichádza slovo x = ${wordHtml(word)} (zľava doprava). Zapíš výstupné slovo y(0) až y(${n-1}) a stav po spracovaní celého slova.${autTable(a)}`,input:linesIn([['y(0..'+(n-1)+') =',...Array(n).fill(TK)],['koncový stav =',NUL]]),answer:[...sim.rows.map(r=>String(r.y)),sim.end],
+   solution:`<p>Platí s(t+1) = p[s(t), x(t)] a ${type==='moore'?'y(t) = v[s(t)] (výstup závisí iba od stavu)':'y(t) = v[s(t), x(t)] (výstup závisí od stavu aj vstupu)'}.</p>${simTable(a,sim)}<p>Výstupné slovo: ${wordHtml(sim.rows.map(r=>r.y))}, koncový stav: ${sim.end}.</p>`}},
+ ()=>{const type=pick(['moore','mealy']),a=makeAut(type,pick([3,4]));const s=R(1,a.m),x=R(0,1);const ns=a.p[s-1][x];const y=type==='moore'?a.y[s-1]:a.y[s-1][x];
+  return{kind:'Prechod a výstup',prompt:`Automat typu ${type==='moore'?'Moore':'Mealy'} je v stave ${s} a na vstupe je x = ${x}. Aký bude nasledujúci stav a aký výstup y automat v tomto takte vydá?${autTable(a)}`,input:linesIn([['s(t+1) =',NUL],['y(t) =',NUL]]),answer:[ns,y],
+   solution:`<p>Nasledujúci stav je p(${s}, ${x}) = ${ns}.</p><p>Výstup ${type==='moore'?`závisí iba od stavu: v(${s}) = ${y}`:`závisí od stavu aj vstupu: v(${s}, ${x}) = ${y}`}.</p>`}},
+ ()=>{const moore=Math.random()<.5;const opt=['Moore','Mealy'];
+  return{kind:'Typ automatu',prompt:moore?`Automat má výstupnú funkciu v: S → Y a zápis y(t) = v[s(t)]. O aký typ ide?`:`Automat má výstupnú funkciu v: S × X → Y a zápis y(t) = v[s(t), x(t)]. O aký typ ide?`,input:{t:'choice',opts:opt},answer:[moore?0:1],
+   solution:`<p>${moore?'Výstup závisí iba od stavu, ide o automat typu Moore (oneskoruje výstup o jeden takt).':'Výstup závisí od stavu aj od vstupu, ide o automat typu Mealy.'}</p>`}},
+ bank(B6)
+];
+
+/* ================= 7. Preklápacie obvody ================= */
+const FFS={D:{in:['D'],t:{'00':['0'],'01':['1'],'10':['0'],'11':['1']},next:(q,i)=>i[0]},
+ T:{in:['T'],t:{'00':['0'],'01':['1'],'10':['1'],'11':['0']},next:(q,i)=>q^i[0]},
+ JK:{in:['J','K'],t:{'00':['0','x'],'01':['1','x'],'10':['x','1'],'11':['x','0']},next:(q,i)=>i[0]&&i[1]?1-q:i[0]?1:i[1]?0:q},
+ SR:{in:['S','R'],t:{'00':['0','x'],'01':['1','0'],'10':['0','1'],'11':['x','0']},next:(q,i)=>i[0]?1:i[1]?0:q}};
+const B7=[
+ ['Ktorý preklápací obvod je univerzálny, teda obsahuje všetky možné typy správania?','PO-JK',['PO-D','PO-T','PO-SR'],'JK vie nastaviť, nulovať, preklápať aj udržať stav.'],
+ ['Čo robí preklápací obvod D?','Oneskoruje vstup D o jeden takt: Q(t+1) = D(t)',['Pri D = 1 preklopí svoj stav','Vždy nuluje výstup','Sčíta vstup D s predošlým stavom'],'PO-D je synchrónny oneskorovací člen o jeden takt.'],
+ ['Ktorá kombinácia vstupov PO-SR je zakázaná?','S = R = 1',['S = R = 0','S = 1, R = 0','S = 0, R = 1'],'Musí platiť S·R = 0.'],
+ ['Čo spraví PO-JK pri J = K = 1?','Preklopí stav: Q(t+1) = Q̄(t)',['Nastaví Q = 1','Nuluje Q','Zachová stav'],'J = K = 1 je preklápanie.'],
+ ['Čo spraví PO-JK pri J = K = 0?','Zachová predošlý stav',['Preklopí stav','Nastaví Q = 1','Nuluje Q'],'J = K = 0 je pamätanie stavu.'],
+ ['Čo spraví PO-T pri T = 1?','Preklopí stav',['Zachová stav','Nastaví Q = 1','Nuluje Q'],'PO-T: Q(t+1) = T ⊕ Q(t). Pri T = 0 stav zachová.'],
+ ['Z čoho sa v praxi realizuje dvojčinný (master-slave) PO-JK?','Z dvoch asynchrónnych PO-SR a logických členov',['Z dvoch PO-D a invertora','Z jedného PO-T','Z troch hradiel XOR'],'Dvojčinný PO-JK má praktický význam.'],
+ ['Koľko výstupných premenných a koľko stavov má preklápací obvod?','Dve výstupné premenné (Q a Q̄) a dva stavy',['Jednu výstupnú premennú a dva stavy','Dve výstupné premenné a štyri stavy','Štyri výstupné premenné a dva stavy'],'Stav 0: Q = 0, Q̄ = 1. Stav 1: Q = 1, Q̄ = 0.'],
+ ['Čo priraďuje inverzná prechodová funkcia p⁻¹ každému prechodu r → u?','Množinu vstupných vektorov PO, pri ktorých sa prechod realizuje',['Výstup obvodu v stave u','Kód stavu r','Počet logických členov'],'Používa sa pri návrhu budiacich funkcií.'],
+ ['Čo je základom realizácie synchrónneho PO-D?','Asynchrónny PO-SR',['Hradlo XOR','Dvojica invertorov bez pamäte','Posuvný register'],'Synchrónny PO-D sa jednoducho realizuje pomocou asynchrónneho PO-SR.'],
+ ['Čo určuje synchronizačná premenná h?','Okamih, v ktorom sa môže zmeniť stav preklápacieho obvodu',['Hodnotu vstupu D','Počet stavov obvodu','Typ prechodovej funkcie'],'Zmena stavu je viazaná na aktívnu hodnotu (hranu) synchronizačného vstupu.']
+];
+const G7=[
+ ()=>{const ff=pick(Object.keys(FFS)),tr=pick(['00','01','10','11']);const F=FFS[ff];
+  return{kind:'Inverzná prechodová funkcia',prompt:`Aké hodnoty vstupov ${F.in.join(', ')} musí mať preklápací obvod <b>${ff}</b>, aby sa jeho stav zmenil z Q(t) = ${tr[0]} na Q(t+1) = ${tr[1]}? Ak na vstupe nezáleží, napíš <b>x</b>.`,input:linesIn([F.in.map(n=>[n+' =',TK]).flat()]),answer:F.t[tr],
+   solution:`<p>Prechod ${tr[0]} → ${tr[1]}, obvod ${ff}: ${F.in.map((n,i)=>`${n} = ${F.t[tr][i]}`).join(', ')}.</p>${ffTable(ff)}`}},
+ ()=>{const ff=pick(Object.keys(FFS));const F=FFS[ff];const trs=['00','01','10','11'];const cols=F.in.length;
+  const cells=trs.flatMap(t=>F.t[t]);
+  return{kind:'Inverzná prechodová tabuľka',prompt:`Vyplň inverznú prechodovú funkciu preklápacieho obvodu <b>${ff}</b>. Riadky sú prechody Q(t) → Q(t+1) v poradí 0→0, 0→1, 1→0, 1→1. Hodnotu, na ktorej nezáleží, označ <b>x</b>.`,input:{t:'grid',r:4,c:cols,m:'tok',rowLabels:['0 → 0','0 → 1','1 → 0','1 → 1'],colLabels:F.in},answer:cells,
+   solution:ffTable(ff)}},
+ ()=>{const ff=pick(['D','T','JK','SR']);const F=FFS[ff];const n=5;let q=R(0,1);const q0=q;const ins=[];const outs=[];
+  for(let t=0;t<n;t++){let i;do{i=F.in.map(()=>R(0,1))}while(ff==='SR'&&i[0]&&i[1]);ins.push(i);q=F.next(q,i);outs.push(q)}
+  return{kind:'Činnosť preklápacieho obvodu',prompt:`Preklápací obvod <b>${ff}</b> je na začiatku v stave Q = ${q0}. Pri každom hodinovom takte sa na vstupoch objaví:<div class="ttwrap"><table class="tt"><thead><tr><th>takt</th>${F.in.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${ins.map((r,t)=>`<tr><td>${t+1}</td>${r.map(x=>`<td>${x}</td>`).join('')}</tr>`).join('')}</tbody></table></div>Zapíš stav Q po každom takte.`,input:gridIn(1,n,'tok'),answer:outs.map(String),
+   solution:`<p>${{D:'Q(t+1) = D(t).',T:'Q(t+1) = T ⊕ Q(t): pri T = 1 stav preklopí, pri T = 0 zachová.',JK:'JK: 00 zachová, 01 nuluje, 10 nastaví, 11 preklopí.',SR:'SR: 00 zachová, 01 nuluje, 10 nastaví (11 je zakázané).'}[ff]}</p><div class="ttwrap"><table class="tt"><thead><tr><th>takt</th>${F.in.map(x=>`<th>${x}</th>`).join('')}<th class="o">Q</th></tr></thead><tbody>${ins.map((r,t)=>`<tr><td>${t+1}</td>${r.map(x=>`<td>${x}</td>`).join('')}<td class="o">${outs[t]}</td></tr>`).join('')}</tbody></table></div>`}},
+ bank(B7),bank(B7)
+];
+function ffTable(ff){const F=FFS[ff];const trs=['00','01','10','11'];
+  return`<div class="ttwrap"><table class="tt"><thead><tr><th>r → u</th>${F.in.map(x=>`<th class="o">${x}</th>`).join('')}</tr></thead><tbody>${trs.map(t=>`<tr><td>${t[0]} → ${t[1]}</td>${F.t[t].map(x=>`<td class="o">${x}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`}
+
+/* ================= 8. Štrukturálna syntéza SSO ================= */
+const B8=[
+ ['Z akých etáp sa skladá syntéza synchrónnych sekvenčných obvodov?','Z abstraktnej a štrukturálnej syntézy',['Z analýzy a diagnostiky','Z kódovania a simulácie','Z minimalizácie a verifikácie'],'Najprv abstraktná (automat), potom štrukturálna syntéza (štruktúra obvodu).'],
+ ['Čo sa navrhuje pri abstraktnej syntéze?','Stavy S, prechodová funkcia p a výstupná funkcia v',['Kódy stavov a budiace funkcie','Počet hradiel NAND','Hodinová frekvencia obvodu'],'Zo slovného opisu vytvoríme exaktný opis správania automatom.'],
+ ['Čo patrí do štrukturálnej syntézy?','Kódovanie stavov, návrh budiacich a výstupných funkcií',['Tvorba prechodového grafu zo slovného opisu','Určenie počtu vstupov a výstupov','Zostavenie Flynnovej klasifikácie'],'Výsledkom je kombinačná časť K a pamäťová časť P s preklápacími obvodmi.'],
+ ['Ako sa určí počet stavových premenných k pre automat s |S| stavmi?','k ≥ ⌈log₂|S|⌉ (najmenšie celé číslo, pre ktoré 2ᵏ ≥ |S|)',['k = |S|','k = |S|/2','k = ⌊log₂|S|⌋ − 1'],'Pre 5 stavov: 2² = 4 < 5, 2³ = 8 ≥ 5, takže k = 3.'],
+ ['Ak nepoužijeme pravidlá pre optimálne kódovanie stavov, návrh bude:','Korektný, ale pravdepodobne zložitejší',['Nesprávny','Nerealizovateľný','Asynchrónny'],'Pravidlá slúžia na zjednodušenie kombinačnej časti, nie na správnosť.'],
+ ['Čo hovorí pravidlo 1 pre kódovanie stavov?','Dva stavy, ktoré vedú pri rovnakom vstupe do rovnakého stavu, kódujeme susedne',['Dva po sebe idúce stavy kódujeme binárne rastúco','Stavy s rovnakým výstupom kódujeme rovnako','Počiatočný stav kódujeme vždy samými nulami'],'Susedné kódy sa líšia iba v jednej stavovej premennej.'],
+ ['Čo hovorí pravidlo 2 pre kódovanie stavov?','Nasledujúce stavy toho istého stavu pri susedných vstupoch kódujeme susedne',['Stavy s rovnakým vstupom kódujeme rovnako','Posledný stav kódujeme jednotkami','Stavy kódujeme podľa abecedy'],'Pre stav s: ak p(s, x₁) = B a p(s, x₂) = C, kódy B a C majú byť susedné.'],
+ ['Aká podmienka platí pre periódu E hodinového signálu synchrónneho sekvenčného obvodu?','E ≥ Pₘₐₓ + Kₘₐₓ',['E ≤ Pₘᵢₙ + Kₘᵢₙ','E = Pₘₐₓ − Kₘₐₓ','E ≥ 2·Pₘₐₓ'],'Perióda musí byť aspoň taká dlhá, ako najdlhšie oneskorenie pamäťovej (P) a kombinačnej (K) časti.'],
+ ['Aký je vzťah medzi frekvenciou f a periódou E hodinového signálu?','f = 1/E',['f = E','f = E²','f = 1/(2E)'],'Čím kratšia perióda, tým vyššia frekvencia.'],
+ ['Pre šírku impulzu š hodinového signálu platí:','šₘᵢₙ ≤ š ≤ Pₘᵢₙ + Kₘᵢₙ',['š ≥ Pₘₐₓ + Kₘₐₓ','š = E','š ≤ šₘᵢₙ'],'Impulz musí byť dosť široký pre preklápací obvod, ale kratší ako najkratšie oneskorenie slučky.']
+];
+function genSSO(){
+  for(;;){const m=pick([3,4,4]);const p=Array.from({length:m},()=>[R(1,m),R(1,m)]);if(uniq(p.flat()).length<m)continue;
+    if(p.every((r,i)=>r[0]===r[1]))continue;
+    const type=pick(['mealy','mealy','moore']);const y=type==='moore'?Array.from({length:m},()=>R(0,1)):Array.from({length:m},()=>[R(0,1),R(0,1)]);
+    if(uniq(type==='moore'?y:y.flat()).length<2)continue;
+    const codes=shuf([0,1,2,3]).slice(0,m);return{m,p,type,y,codes}}}
+function ssoFuncs(A,ff){ // vráti funkcie ako {name:vals[8]} s dc pre nepoužité kódy
+  const stateOf={};A.codes.forEach((c,i)=>stateOf[c]=i+1);const f={};
+  const put=(nm,i,v)=>{(f[nm]||(f[nm]=Array(8).fill('x')))[i]=v};
+  for(let i=0;i<8;i++){const x=(i>>2)&1,z1=(i>>1)&1,z2=i&1,code=z1*2+z2;const s=stateOf[code];if(s===undefined){continue}
+    const ns=A.p[s-1][x],nc=A.codes[ns-1],n1=(nc>>1)&1,n2=nc&1;const y=A.type==='moore'?A.y[s-1]:A.y[s-1][x];
+    put('y',i,y);
+    [[z1,n1,1],[z2,n2,2]].forEach(([q,u,k])=>{const tr=''+q+u;
+      if(ff==='D')put('D'+k,i,u);
+      else if(ff==='T')put('T'+k,i,q^u);
+      else{const t=FFS[ff].t[tr];const nm=FFS[ff].in;nm.forEach((nn,j)=>put(nn+k,i,t[j]==='x'?'x':+t[j]))}})}
+  Object.keys(f).forEach(k=>{f[k]=f[k].map(v=>v)});return f}
+function ssoTable(A){const rows=A.p.map((r,i)=>A.type==='moore'?`<tr><td>${i+1}</td><td>${r[0]}</td><td>${r[1]}</td><td class="o">${A.y[i]}</td></tr>`:`<tr><td>${i+1}</td><td>${r[0]}</td><td>${r[1]}</td><td class="o">${A.y[i][0]}</td><td class="o">${A.y[i][1]}</td></tr>`).join('');
+  const head=A.type==='moore'?`<tr><th rowspan="2">S</th><th colspan="2">p</th><th>v</th></tr><tr><th>x=0</th><th>x=1</th><th>y</th></tr>`:`<tr><th rowspan="2">S</th><th colspan="2">p</th><th colspan="2">v</th></tr><tr><th>x=0</th><th>x=1</th><th>x=0</th><th>x=1</th></tr>`;
+  const cod=`<table class="tt"><thead><tr><th>S</th><th>z<sub>1</sub>z<sub>2</sub></th></tr></thead><tbody>${A.codes.map((c,i)=>`<tr><td>${i+1}</td><td>${bstr(c,2)}</td></tr>`).join('')}</tbody></table>`;
+  return`<div class="duo"><div class="ttwrap"><table class="tt"><thead>${head}</thead><tbody>${rows}</tbody></table></div><div class="ttwrap">${cod}</div></div>`}
+const G8=[
+ ()=>{const m=R(3,12),k=Math.ceil(Math.log2(m));return{kind:'Počet stavových premenných',prompt:`Automat má ${m} ${m<5?'stavy':'stavov'}. Koľko stavových premenných (preklápacích obvodov) potrebuješ na jeho zakódovanie?`,input:linesIn([['k =',NUL]]),answer:[k],
+   solution:`<p>Musí platiť 2<sup>k</sup> ≥ ${m}. Pre k = ${k-1} je 2<sup>${k-1}</sup> = ${pw(2,k-1)} < ${m} (nestačí), pre k = ${k} je 2<sup>${k}</sup> = ${pw(2,k)} ≥ ${m}. Teda k = ⌈log₂ ${m}⌉ = ${k}.</p>`}},
+ ()=>{const m=R(3,9),k=Math.ceil(Math.log2(m)),ff=pick(['D','T','JK','SR']);const per=ff==='JK'||ff==='SR'?2:1;
+  return{kind:'Počet budiacich funkcií',prompt:`Automat s ${m} ${m<5?'stavmi':'stavmi'} realizujeme synchrónnym sekvenčným obvodom s preklápacími obvodmi typu <b>${ff}</b>. Koľko stavových premenných a koľko budiacich funkcií treba navrhnúť (bez výstupnej funkcie)?`,input:linesIn([['stavových premenných =',NUL],['budiacich funkcií =',NUL]]),answer:[k,k*per],
+   solution:`<p>k = ⌈log₂ ${m}⌉ = ${k}. Každý preklápací obvod ${ff} má ${per} ${per===1?'vstup':'vstupy'} (${FFS[ff].in.join(', ')}), takže budiacich funkcií je ${k}·${per} = ${k*per}.</p>`}},
+ ()=>{const c=pick([[4,6],[5,5],[2,2],[8,12],[10,10],[20,30],[10,15],[25,25],[1,3],[2,3]]);const E=c[0]+c[1];const f=1000/E;
+  return{kind:'Hodinová frekvencia',prompt:`Najdlhšie oneskorenie pamäťovej časti je Pₘₐₓ = ${c[0]} ns a kombinačnej časti Kₘₐₓ = ${c[1]} ns. Aká je minimálna perióda E hodinového signálu (v ns) a aká je maximálna frekvencia f (v MHz)?`,input:linesIn([['Eₘᵢₙ (ns) =',NUL],['fₘₐₓ (MHz) =',NUL]]),answer:[E,f],
+   solution:`<p>E ≥ Pₘₐₓ + Kₘₐₓ = ${c[0]} + ${c[1]} = ${E} ns.</p><p>f = 1/E = 1/${E} ns = ${f} MHz (1/ns = 1000 MHz).</p>`}},
+ ()=>{const A=genSSO();const r1=[];for(let x=0;x<2;x++)for(let i=0;i<A.m;i++)for(let j=i+1;j<A.m;j++)if(A.p[i][x]===A.p[j][x])r1.push([i+1,j+1,x]);
+  if(!r1.length)return G8[0]();const [a,b,x]=pick(r1);const adj=popc(A.codes[a-1]^A.codes[b-1])===1;
+  return{kind:'Pravidlo 1 pre kódovanie',prompt:`Je kódovanie stavov v súlade s pravidlom 1 pre dvojicu stavov ${a} a ${b}? (Pri vstupe x = ${x} vedú obe do rovnakého stavu.)${ssoTable(A)}`,...mcq(['Áno, kódy sú susedné','Nie, kódy nie sú susedné'],adj?'Áno, kódy sú susedné':'Nie, kódy nie sú susedné'),
+   solution:`<p>Podľa pravidla 1 majú byť stavy ${a} a ${b} kódované susedne, lebo p(${a}, ${x}) = p(${b}, ${x}) = ${A.p[a-1][x]}. Ich kódy sú ${bstr(A.codes[a-1],2)} a ${bstr(A.codes[b-1],2)}, ${adj?'líšia sa v jednej premennej, teda sú susedné':'líšia sa vo dvoch premenných, teda nie sú susedné'}.</p>`}},
+ ()=>{let A,ff,F,nm,names,vals;for(let t=0;t<200;t++){A=genSSO();ff=pick(['D','D','JK','T','SR']);F=ssoFuncs(A,ff);const keys=Object.keys(F).filter(k=>k!=='y');nm=pick([...keys,...keys,'y']);
+    names=['x','z1','z2'];vals=F[nm];
+    if(nm==='y'&&A.type==='moore'){names=['z1','z2'];const v2=Array(4).fill('x');for(let i=0;i<8;i++)if(((i>>2)&1)===0&&vals[i]!=='x')v2[i&3]=vals[i];vals=v2}
+    if(vals.some(v=>v===1)&&vals.some(v=>v===0))break}
+  const mz=minimize(vals);const ast=minAst(mz,names);
+  const full=Object.keys(F).sort().map(k=>({h:k.replace(/(\D+)(\d)/,(m,a,d)=>a+'<sub>'+d+'</sub>').replace('y','y'),vals:F[k]}));
+  const nmH=nm==='y'?'y':nm.replace(/(\D+)(\d)/,(m,a,d)=>a+'<sub>'+d+'</sub>');
+  const ffTxt={D:'D (D = následujúca hodnota)',T:'T',JK:'JK',SR:'SR'}[ff];
+  const detail=nm==='y'?'':`<p>Pri prechode Q(t) → Q(t+1) určí inverzná prechodová funkcia hodnotu vstupu ${FFS[ff].in.join(' a ')}:</p>${ffTable(ff)}`;
+  return{kind:'Budiaca funkcia',prompt:`Synchrónny sekvenčný obvod (automat ${A.type==='moore'?'Moore':'Mealy'}) má stavy zakódované stavovými premennými z₁z₂ a realizuje sa preklápacími obvodmi <b>${ffTxt}</b>. Nájdi minimálnu DNF ${nm==='y'?'výstupnej funkcie <b>y</b>':`budiacej funkcie <b>${nmH}</b>`} v premenných ${names.map(dispName).join(', ')}.${ssoTable(A)}${A.m<4?'<p class="muted">Nepoužitý kód nepatrí žiadnemu stavu, takže tam funkcia nie je definovaná (x), môžeš ju použiť ako 0 alebo 1.</p>':''}<p class="muted">Premenné píš ako x, z1, z2, negáciu apostrofom (z1').</p>`,input:{t:'expr',names},answer:[],
+   check:txt=>checkExpr(txt,{names,vals,form:'dnf',minLit:mz.cost}),ref:exprHtml(ast),refTxt:exprTxt(ast),
+   solution:`<p>Najprv vytvoríme tabuľku: pre každý stav a vstup určíme nasledujúci stav a jeho kód.</p>${detail}<p>Tabuľka všetkých funkcií (bodov, ktoré zodpovedajú nepoužitému kódu, sú x):</p>${ttable(['x','z1','z2'],full,{de:false})}<p>Mapa funkcie ${nmH} a jej minimalizácia:</p>${kmap(vals,names,{cubes:mz.cubes})}<div class="eq">${nmH} = ${exprHtml(ast)}</div>`}},
+ bank(B8),bank(B8)
+];
+
+/* ================= témy ================= */
+const TOPICS=[
+ {id:'arch',name:'Architektúry a základy',short:'von Neumann, Flynn, výroky',gens:G1},
+ {id:'bf',name:'Booleovské funkcie',short:'zápisy, DE, počty funkcií',gens:G2},
+ {id:'alg',name:'Booleova algebra',short:'pravidlá, zjednodušovanie',gens:G3},
+ {id:'nf',name:'Normálne formy a mapy',short:'DNF, KNF, minimalizácia',gens:G4},
+ {id:'cir',name:'Analýza a syntéza obvodov',short:'hradlá, NAND, NOR',gens:G5},
+ {id:'aut',name:'Konečné automaty',short:'Moore, Mealy, simulácia',gens:G6},
+ {id:'ff',name:'Preklápacie obvody',short:'D, JK, T, SR',gens:G7},
+ {id:'sso',name:'Syntéza sekvenčných obvodov',short:'kódovanie, budiace funkcie',gens:G8}
+];
+'use strict';
+/* ================= teória (príklady sa vykresľujú rovnakými funkciami ako úlohy) ================= */
+const tsec=(h,b)=>`<section class="tsec"><h4>${h}</h4>${b}</section>`;
+const tex=b=>`<div class="tex">${b}</div>`;
+const tbl=(head,rows)=>`<div class="ttwrap"><table class="tt tl"><thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+function buildCircuit(names,gates){const nIn=names.length;const envs=Array.from({length:1<<nIn},(_,i)=>{const env={};names.forEach((x,j)=>env[x]=(i>>(nIn-1-j))&1);gates.forEach(g=>{env[g.id]=GT[g.type].f(...g.ins.map(x=>env[x]))});return env});
+  const out=gates[gates.length-1].id;return{names,gates,out,envs,vec:envs.map(e=>e[out])}}
+(()=>{
+  const X3=['x1','x2','x3'];
+  const maj=[0,0,0,1,0,1,1,1];
+  const ex4=[0,1,1,1,1,1,0,0, 0,1,1,1,0,0,0,1].map(x=>x);
+  const e1=buildCircuit(['a','b','c','d'],[{id:'Z1',type:'XOR',ins:['a','b']},{id:'Z2',type:'NOT',ins:['c']},{id:'Z3',type:'AND',ins:['Z1','Z2']},{id:'Z4',type:'OR',ins:['Z3','d']}]);
+  const mz4=minimize(ex4),n4=['a','b','c','d'];
+  const mz3=minimize([1,1,0,1,0,1,1,0]);
+  const arch=
+   tsec('Základné pojmy',`<p>Počítač vykonáva výpočtový proces, ktorý riadi program. <b>Hardvér</b> sú technické prostriedky, <b>softvér</b> programy. <b>Program</b> je postupnosť inštrukcií a údajov. Počítačový systém tvorí počítač, doplnkový hardvér a softvér.</p><p>Počítačové inžinierstvo zahŕňa návrh, konštrukciu, implementáciu a údržbu počítačov. Spája elektrotechniku (siete, elektronika, čipy) a informatiku (algoritmy, údajové štruktúry, operačné systémy) a ich prienik: digitálnu logiku a návrh PC.</p>`)+
+   tsec('Princetonská a harvardská architektúra',tbl(['','Von Neumann (Princeton, 1946)','Harvardská (1944, MARK 1, Aiken)'],[['Pamäť','jedna pamäť pre inštrukcie aj údaje','oddelený adresový priestor pre programy a údaje'],['Prístup','rovnaký pre inštrukcie a údaje','oddelený'],['Signály','tie isté adresové, údajové a riadiace','oddelené'],['Sústava','dvojková','dvojková']])+`<p>Von Neumannov stroj má pamäť, riadiacu jednotku (vyberá inštrukcie), aritmetickú jednotku (vykonáva operácie nad údajmi), vstupnú a výstupnú jednotku. Spracovanie je dané postupnosťou inštrukcií.</p>`)+
+   tsec('Súčasný počítačový systém',`<p>Procesor, pamäť (hlavná a sekundárna), vstupno-výstupný podsystém: vstupné zariadenia (klávesnica, myš, dotyková obrazovka), výstupné (tlačiareň, obrazovka, zvuk) a komunikačné (sieť, Wi-Fi, NFC, modemy).</p>`)+
+   tsec('Klasifikácia počítačov',`<p>Podľa aplikačného určenia: <b>univerzálne</b>, <b>problémovo orientované</b>, <b>špecializované</b>. Podľa architektúry: princetonská a harvardská.</p><p><b>Flynnova klasifikácia (1966)</b> podľa počtu tokov inštrukcií a údajov:</p>`+tbl(['Trieda','Význam','Typický predstaviteľ'],[['SISD','1 tok inštrukcií, 1 tok údajov','sériový jednoprocesorový počítač, klasické PC, mainframe'],['SIMD','1 tok inštrukcií, viac tokov údajov','maticový počítač, výpočty na grafických kartách'],['MISD','viac tokov inštrukcií, 1 tok údajov','prúdové spracovanie, vysoká spoľahlivosť, vesmírne technológie'],['MIMD','viac tokov inštrukcií aj údajov','viacprocesorové a distribuované počítače']])+`<p>Podľa spôsobu riadenia: tokom inštrukcií (<b>control flow</b>, von Neumannov typ), tokom údajov (<b>data flow</b>), tokom požiadaviek (<b>demand flow</b>). Podľa procesora: <b>CISC</b> (Complex Instruction Set), <b>RISC</b> (Reduced Instruction Set), <b>NISC</b> (No Instruction Set).</p>`)+
+   tsec('Výrok a Booleova algebra',`<p><b>Výrok</b> je oznamovacia veta s práve jednou pravdivostnou hodnotou (1 pravda, 0 nepravda). Otázky, rozkazy, zvolania a neúplné vety výrokmi nie sú. George Boole (1815–1864) preformuloval výrokovú logiku do algebry so základnými operátormi <b>OR</b> (súčet), <b>AND</b> (súčin) a <b>NOT</b> (negácia).</p>`)+
+   tsec('Elektronická realizácia',`<p>Logickým hodnotám zodpovedajú úrovne napätia: <b>H</b> (vysoká) a <b>L</b> (nízka). V <b>kladnej logike</b> je 1 ⇔ H a 0 ⇔ L, v <b>zápornej logike</b> opačne. Mechanický spínač nahradil <b>tranzistor</b> (vynájdený 1947, Nobelova cena 1956 pre Bardeena, Brattaina a Shockleyho). Integrovaný obvod (čip) sa vyrába z kremíkových plátkov (wafer): rafinácia kremičitého piesku, ingot, rezanie, masky, oxidácia, difúzia, test, rozlámanie na čipy a zapuzdrenie.</p>`);
+
+  const bf=
+   tsec('Logické obvody',`<p>Logický obvod pracuje s dvojhodnotovými premennými. Vstupné slovo X = (x₁, …, xₙ) má 2ⁿ možností, výstupné slovo Y = (y₁, …, yₘ) 2ᵐ možností. Delíme ich na <b>kombinačné</b> a <b>sekvenčné</b>, <b>asynchrónne</b> a <b>synchrónne</b>, s <b>pevnou</b> a <b>programovateľnou</b> funkciou. Úlohy: analýza, syntéza, diagnostika, simulácia.</p>`)+
+   tsec('Booleovská funkcia',`<p>B-funkcia je zobrazenie f: {0,1}ⁿ → {0,1}. Funkcia n premenných má 2ⁿ vstupných bodov.</p><ul><li>Počet <b>úplne definovaných</b> funkcií n premenných: <b>2<sup>2ⁿ</sup></b> (n = 2 → 16, n = 3 → 256).</li><li>Počet <b>neúplne definovaných</b> funkcií (hodnoty 0, 1, x): <b>3<sup>2ⁿ</sup></b> (n = 2 → 81, n = 3 → 6561).</li></ul>`)+
+   tsec('Päť spôsobov zápisu',`<p>Príklad: väčšinová (majoritná) funkcia troch premenných, y = 1, ak má väčšina vstupov hodnotu 1.</p>${tex(ttable(X3,[{h:'y',vals:maj}]))}<ul><li><b>Pravdivostná tabuľka</b> (vľavo). DE (desiatkový ekvivalent) = x₁·2² + x₂·2 + x₃.</li><li><b>Číselný zápis</b>: y = D(3, 5, 6, 7) (body s hodnotou 1) = K(0, 1, 2, 4) (body s hodnotou 0).</li><li><b>Vektorový zápis</b>: y = ${vecStr(maj)} (stĺpec výstupov pre vstupy 0 až 7).</li><li><b>Mapa</b>: Grayov kód popisov (00, 01, 11, 10), susedné štvorčeky sa líšia v jednej premennej.</li><li><b>Výraz</b>: y = x₁x₂ + x₁x₃ + x₂x₃.</li></ul>${tex(kmap(maj,X3,{idx:true}))}<p><b>Neúplne definovaná</b> funkcia má hodnoty x: y = D(3, 5, 6 ; {0, 7}) = K(1, 2, 4 ; {0, 7}). Vektor: (x0010 11x).</p>`)+
+   tsec('Funkcie jednej a dvoch premenných',`<p>Jedna premenná: nulová (0), jednotková (1), opakovanie (x), negácia (x̄). Dve premenné:</p>`+tbl(['Funkcia','Vektor pre x₁x₂ = 00, 01, 10, 11'],FN2.map(f=>[f[0],vecStr(f[1])]))+`<p>XOR pre viac premenných je 1, ak je jednotiek <b>nepárny</b> počet.</p>`);
+
+  const alg=
+   tsec('Pravidlá Booleovej algebry',tbl(['Názov','Pravidlo'],[['Komutatívnosť','A + B = B + A, A·B = B·A'],['Asociatívnosť','A + (B + C) = (A + B) + C, A·(B·C) = (A·B)·C'],['Distributívnosť','A + B·C = (A + B)·(A + C), A·(B + C) = A·B + A·C'],['Idempotencia','A + A + … + A = A, A·A·…·A = A'],['De Morgan',`${ov('A + B')} = Ā·B̄, ${ov('A·B')} = Ā + B̄`],['Dvojitá negácia',`${ov(ov('A'))} = A`],['Komplement','A + Ā = 1, A·Ā = 0'],['Agresívnosť 0 a 1','A + 1 = 1, A·0 = 0'],['Neutrálnosť 0 a 1','A + 0 = A, A·1 = A'],['Spojovanie','(A + B)(Ā + B) = B, A·B + Ā·B = B'],['Absorpcia','A + A·B = A, A·(A + B) = A'],['','A + Ā·B = A + B, A·(Ā + B) = A·B'],['Konsenzus','A·B + Ā·C + B·C = A·B + Ā·C, (A + B)(Ā + C)(B + C) = (A + B)(Ā + C)']]))+
+   tsec('Ako sa zjednodušuje',`<p>Hľadáme vo výraze známe vzory a postupne ich nahrádzame. Pomáha vynímanie pred zátvorku, spojovanie dvojíc členov a absorpcia.</p>${tex(`f = x·y + x̄·y·z̄ + y·z = y·(x + x̄·z̄ + z) = y·(x + 1) = y`.replace(/x̄/g,ov('x')).replace(/z̄/g,ov('z')))}<p>Výsledok môžeš skontrolovať mapou funkcie.</p>`)+
+   tsec('Negácia súčtu a súčinu',`<p>De Morganove pravidlá platia pre ľubovoľný počet členov: ${ov('A + B + C')} = Ā·B̄·C̄ a ${ov('A·B·C')} = Ā + B̄ + C̄. Negáciu posúvame dovnútra a mení sa operátor.</p>`);
+
+  const nf=
+   tsec('Elementárny súčin a súčet',`<p><b>Elementárny súčin</b> je súčin písmen (premenná alebo jej negácia), napríklad x₁·x̄₂·x₃, <b>rád</b> r = počet písmen. <b>Elementárny súčet</b> je súčet písmen, napr. (x₁ + x̄₂ + x₃).</p>`.replace(/x̄₂/g,ov('x<sub>2</sub>')))+
+   tsec('DNF a KNF',`<ul><li><b>DNF</b> (disjunktívna normálna forma) je súčet elementárnych súčinov: f = g₁ + g₂ + …</li><li><b>KNF</b> (konjunktívna normálna forma) je súčin elementárnych súčtov: f = h₁·h₂·…</li></ul><p>Druhy DNF: <b>úplná</b> (UDNF: všetky súčiny majú rád n, pre danú funkciu je jediná, má súčin pre každú jednotku), <b>skrátená</b> (SDNF: obsahuje všetky prosté implikanty), <b>bezhazardná</b> (BDNF), <b>irredundantná</b> (IDNF: nedá sa vynechať žiadne písmeno ani člen), <b>minimálna</b> (MDNF: minimálny počet písmen). Rovnako pre KNF (UKNF má súčet pre každú <b>nulu</b>).</p><p>Pre danú funkciu môže existovať viac IDNF, ale UDNF a SDNF je len jedna.</p>`)+
+   tsec('Implikant a mapa',`<p><b>Implikant</b> funkcie f je súčin, ktorý má hodnotu 1 v bodoch, kde f = 1 (alebo nie je definovaná). <b>Prostý implikant</b> je taký, ktorého žiadna vlastná časť nie je implikantom (nedá sa zväčšiť konfigurácia).</p><p><b>Pravidelná konfigurácia</b> stupňa s má 2<sup>s</sup> štvorčekov a každý z nich má v nej práve s susedných. Súčin z nej má rád <b>r = n − s</b>.</p><p>Mapa funkcie n premenných má 2ⁿ štvorčekov a každý štvorček má práve n susedných (aj cez okraj mapy).</p>`)+
+   tsec('Minimalizácia mapou',`<p>Postup pre MDNF: pokryjeme všetky jednotky najmenším počtom čo najväčších konfigurácií, každú vyjadríme súčinom (premenná, ktorá sa v konfigurácii nemení), súčiny sčítame. Hodnoty x môžeme použiť ako 0 aj ako 1.</p>${tex(`${kmap(ex4,n4,{cubes:mz4.cubes})}<div class="eq">MDNF: f = ${exprHtml(minAst(mz4,n4))}</div>`)}<p><b>Duálne pre MKNF</b>: pokrývame <b>nuly</b>, každú konfiguráciu vyjadríme súčtom (premenná je v súčte <b>negovaná</b>, ak má v konfigurácii hodnotu 1) a súčty vynásobíme.</p>${tex(`${kmap(ex4,n4,{cubes:minimize(ex4,true).cubes,dual:true})}<div class="eq">MKNF: f = ${exprHtml(minAst(minimize(ex4,true),n4))}</div>`)}`)+
+   tsec('Iné metódy',`<p>Pri väčšom počte premenných sa používajú algoritmy <b>Quine–McCluskey</b> a <b>Petrick</b> (preštuduj v odporúčanej literatúre). Skupinová minimalizácia hľadá spoločné súčiny pre viac funkcií naraz.</p>`);
+
+  const cir=
+   tsec('Analýza a syntéza',`<p><b>Analýza</b>: je daná štruktúra obvodu, hľadáme jeho správanie. Úloha má vždy jednoznačné riešenie. <b>Syntéza</b>: je daná funkcia (skupina funkcií) a súbor typov členov, hľadáme štruktúru. Riešenie nie je jednoznačné, kritériom býva minimálny počet členov. Algoritmicky sa rieši najmä pre DNF, KNF a dvojúrovňové obvody.</p>`)+
+   tsec('Logické členy',tbl(['Člen','Funkcia','Značka (IEC)'],[['AND','y = a·b','&'],['OR','y = a + b','≥1'],['NOT','y = ā','1 s krúžkom'],['NAND','y = '+ov('a·b')+' = a ↑ b','& s krúžkom'],['NOR','y = '+ov('a + b')+' = a ↓ b','≥1 s krúžkom'],['XOR','y = a ⊕ b','=1'],['XNOR','y = '+ov('a ⊕ b'),'=1 s krúžkom']]))+
+   tsec('Analýza obvodu',`<p>Hodnoty hradiel postupne dosadzujeme od vstupov k výstupu (substitúcia) a výsledok upravíme do normálnej formy alebo zapíšeme mapou či číselným zápisom.</p>${tex(`${circuitSvg(e1)}<ul class="gl2">${gateList(e1)}</ul><div class="eq">F = (a ⊕ b)·${ov('c')} + d = a${ov('b')}${ov('c')} + ${ov('a')}b${ov('c')} + d</div><div class="eq">F = D(${setStr(idxOf(e1.vec,1))})</div>`)}`)+
+   tsec('Zmiešané normálne formy',`<p>Z DNF a KNF sa dajú odvodiť formy z hradiel NAND a NOR. Dvojúrovňové obvody sú najrýchlejšie (predpoklad: dostupné negované vstupy, neobmedzený počet vstupov hradiel).</p>${tbl(['Zo','Typ NF','Pravidlo'],[['DNF','NF ↑/↑ (Shefferova)',`súčin → NAND písmen, jednopísmenový člen sa negoval: (a↑b)↑(c↑d)↑${ov('e')}`],['DNF','NF ↓/+',`súčin A·B = Ā ↓ B̄, súčet ostáva`],['KNF','NF ↓/↓ (Peirceova)',`súčet → NOR písmen: (a↓b)↓(c↓d)↓${ov('e')}`],['KNF','NF ↑/·',`súčet A + B = Ā ↑ B̄, súčin ostáva`]])}<p>Hradlá NAND stačia na realizáciu každej funkcie. Pre dvojúrovňovú NAND/NAND realizáciu MDNF potrebuješ jedno hradlo NAND pre každý súčin s aspoň dvoma písmenami a jedno výstupné hradlo.</p>`);
+
+  const A0={type:'mealy',m:3,p:[[1,2],[3,2],[1,3]],y:[[0,0],[1,0],[0,1]]};
+  const M0={type:'moore',m:3,p:[[1,2],[3,2],[3,1]],y:[0,1,0]};
+  const w=[1,0,1,1,0],sm=simulate(M0,w,1),sa=simulate(A0,w,1);
+  const aut=
+   tsec('Sekvenčný obvod a konečný automat',`<p>Výstup sekvenčného obvodu nezávisí iba od vstupu, ale aj od stavu, teda od histórie na vstupe. Obvod preto potrebuje <b>pamäť</b>. Správanie opisuje konečný automat A = (X, S, Y, p, v, S₀):</p><ul><li>X – vstupy, Y – výstupy, S – stavy, S₀ – začiatočný stav,</li><li>p: S × X → S – <b>prechodová funkcia</b>, s(t+1) = p[s(t), x(t)],</li><li>v – <b>výstupná funkcia</b>.</li></ul>`)+
+   tsec('Moore a Mealy',tbl(['','Moore','Mealy'],[['Výstupná funkcia','v: S → Y','v: S × X → Y'],['Výstup','y(t) = v[s(t)]','y(t) = v[s(t), x(t)]'],['Závisí od','iba od stavu','od stavu aj vstupu'],['Dynamika','oneskoruje výstupné slovo o <b>jeden takt</b>','reaguje okamžite']])+`<p>Zápis: prechodová tabuľka (riadky stavy, stĺpce vstupy) alebo prechodový graf (stavy sú uzly, prechody orientované hrany).</p>`)+
+   tsec('Príklad: Moore',`<p>Začiatočný stav S₀ = 1, vstupné slovo x = ${wordHtml(w)}.</p>${autTable(M0)}${simTable(M0,sm)}<p>Výstupné slovo y = ${wordHtml(sm.rows.map(r=>r.y))}. Prvý výstup vznikol ešte pred prvým vstupom, preto Moore oneskoruje.</p>`)+
+   tsec('Príklad: Mealy',`${autTable(A0)}${simTable(A0,sa)}<p>Výstupné slovo y = ${wordHtml(sa.rows.map(r=>r.y))}.</p>`);
+
+  const ff=
+   tsec('Preklápací obvod',`<p>Preklápací obvod (PO) má dva stavy a dve výstupné premenné: stav 0 (Q = 0, Q̄ = 1) a stav 1 (Q = 1, Q̄ = 0). Synchrónne PO menia stav iba v okamihu určenom synchronizačnou premennou h (aktívna hodnota alebo hrana).</p>`)+
+   tsec('Typy a ich správanie',tbl(['PO','Vstupy','Správanie','Q(t+1)'],[['D','D','oneskorenie vstupu o jeden takt','D'],['T','T','T = 1 preklopí, T = 0 zachová','T ⊕ Q'],['JK','J, K','00 zachová, 01 nuluje, 10 nastaví, 11 preklopí (univerzálny)','J·Q̄ + K̄·Q'],['SR','S, R','00 zachová, 01 nuluje, 10 nastaví, 11 zakázané (S·R = 0)','S + R̄·Q']])+`<p>Základom realizácie PO-D je asynchrónny PO-SR. V praxi má význam dvojčinný (master-slave) PO-JK z dvoch asynchrónnych PO-SR a logických členov.</p>`)+
+   tsec('Inverzná prechodová funkcia p⁻¹',`<p>Pre každý prechod r → u udáva, aké vstupy musí PO mať, aby sa prechod uskutočnil. Používa sa pri návrhu budiacich funkcií. <b>x</b> znamená, že na hodnote nezáleží.</p>`+(()=>{const t=['00','01','10','11'];return`<div class="ttwrap"><table class="tt"><thead><tr><th>r → u</th><th class="o">D</th><th class="o">T</th><th class="o" colspan="2">J K</th><th class="o" colspan="2">S R</th></tr></thead><tbody>${t.map(k=>`<tr><td>${k[0]} → ${k[1]}</td><td class="o">${FFS.D.t[k][0]}</td><td class="o">${FFS.T.t[k][0]}</td><td class="o">${FFS.JK.t[k][0]}</td><td class="o">${FFS.JK.t[k][1]}</td><td class="o">${FFS.SR.t[k][0]}</td><td class="o">${FFS.SR.t[k][1]}</td></tr>`).join('')}</tbody></table></div>`})())+
+   tsec('Podmienky správnej synchronizácie',`<p>Pamäťová časť P (preklápacie obvody) a kombinačná časť K tvoria slučku. Perióda hodinového signálu musí byť dosť dlhá, aby sa signál ustálil: <b>E ≥ Pₘₐₓ + Kₘₐₓ</b>, frekvencia <b>f = 1/E</b>. Šírka impulzu: <b>šₘᵢₙ ≤ š ≤ Pₘᵢₙ + Kₘᵢₙ</b>. Dvojčinné PO s krátkym vzorkovaním túto požiadavku uľahčujú.</p>`);
+
+  const SA={m:4,type:'mealy',p:[[2,1],[3,1],[4,2],[1,3]],y:[[0,0],[0,0],[0,0],[0,1]],codes:[0,3,1,2]};
+  const FD=ssoFuncs(SA,'D'),FJ=ssoFuncs(SA,'JK');
+  const nm3=['x','z1','z2'];
+  const mD1=minimize(FD.D1),mD2=minimize(FD.D2),mY=minimize(FD.y),mJ1=minimize(FJ.J1),mK1=minimize(FJ.K1);
+  const sso=
+   tsec('Dve etapy syntézy',`<p><b>Abstraktná syntéza</b> je tvorivý proces: zo slovného opisu vytvoríme automat, teda navrhneme stavy S, prechodovú funkciu p a výstupnú funkciu v (vstupy a výstupy sú spravidla známe). Príklady: kontrolór kódu (trojbitové slová 000 až 101 sú platné, 110 a 111 dávajú y = 1) alebo riadiaci systém predajného automatu (stavy podľa vhodenej sumy).</p><p><b>Štrukturálna syntéza</b>: z automatu navrhneme štruktúru s preklápacími obvodmi daného typu a logickými členmi daného typu:</p><ol><li>kódovanie stavov,</li><li>návrh budiacich funkcií (cez inverznú prechodovú funkciu PO),</li><li>návrh výstupnej funkcie,</li><li>minimalizácia výrazov (MDNF, MKNF) a realizácia členmi (napr. NAND).</li></ol>`)+
+   tsec('Kódovanie stavov',`<p>Každému stavu priradíme vektor stavových premenných z₁…zₖ. Ich počet <b>k ≥ ⌈log₂|S|⌉</b> (najmenšie celé k, pre ktoré 2ᵏ ≥ |S|). Pre 4 stavy k = 2, pre 5 až 8 stavov k = 3.</p><p><b>Pravidlá optimálneho kódu</b> (zjednodušia kombinačnú časť, ale nie sú nutné):</p><ul><li><b>Pravidlo 1:</b> ak dva stavy vedú pri rovnakom vstupe do rovnakého stavu, kódujeme ich <b>susedne</b> (líšia sa v jednej premennej).</li><li><b>Pravidlo 2:</b> ak sú nasledujúce stavy toho istého stavu pri susedných vstupoch (x₁ a x₂), kódujeme ich susedne.</li></ul><p>Ak pravidlá nepoužijeme, návrh bude korektný, len zložitejší.</p>`)+
+   tsec('Príklad: PO-D',`<p>Mealyho automat so 4 stavmi, kódovanie 1 → 00, 2 → 11, 3 → 01, 4 → 10:</p>${ssoTable(SA)}<p>Pre PO-D platí D<sub>i</sub> = nasledujúca hodnota z<sub>i</sub>. Pre každý stav a vstup určíme nasledujúci stav a jeho kód:</p>${ttable(nm3,[{h:'D<sub>1</sub>',vals:FD.D1},{h:'D<sub>2</sub>',vals:FD.D2},{h:'y',vals:FD.y}],{de:false})}${tex(`D<sub>1</sub> = ${exprHtml(minAst(mD1,nm3))}<br>D<sub>2</sub> = ${exprHtml(minAst(mD2,nm3))}<br>y = ${exprHtml(minAst(mY,nm3))}`)}<p>Mapa funkcie D<sub>1</sub>:</p>${kmap(FD.D1,nm3,{cubes:mD1.cubes})}`)+
+   tsec('Príklad: PO-JK',`<p>Rovnaký automat s preklápacími obvodmi JK. Pre každý bit z<sub>i</sub> vyberieme z inverznej prechodovej funkcie hodnoty J<sub>i</sub> a K<sub>i</sub> podľa prechodu z<sub>i</sub>(t) → z<sub>i</sub>(t+1). Nepoužité hodnoty sú x.</p>${ttable(nm3,[{h:'J<sub>1</sub>',vals:FJ.J1},{h:'K<sub>1</sub>',vals:FJ.K1}],{de:false})}${tex(`J<sub>1</sub> = ${exprHtml(minAst(mJ1,nm3))}<br>K<sub>1</sub> = ${exprHtml(minAst(mK1,nm3))}`)}`)+
+   tsec('Model obvodu',`<p>Kombinačná časť K má vstupy x a z₁…zₖ a výstupy budiace funkcie preklápacích obvodov a výstupnú funkciu y. Pamäťová časť P je k preklápacích obvodov so spoločnou synchronizáciou h, ich výstupy sa vracajú na vstup kombinačnej časti.</p>`);
+
+  const T={arch,bf,alg,nf,cir,aut,ff,sso};
+  TOPICS.forEach(t=>{t.full=T[t.id]});
+  const sum={
+   arch:'<ul><li>Von Neumann: jedna pamäť pre program aj údaje. Harvard: oddelený adresový priestor.</li><li>Flynn (1966): SISD, SIMD, MISD, MIMD.</li><li>Výrok má práve jednu pravdivostnú hodnotu. Boole: OR, AND, NOT.</li><li>Kladná logika: 1 ⇔ H. Tranzistor 1947.</li></ul>',
+   bf:'<ul><li>2<sup>2ⁿ</sup> úplných a 3<sup>2ⁿ</sup> neúplných funkcií n premenných.</li><li>Zápisy: tabuľka, D(…)/K(…), vektor, mapa, výraz.</li><li>DE = x₁·2ⁿ⁻¹ + … + xₙ·2⁰.</li><li>XOR viacerých premenných = 1 pri nepárnom počte jednotiek.</li></ul>',
+   alg:'<ul><li>Komutatívnosť, asociatívnosť, distributívnosť (aj A + BC = (A+B)(A+C)).</li><li>De Morgan: ¬(A+B) = Ā·B̄.</li><li>Absorpcia: A + AB = A, A + ĀB = A + B.</li><li>Spojovanie: AB + ĀB = B. Konsenzus: AB + ĀC + BC = AB + ĀC.</li></ul>',
+   nf:'<ul><li>DNF: súčet súčinov. KNF: súčin súčtov.</li><li>MDNF z jednotiek, MKNF z núl (súčty s negovanými premennými).</li><li>Konfigurácia stupňa s: 2<sup>s</sup> štvorčekov, rád súčinu r = n − s.</li><li>Mapa: 2ⁿ štvorčekov, n susedných.</li></ul>',
+   cir:'<ul><li>Analýza: štruktúra → správanie (jednoznačné). Syntéza: viac riešení.</li><li>NAND/NAND z DNF, NOR/NOR z KNF.</li><li>A·B = Ā ↓ B̄, A + B = Ā ↑ B̄.</li></ul>',
+   aut:'<ul><li>A = (X, S, Y, p, v, S₀). s(t+1) = p[s(t), x(t)].</li><li>Moore: y = v[s]. Mealy: y = v[s, x].</li><li>Moore oneskoruje výstup o jeden takt.</li></ul>',
+   ff:'<ul><li>D: Q⁺ = D. T: Q⁺ = T ⊕ Q. JK: Q⁺ = JQ̄ + K̄Q. SR: Q⁺ = S + R̄Q, S·R = 0.</li><li>Inverzná prechodová funkcia: 0→1: D=1, T=1, JK=1x, SR=10.</li><li>E ≥ Pₘₐₓ + Kₘₐₓ, f = 1/E.</li></ul>',
+   sso:'<ul><li>Abstraktná syntéza → automat. Štrukturálna → kódy, budiace a výstupné funkcie.</li><li>k ≥ ⌈log₂|S|⌉.</li><li>Pravidlo 1 a 2 pre susedné kódy.</li><li>D<sub>i</sub> = z<sub>i</sub>⁺. JK a SR podľa p⁻¹.</li></ul>'};
+  TOPICS.forEach(t=>{t.theory=sum[t.id]});
+})();
+/* ---------- stav a uloženie ---------- */
+const KEY='ppi-cvicebnica-v1';
+let ST={stats:{},streak:0,best:0};
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.stats)ST=s}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(ST))}catch(e){}};
+let S={view:'practice',topic:'mix',q:null,qt:null,sel:null,rows:[],counted:false,done:false,shown:false};
+const $=s=>document.querySelector(s);
+const tstat=id=>ST.stats[id]||(ST.stats[id]={ok:0,total:0});
+const totals=()=>Object.values(ST.stats).reduce((a,s)=>({ok:a.ok+s.ok,total:a.total+s.total}),{ok:0,total:0});
+
+/* ---------- parsovanie polí ---------- */
+function parseNum(s){s=String(s).trim().replace(/[−–]/g,'-').replace(/,/g,'.').replace(/\s+/g,'');if(!s)return null;
+  let m=s.match(/^([+-]?)(\d+)\/(\d+)$/);if(m){const d=+m[3];if(!d)return null;return(m[1]==='-'?-1:1)*(+m[2])/d}
+  m=s.match(/^([+-]?)(\d+)(?:\.(\d+))?$/);if(m)return(m[1]==='-'?-1:1)*parseFloat(m[2]+(m[3]?'.'+m[3]:''));return null}
+function parseTok(s){s=String(s).trim().toLowerCase();if(s==='-'||s==='×')s='x';return['0','1','x'].includes(s)?s:null}
+function parseSet(s){s=String(s).trim();if(s===''||s==='-'||s==='∅'||s==='–'){return s===''?null:[]}
+  const p=s.split(/[\s,;]+/).filter(Boolean);if(!p.every(x=>/^\d+$/.test(x)))return null;return uniq(p.map(Number)).sort((a,b)=>a-b)}
+const PARSE={num:parseNum,tok:parseTok,set:parseSet};
+const same=(m,u,a)=>m==='num'?Math.abs(u-a)<1e-9:m==='set'?JSON.stringify(u)===JSON.stringify(a):u===a;
+const showVal=(m,a)=>m==='set'?(a.length?a.join(', '):'-'):m==='num'?String(Math.round(a*1e6)/1e6).replace('-','−'):String(a);
+
+/* ---------- navigácia ---------- */
+function renderNav(){
+  const all=totals();
+  const btn=(id,name,short,st)=>`<button class="tbtn" data-id="${id}" aria-pressed="${S.topic===id}"><span class="n"><span>${name}</span><em>${st.ok}/${st.total}</em></span><span class="s">${short}</span><div class="bar"><i style="width:${st.total?Math.round(100*st.ok/st.total):0}%"></i></div></button>`;
+  $('#nav').innerHTML=(S.view==='theory'?'':btn('mix','Všetko dokopy','náhodná téma',all))+TOPICS.map(t=>btn(t.id,t.name,t.short,tstat(t.id))).join('')+`<button class="reset" id="reset">Vynulovať štatistiku</button>`;
+  $('#nav').querySelectorAll('.tbtn').forEach(b=>b.onclick=()=>{S.topic=b.dataset.id;renderTheory();if(S.view==='theory')window.scrollTo({top:0});next()});
+  $('#reset').onclick=()=>{ST={stats:{},streak:0,best:0};save();renderNav()};
+  renderScore()}
+function renderScore(){const a=totals();
+  $('#score').innerHTML=`<div><b>${a.ok}/${a.total}</b><span>správne na 1. pokus</span></div><div><b>${ST.streak}</b><span>v rade</span></div><div><b>${ST.best}</b><span>najlepšia séria</span></div>`}
+function renderTheory(){
+  const t=TOPICS.find(x=>x.id===S.topic),d=$('#theory'),p=$('#tpane');
+  if(!t){d.hidden=true;p.innerHTML='';return}
+  d.hidden=false;d.querySelector('summary').textContent='Zhrnutie z prednášok: '+t.name;d.querySelector('.in').innerHTML=t.theory;
+  p.innerHTML=`<h3>${t.name}</h3>${t.full}`}
+function setView(v){
+  S.view=v;$('#app').dataset.view=v;
+  document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v));
+  if(v==='theory'&&S.topic==='mix'){S.topic='arch';renderTheory();next()}else{renderTheory();renderNav()}
+  $('#tpane').scrollTop=0}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setView(b.dataset.v));
+
+/* ---------- otázky ---------- */
+function next(){
+  const pool=S.topic==='mix'?TOPICS:TOPICS.filter(t=>t.id===S.topic);
+  let q=null,t=null;
+  for(let k=0;k<8&&!q;k++){try{t=pick(pool);q=pick(t.gens)()}catch(e){q=null}}
+  S={...S,q,qt:t,sel:null,rows:q&&q.input.t==='rows'?q.input.rows.map(()=>null):[],counted:false,done:false,shown:false};
+  renderNav();renderCard();
+  const cd=$('#card');if(cd.getBoundingClientRect().top<0)cd.scrollIntoView({block:'start',behavior:'auto'});
+  const f=$('#card input.cell');if(f&&matchMedia('(hover:hover)').matches)f.focus({preventScroll:true})}
+const CELL='autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"';
+const cellHtml=(k,m,label)=>`<input class="cell ${m==='set'?'wide':''}" id="c${k}" data-m="${m}" aria-label="${label}" ${CELL} inputmode="text">`;
+function inputsHtml(inp){
+  if(inp.t==='grid'){let k=0;const rows=[];const hasL=inp.colLabels;
+    if(hasL)rows.push(`<tr>${inp.rowLabels?'<th></th>':''}${inp.colLabels.map(c=>`<th>${c}</th>`).join('')}</tr>`);
+    for(let i=0;i<inp.r;i++){let tds=inp.rowLabels?`<th>${inp.rowLabels[i]}</th>`:'';for(let j=0;j<inp.c;j++){tds+=`<td>${cellHtml(k,inp.m,`riadok ${i+1}, stĺpec ${j+1}`)}</td>`;k++}rows.push(`<tr>${tds}</tr>`)}
+    return`<div class="answer"><span class="lbl2">Tvoja odpoveď</span><div class="ttwrap"><span class="mx in"><table>${rows.join('')}</table></span></div></div>`}
+  if(inp.t==='lines'){let k=0;return`<div class="answer"><span class="lbl2">Tvoja odpoveď</span>${inp.lines.map(l=>`<div class="ln">${l.map(x=>{if(x===null)return cellHtml(k++,'num','pole '+k);if(typeof x==='object')return cellHtml(k++,x.m,'pole '+k);return`<span class="t">${x}</span>`}).join('')}</div>`).join('')}</div>`}
+  if(inp.t==='expr'){return`<div class="answer"><span class="lbl2">Tvoja odpoveď</span><div class="ln"><input class="cell expr" id="c0" data-m="expr" aria-label="výraz" ${CELL} inputmode="text" placeholder="napr. a'b + c"></div>
+    <div class="insbar" aria-label="Vloženie znaku">${["'",'+','·','(',')','⊕'].map(c=>`<button type="button" class="ib" data-ins="${c}" aria-label="vložiť ${c}">${c}</button>`).join('')}</div>
+    <div class="muted">Premenné: ${inp.names.map(dispName).join(', ')}. Negácia apostrofom (a'), súčet +, súčin · alebo bez znaku. Konštanty 0 a 1.</div></div>`}
+  if(inp.t==='rows')return`<div class="rowsq">${inp.rows.map((r,i)=>`<div class="rq"><div class="rl">${r.label}</div><div class="ro" role="radiogroup">${r.opts.map((o,j)=>`<button class="opt sm" role="radio" aria-checked="false" data-r="${i}" data-i="${j}">${o}</button>`).join('')}</div></div>`).join('')}</div>`;
+  return`<div class="opts" role="radiogroup" aria-label="Možnosti">${inp.opts.map((o,i)=>`<button class="opt" role="radio" aria-checked="false" data-i="${i}">${o}</button>`).join('')}</div>`}
+function hintFor(inp){
+  if(inp.t==='choice'||inp.t==='rows'||inp.t==='expr')return'';
+  const ms=new Set();if(inp.t==='grid')ms.add(inp.m);else inp.lines.flat().forEach(x=>{if(x===null)ms.add('num');else if(typeof x==='object')ms.add(x.m)});
+  const h=[];if(ms.has('num'))h.push('čísla (aj zlomky <kbd>2/7</kbd> alebo desatinné)');if(ms.has('tok'))h.push('hodnoty <kbd>0</kbd>, <kbd>1</kbd> alebo <kbd>x</kbd>');if(ms.has('set'))h.push('zoznam čísel oddelených čiarkou, prázdna množina <kbd>-</kbd>');
+  return`<div class="muted">Zápis: ${h.join('; ')}. Enter skočí na ďalšie pole.</div>`}
+function renderCard(){
+  const q=S.q,c=$('#card');
+  if(!q){c.innerHTML='<p>Príklad sa nepodarilo vytvoriť. Skús ďalší.</p><div class="actions"><button class="btn main" id="nx">Ďalší príklad</button></div>';$('#nx').onclick=next;return}
+  c.innerHTML=`<div class="meta"><span class="chip">${q.kind}</span><span>${S.qt.name}</span></div>
+   <div class="prompt">${q.prompt}</div>${inputsHtml(q.input)}${hintFor(q.input)}
+   <div id="fb" role="status" aria-live="polite"></div>
+   <div class="actions"><button class="btn main" id="chk">Skontrolovať</button><button class="btn" id="shw">Ukáž riešenie</button><button class="btn" id="nx">Ďalší príklad</button></div>
+   <div id="sol" class="sol" hidden></div>`;
+  $('#chk').onclick=check;$('#shw').onclick=reveal;$('#nx').onclick=next;
+  c.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(S.done||S.shown)return;
+    if(b.dataset.r!==undefined){const r=+b.dataset.r;S.rows[r]=+b.dataset.i;c.querySelectorAll(`.opt[data-r="${r}"]`).forEach(o=>{o.setAttribute('aria-checked',o===b);o.classList.remove('bad','ok')})}
+    else{S.sel=+b.dataset.i;c.querySelectorAll('.opt').forEach(o=>{o.setAttribute('aria-checked',o===b);o.classList.remove('bad','ok')})}});
+  const ins=[...c.querySelectorAll('input.cell')];
+  ins.forEach((el,i)=>el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if(S.done||S.shown)return next();if(i<ins.length-1)ins[i+1].focus();else check()}}));
+  c.querySelectorAll('.ib').forEach(b=>b.onclick=()=>{const el=$('#c0');if(!el||el.readOnly)return;const a=el.selectionStart??el.value.length,z=el.selectionEnd??a;el.value=el.value.slice(0,a)+b.dataset.ins+el.value.slice(z);el.focus();const p=a+b.dataset.ins.length;try{el.setSelectionRange(p,p)}catch(e){}})}
+function fb(cls,txt){$('#fb').innerHTML=`<div class="fb ${cls}">${txt}</div>`}
+function record(ok){const s=tstat(S.qt.id);s.total++;if(ok){s.ok++;ST.streak++;ST.best=Math.max(ST.best,ST.streak)}else ST.streak=0;S.counted=true;save();renderNav()}
+function finishOk(){S.done=true;fb('ok','Správne.');lockInputs();showSol(false);$('#chk').disabled=true;$('#nx').classList.add('main');$('#chk').classList.remove('main');$('#nx').focus({preventScroll:true})}
+function fieldSpecs(){const q=S.q.input;if(q.t==='grid')return Array(q.r*q.c).fill(q.m);return q.lines.flat().filter(x=>x===null||(x&&typeof x==='object')).map(x=>x===null?'num':x.m)}
+function check(){
+  if(S.done||S.shown)return;
+  const q=S.q,inp=q.input;
+  if(inp.t==='choice'){
+    if(S.sel==null){fb('warn','Vyber jednu možnosť.');return}
+    const ok=S.sel===q.answer[0];$('#card').querySelectorAll('.opt').forEach((o,i)=>{if(i===S.sel)o.classList.add(ok?'ok':'bad')});
+    if(!S.counted)record(ok);if(ok)finishOk();else fb('bad','Zatiaľ nie. Skús inú možnosť alebo si zobraz riešenie.');return}
+  if(inp.t==='rows'){
+    if(S.rows.some(x=>x===null)){fb('warn','Odpovedz na každý riadok.');return}
+    let hit=0;$('#card').querySelectorAll('.opt').forEach(o=>{const r=+o.dataset.r,i=+o.dataset.i;if(S.rows[r]===i)o.classList.add(i===q.answer[r]?'ok':'bad')});
+    S.rows.forEach((v,i)=>{if(v===q.answer[i])hit++});const ok=hit===q.answer.length;
+    if(!S.counted)record(ok);if(ok)finishOk();else fb('bad',`Správne ${hit} z ${q.answer.length} riadkov. Červené oprav alebo si zobraz riešenie.`);return}
+  const ins=[...$('#card').querySelectorAll('input.cell')];
+  if(inp.t==='expr'){
+    const r=q.check(ins[0].value);
+    if(r.ok){ins[0].classList.add('ok');ins[0].classList.remove('bad');if(!S.counted)record(true);finishOk();return}
+    ins[0].classList.add(r.hold?'warn':'bad');ins[0].classList.remove(r.hold?'bad':'warn');
+    if(r.hold){fb('warn',r.msg);return}
+    if(!S.counted)record(false);fb('bad',r.msg||'Výraz nesedí.');return}
+  const specs=fieldSpecs();const vals=ins.map((el,i)=>PARSE[specs[i]](el.value));
+  if(vals.some(v=>v===null)){fb('warn',{num:'Vyplň všetky polia číslom alebo zlomkom.',tok:'Vyplň všetky polia hodnotou 0, 1 alebo x.',set:'Vyplň všetky polia zoznamom čísel (prázdna množina je -).'}[specs.find((s,i)=>vals[i]===null)]);return}
+  let hit=0;vals.forEach((v,i)=>{const g=same(specs[i],v,q.answer[i]);ins[i].classList.toggle('ok',g);ins[i].classList.toggle('bad',!g);if(g)hit++});
+  const ok=hit===q.answer.length;if(!S.counted)record(ok);
+  if(ok)finishOk();else fb('bad',`Správne ${hit} z ${q.answer.length} polí. Červené polia oprav alebo si zobraz riešenie.`)}
+function lockInputs(){$('#card').querySelectorAll('input.cell').forEach(i=>i.readOnly=true);$('#card').querySelectorAll('.opt').forEach(o=>o.disabled=true)}
+function showSol(open){const s=$('#sol');s.hidden=false;s.innerHTML=`<h3>Postup</h3>${S.q.solution}`;if(open)s.scrollIntoView({block:'nearest',behavior:'smooth'})}
+function reveal(){
+  if(!S.counted)record(false);
+  S.shown=true;const q=S.q,inp=q.input;
+  if(inp.t==='choice')$('#card').querySelectorAll('.opt').forEach((o,i)=>{o.disabled=true;if(i===q.answer[0])o.classList.add('ok')});
+  else if(inp.t==='rows')$('#card').querySelectorAll('.opt').forEach(o=>{o.disabled=true;if(+o.dataset.i===q.answer[+o.dataset.r])o.classList.add('ok')});
+  else if(inp.t==='expr'){const el=$('#c0');el.readOnly=true;el.value='';el.placeholder='riešenie je nižšie';el.classList.remove('bad','warn')}
+  else{const ins=[...$('#card').querySelectorAll('input.cell')],specs=fieldSpecs();ins.forEach((el,i)=>{el.value=showVal(specs[i],q.answer[i]);el.classList.remove('bad');el.classList.add('ok');el.readOnly=true})}
+  if(!S.done)fb('warn','Riešenie je zobrazené, tento príklad sa počíta ako nesprávny.');
+  $('#chk').disabled=true;
+  const s=$('#sol');s.hidden=false;s.innerHTML=`<h3>Postup</h3>${inp.t==='expr'?`<div class="eq">Správna odpoveď: ${q.ref}</div>`:''}${q.solution}`;s.scrollIntoView({block:'nearest',behavior:'smooth'})}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&(S.done||S.shown)&&e.target===document.body)next()});
+renderTheory();next();
+</script>
+
+</body></html>

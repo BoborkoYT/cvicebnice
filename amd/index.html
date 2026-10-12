@@ -1,0 +1,593 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Cvičebnica ADM</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: ľavý panel s témami, vpravo jedna veľká karta s príkladom ako list z poznámkového bloku */
+:root{
+  --bg:#f3f5f8; --card:#ffffff; --fg:#1c2331; --muted:#5d6678; --rule:#dfe6f0; --line:#cfd8e6;
+  --red:#c42a3c; --blue:#1d5fc4; --green:#1b8450; --amber:#b86e00;
+  --ok-bg:#e3f4ea; --bad-bg:#fbe6e8; --soft:#e9eef7;
+  --f-display:'Caveat','Segoe Print','Bradley Hand',cursive; --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif; --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111620; --card:#192030; --fg:#e7ebf3; --muted:#9aa5ba; --rule:#202a3c; --line:#33415a;
+  --red:#ff7f8c; --blue:#80aaff; --green:#58d28e; --amber:#f0b14a;
+  --ok-bg:#16382a; --bad-bg:#44212a; --soft:#222c40; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111620; --card:#192030; --fg:#e7ebf3; --muted:#9aa5ba; --rule:#202a3c; --line:#33415a;
+  --red:#ff7f8c; --blue:#80aaff; --green:#58d28e; --amber:#f0b14a;
+  --ok-bg:#16382a; --bad-bg:#44212a; --soft:#222c40; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.55 var(--f-body);padding-inline:16px;padding-block:20px 40px;
+  background-image:linear-gradient(var(--rule) 1px,transparent 1px);background-size:100% 32px}
+.app{max-width:1060px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font:700 2.6rem/1 var(--f-display);color:var(--red);margin:0;letter-spacing:.01em}
+.top{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:flex-end;justify-content:space-between}
+.sub{margin:4px 0 0;color:var(--muted);font-size:.95rem}
+.score{display:flex;gap:18px;font-variant-numeric:tabular-nums}
+.score div{display:flex;flex-direction:column;line-height:1.2}
+.score b{font:600 1.4rem var(--f-body)}
+.score span{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:20px;align-items:start}
+nav.topics{display:flex;flex-direction:column;gap:8px;position:sticky;top:16px}
+.tbtn{all:unset;box-sizing:border-box;cursor:pointer;display:block;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;transition:border-color .15s,background .15s}
+.tbtn:hover{border-color:var(--blue)}
+.tbtn:focus-visible,.btn:focus-visible,.opt:focus-visible,summary:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.tbtn[aria-pressed="true"]{border-color:var(--blue);background:var(--soft)}
+.tbtn .n{display:flex;justify-content:space-between;gap:8px;font-weight:600;font-size:.95rem}
+.tbtn .n em{font-style:normal;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums;font-size:.85rem}
+.tbtn .s{font-size:.8rem;color:var(--muted)}
+.bar{height:4px;border-radius:2px;background:var(--rule);margin-top:7px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green);width:0}
+.reset{all:unset;cursor:pointer;font-size:.8rem;color:var(--muted);text-decoration:underline;padding:4px 2px}
+.reset:focus-visible{outline:3px solid var(--blue)}
+main{display:flex;flex-direction:column;gap:14px;min-width:0}
+details.theory{background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:0}
+details.theory summary{cursor:pointer;padding:10px 14px;font:700 1.35rem var(--f-display);color:var(--green);list-style:none}
+details.theory summary::before{content:"＋ ";font-family:var(--f-body);font-size:.9rem}
+details.theory[open] summary::before{content:"− "}
+details.theory .in{padding:0 16px 12px;font-size:.93rem}
+details.theory ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:5px}
+.card{scroll-margin-top:12px;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:20px 20px 22px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.meta{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;color:var(--muted);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase}
+.chip{background:var(--soft);color:var(--blue);padding:3px 10px;border-radius:99px;font-weight:600}
+.prompt{font-size:1.05rem;min-width:0}
+.prompt p{margin:.5em 0}.muted{color:var(--muted);font-size:.88rem}
+.eq{margin:10px 0;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;overflow-x:auto;max-width:100%;padding-block:4px}
+.gap{display:inline-block;width:14px}
+.lbl{color:var(--blue);font-weight:600;white-space:nowrap}
+.sys{display:inline-flex;flex-direction:column;gap:2px;margin:8px 0;padding:4px 0 4px 14px;border-left:3px solid var(--blue);font-size:1.1rem;font-variant-numeric:tabular-nums}
+.op{display:inline-block;background:var(--soft);color:var(--red);padding:1px 8px;border-radius:6px;font-family:var(--f-mono);font-size:.88em;white-space:nowrap}
+.mx{display:inline-block;position:relative;padding:4px 10px;margin:0 3px;vertical-align:middle}
+.mx::before,.mx::after{content:"";position:absolute;top:0;bottom:0;width:7px;border:2px solid currentColor}
+.mx::before{left:0;border-right:0}.mx::after{right:0;border-left:0}
+.mx table{border-collapse:collapse}
+.mx td{padding:3px 9px;text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mx td.aug{border-left:2px solid currentColor}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:.82em;line-height:1.1;margin:0 .1em}
+.fr i{font-style:normal;padding:0 .2em}.fr i:first-child{border-bottom:1.5px solid currentColor}
+.answer{display:flex;flex-direction:column;gap:10px;align-items:flex-start;padding:14px 16px;background:var(--soft);border-radius:10px;max-width:100%;overflow-x:auto}
+.answer .lbl2{font:700 1.25rem var(--f-display);color:var(--red)}
+.cell{font:500 1rem var(--f-mono);width:4.6em;padding:6px 6px;text-align:center;border:1.5px solid var(--line);border-radius:7px;background:var(--card);color:var(--fg)}
+.cell:focus{outline:3px solid var(--blue);outline-offset:0;border-color:var(--blue)}
+.cell.ok{border-color:var(--green);background:var(--ok-bg)}.cell.bad{border-color:var(--red);background:var(--bad-bg)}
+.cell:read-only{cursor:default}
+.ln{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
+.ln .t{white-space:nowrap}
+.mx.in td{padding:3px 4px}
+.opts{display:flex;flex-direction:column;gap:8px;align-items:stretch;width:100%;max-width:520px}
+.opt{all:unset;box-sizing:border-box;cursor:pointer;border:1.5px solid var(--line);background:var(--card);border-radius:9px;padding:10px 14px;display:block}
+.opt:hover{border-color:var(--blue)}
+.opt[aria-checked="true"]{border-color:var(--blue);background:var(--soft)}
+.opt.ok{border-color:var(--green);background:var(--ok-bg)}.opt.bad{border-color:var(--red);background:var(--bad-bg)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{all:unset;box-sizing:border-box;cursor:pointer;padding:10px 18px;border-radius:9px;font-weight:600;border:1.5px solid var(--line);background:var(--card);color:var(--fg)}
+.btn:hover{border-color:var(--blue)}
+.btn.main{background:var(--blue);border-color:var(--blue);color:#fff}
+:root[data-theme="dark"] .btn.main{color:#0d1424}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.main{color:#0d1424}}
+.btn[disabled]{opacity:.45;cursor:default}
+.fb{padding:10px 14px;border-radius:9px;font-weight:500}
+.fb.ok{background:var(--ok-bg);color:var(--green)}.fb.bad{background:var(--bad-bg);color:var(--red)}.fb.warn{background:var(--soft);color:var(--amber)}
+.sol{border-top:2px dashed var(--line);padding-top:12px}
+.sol h3{font:700 1.4rem var(--f-display);color:var(--green);margin:0 0 4px}
+.sol p{margin:.4em 0}.sol ul{margin:.4em 0;padding-left:1.2em}
+.steps{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.st{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;overflow-x:auto;max-width:100%}
+.st .op{min-width:8.5em}
+kbd{font:500 .8em var(--f-mono);background:var(--soft);padding:1px 6px;border-radius:5px}
+
+.tabs{display:flex;flex-wrap:wrap;gap:6px;border-bottom:2px solid var(--line)}
+.tab{all:unset;box-sizing:border-box;cursor:pointer;padding:9px 16px;font-weight:600;color:var(--muted);border:2px solid transparent;border-bottom:0;border-radius:9px 9px 0 0;margin-bottom:-2px}
+.tab:hover{color:var(--fg)}
+.tab[aria-selected="true"]{color:var(--blue);background:var(--card);border-color:var(--line)}
+.tab:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.split{display:flex;flex-direction:column;gap:14px;min-width:0}
+.tpane{display:none;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:6px 20px 18px;min-width:0}
+.tpane h3{font:700 2rem/1.1 var(--f-display);color:var(--red);margin:12px 0 0}
+.tsec{padding-top:14px}
+.tsec h4{font:700 1.45rem/1.1 var(--f-display);color:var(--green);margin:0 0 4px}
+.tsec p{margin:.4em 0}.tsec ul,.tsec ol{margin:.4em 0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+.tex{border-left:3px solid var(--blue);background:var(--soft);border-radius:0 8px 8px 0;padding:6px 12px;margin:8px 0;overflow-x:auto;max-width:100%}
+.tex p{margin:.3em 0}
+.app[data-view="theory"]{max-width:1320px}
+.app[data-view="theory"] details.theory{display:none}
+.app[data-view="theory"] .tpane{display:block}
+@media (min-width:1100px){
+  .app[data-view="theory"] .split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;gap:18px}
+  .app[data-view="theory"] .card{position:sticky;top:16px;max-height:calc(100vh - 32px);overflow-y:auto}
+}
+@media (max-width:820px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  nav.topics{flex-direction:row;overflow-x:auto;position:static;padding-bottom:6px;gap:8px}
+  .tbtn{flex:0 0 auto;min-width:170px}
+  .tbtn .s{display:none}
+  h1{font-size:2.2rem}.card{padding:16px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<div class="app" id="app" data-view="practice">
+  <header class="top">
+    <div>
+      <h1>Cvičebnica ADM</h1>
+      <p class="sub">Matice, sústavy rovníc, Gaussova eliminácia, inverzná matica a determinanty. Každý príklad je nový.</p>
+    </div>
+    <div class="score" id="score"></div>
+  </header>
+  <div class="tabs" role="tablist" aria-label="Zobrazenie"><button class="tab" role="tab" id="tab-practice" aria-selected="true" data-v="practice">Cvičenie</button><button class="tab" role="tab" id="tab-theory" aria-selected="false" data-v="theory">Teória a cvičenie vedľa seba</button></div>
+  <div class="layout">
+    <nav class="topics" id="nav" aria-label="Témy"></nav>
+    <main>
+      <details class="theory" id="theory"><summary></summary><div class="in"></div></details>
+      <div class="split"><article class="tpane" id="tpane" aria-label="Teória"></article><section class="card" id="card" aria-live="off"></section></div>
+    </main>
+  </div>
+</div>
+<script>
+'use strict';
+/* ---------- zlomky ---------- */
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a};
+const F=(n,d=1)=>{if(d<0){n=-n;d=-d}const g=gcd(n,d)||1;return{n:n/g,d:d/g}};
+const add=(a,b)=>F(a.n*b.d+b.n*a.d,a.d*b.d),sub=(a,b)=>F(a.n*b.d-b.n*a.d,a.d*b.d),mul=(a,b)=>F(a.n*b.n,a.d*b.d),div=(a,b)=>F(a.n*b.d,a.d*b.n),eq=(a,b)=>a.n===b.n&&a.d===b.d,isZ=a=>a.n===0,neg=a=>F(-a.n,a.d);
+const fs=a=>`${a.n<0?'−':''}${Math.abs(a.n)}${a.d!==1?'/'+a.d:''}`;
+const fh=a=>a.d===1?`${a.n<0?'−':''}${Math.abs(a.n)}`:`${a.n<0?'−':''}<span class="fr"><i>${Math.abs(a.n)}</i><i>${a.d}</i></span>`;
+function parseF(s){s=String(s).trim().replace(/[−–]/g,'-').replace(/,/g,'.').replace(/\s+/g,'');if(s==='')return null;
+  let m=s.match(/^([+-]?)(\d+)\/(\d+)$/);if(m){const d=+m[3];if(!d)return null;return F((m[1]==='-'?-1:1)*(+m[2]),d)}
+  m=s.match(/^([+-]?)(\d+)(?:\.(\d+))?$/);if(m){const fr=m[3]||'';const d=Math.pow(10,fr.length);return F((m[1]==='-'?-1:1)*(+(m[2]+fr)),d)}
+  return null}
+/* ---------- náhoda ---------- */
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[R(0,a.length-1)];
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=R(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+const rmI=(r,c,lo,hi)=>Array.from({length:r},()=>Array.from({length:c},()=>R(lo,hi)));
+const FM=A=>A.map(r=>r.map(x=>F(x)));
+const flat=M=>M.flat();
+const sg=n=>n<0?'−'+(-n):''+n;
+const P=n=>n<0?`(−${-n})`:`${n}`;
+const fk=f=>{f=typeof f==='number'?F(f):f;return(f.n<0||f.d!==1)?`(${fs(f)})`:fs(f)};
+/* ---------- matice ---------- */
+const mmul=(A,B)=>A.map((r,i)=>B[0].map((_,j)=>r.reduce((s,_,k)=>add(s,mul(A[i][k],B[k][j])),F(0))));
+const mT=A=>A[0].map((_,j)=>A.map(r=>r[j]));
+const mAdd=(A,B,s=1)=>A.map((r,i)=>r.map((x,j)=>s>0?add(x,B[i][j]):sub(x,B[i][j])));
+const mSc=(c,A)=>A.map(r=>r.map(x=>mul(c,x)));
+const mI=n=>Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>F(i===j?1:0)));
+const mEq=(A,B)=>A.every((r,i)=>r.every((x,j)=>eq(x,B[i][j])));
+function det(A){const n=A.length;const M=A.map(r=>r.slice());let d=F(1);
+  for(let c=0;c<n;c++){let p=-1;for(let r=c;r<n;r++)if(!isZ(M[r][c])){p=r;break}
+    if(p<0)return F(0);if(p!==c){[M[p],M[c]]=[M[c],M[p]];d=neg(d)}
+    d=mul(d,M[c][c]);
+    for(let r=c+1;r<n;r++){const f=div(M[r][c],M[c][c]);for(let k=c;k<n;k++)M[r][k]=sub(M[r][k],mul(f,M[c][k]))}}
+  return d}
+const minor=(A,i,j)=>A.filter((_,r)=>r!==i).map(r=>r.filter((_,c)=>c!==j));
+const cof=(A,i,j)=>{const d=det(minor(A,i,j));return(i+j)%2?neg(d):d};
+function gj(M0){const M=M0.map(r=>r.slice());const rows=M.length,cols=M[0].length;const steps=[];let r=0;
+  const snap=op=>steps.push({op,M:M.map(x=>x.slice())});
+  for(let c=0;c<cols&&r<rows;c++){let p=-1;for(let i=r;i<rows;i++)if(!isZ(M[i][c])){p=i;break}
+    if(p<0)continue;
+    if(p!==r){[M[p],M[r]]=[M[r],M[p]];snap(`R${r+1} ↔ R${p+1}`)}
+    if(!eq(M[r][c],F(1))){const k=div(F(1),M[r][c]);M[r]=M[r].map(x=>mul(x,k));snap(`${fk(k)}·R${r+1}`)}
+    for(let i=0;i<rows;i++){if(i===r||isZ(M[i][c]))continue;const k=neg(M[i][c]);M[i]=M[i].map((x,j)=>add(x,mul(k,M[r][j])));snap(`${fk(k)}·R${r+1} + R${i+1} → R${i+1}`)}
+    r++}
+  return{M,steps}}
+function inv(A){const n=A.length;const aug=A.map((r,i)=>[...r,...mI(n)[i]]);const{M}=gj(aug);
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++)if(!eq(M[i][j],F(i===j?1:0)))return null;
+  return M.map(r=>r.slice(n))}
+/* ---------- HTML pomôcky ---------- */
+const mx=(M,aug=-1,cls='')=>`<span class="mx ${cls}"><table>${M.map(r=>`<tr>${r.map((x,j)=>`<td class="${j===aug?'aug':''}">${fh(x)}</td>`).join('')}</tr>`).join('')}</table></span>`;
+const lab=(n,M,aug=-1)=>`<span class="lbl">${n} =</span> ${mx(M,aug)}`;
+const eqStr=(co,rhs,v=['x','y','z'])=>{let s='';co.forEach((a,i)=>{if(a===0)return;const t=(Math.abs(a)===1?'':Math.abs(a))+v[i];s+=s===''?(a<0?'−':'')+t:` ${a<0?'−':'+'} ${t}`});return(s||'0')+' = '+sg(rhs)};
+const sys=(rows,v)=>`<div class="sys">${rows.map(r=>`<div>${eqStr(r.slice(0,-1),r[r.length-1],v)}</div>`).join('')}</div>`;
+const stepsHtml=(init,aug,st)=>`<div class="steps"><div class="st"><span class="op">začiatok</span>${mx(init,aug)}</div>${st.map(s=>`<div class="st"><span class="op">${s.op}</span>${mx(s.M,aug)}</div>`).join('')}</div>`;
+const grid=(r,c,aug=-1)=>({t:'grid',r,c,aug});
+const lines=l=>({t:'lines',lines:l});
+const choice=(opts,cor)=>{const o=shuf(opts);return{input:{t:'choice',opts:o},answer:[o.indexOf(cor)]}};
+const addOp=(k,i,j)=>`${fk(k)}·R${i+1} + R${j+1} → R${j+1}`,scaleOp=(k,i)=>`${fk(k)}·R${i+1}`,swapOp=(i,j)=>`R${i+1} ↔ R${j+1}`;
+const OP=s=>`<span class="op">${s}</span>`;
+const sub_=n=>String(n).split('').map(c=>'₀₁₂₃₄₅₆₇₈₉'[+c]).join('');
+const XV=n=>Array.from({length:n},(_,i)=>'x'+sub_(i+1));
+const YN=['Áno','Nie'];
+
+/* ========== 1. MATICE A OPERÁCIE ========== */
+const gMat=[];
+gMat.push(()=>{const r=pick([2,3]),c=pick([2,3]),s=pick([1,-1]);const A=FM(rmI(r,c,-5,9)),B=FM(rmI(r,c,-5,9));const Rm=mAdd(A,B,s);
+  return{kind:s>0?'Súčet matíc':'Rozdiel matíc',prompt:`Vypočítaj.<div class="eq">${lab('A',A)} <span class="gap"></span> ${lab('B',B)}</div><div class="eq">A ${s>0?'+':'−'} B = ?</div>`,input:grid(r,c),answer:flat(Rm),
+  solution:`<p>Obe matice majú rozmer ${r}×${c}, takže ich ${s>0?'sčítame':'odčítame'} prvok po prvku.</p><div class="eq">${mx(Rm)}</div>`}});
+gMat.push(()=>{const r=pick([2,3]),c=pick([2,3]),k=pick([2,3,4,5,-1,-2,-3]);const A=FM(rmI(r,c,-4,6));const Rm=mSc(F(k),A);
+  return{kind:'Skalárny násobok',prompt:`Vypočítaj.<div class="eq"><span class="lbl">c = ${sg(k)}</span> <span class="gap"></span> ${lab('A',A)}</div><div class="eq">c · A = ?</div>`,input:grid(r,c),answer:flat(Rm),
+  solution:`<p>Každý prvok matice vynásobíme číslom ${sg(k)}.</p><div class="eq">${mx(Rm)}</div>`}});
+gMat.push(()=>{const[m,rr,n]=pick([[2,2,2],[2,3,2],[2,3,3],[3,2,2],[2,2,3],[3,3,2]]);const Ai=rmI(m,rr,-3,4),Bi=rmI(rr,n,-3,4);const A=FM(Ai),B=FM(Bi);const Pm=mmul(A,B);
+  const term=(i,j)=>Ai[i].map((a,k)=>`${P(a)}·${P(Bi[k][j])}`).join(' + ')+' = '+sg(Pm[i][j].n);
+  const head=`<p>A je ${m}×${rr}, B je ${rr}×${n}. Vnútorné rozmery sa rovnajú, takže A·B existuje a má rozmer ${m}×${n}.</p>`;
+  const body=`<div class="eq">${lab('A',A)} <span class="gap"></span> ${lab('B',B)}</div>`;
+  if(m*n>=6||Math.random()<.4){const i=R(0,m-1),j=R(0,n-1);
+    return{kind:'Násobenie matíc',prompt:`Vypočítaj jeden prvok súčinu. ${body}<div class="eq">(A·B)<sub>${i+1}${j+1}</sub> = ?</div><p class="muted">Prvok z ${i+1}. riadku a ${j+1}. stĺpca.</p>`,input:lines([[`(A·B)<sub>${i+1}${j+1}</sub> =`,null]]),answer:[Pm[i][j]],
+    solution:`${head}<p>Zoberieme ${i+1}. riadok matice A a ${j+1}. stĺpec matice B a sčítame súčiny:</p><div class="eq">${term(i,j)}</div>`}}
+  return{kind:'Násobenie matíc',prompt:`Vypočítaj súčin A·B.${body}`,input:grid(m,n),answer:flat(Pm),
+    solution:`${head}<ul>${Pm.map((_,i)=>Pm[0].map((_,j)=>`<li>a<sub>${i+1}${j+1}</sub>: ${term(i,j)}</li>`).join('')).join('')}</ul><div class="eq">${mx(Pm)}</div>`}});
+gMat.push(()=>{const r=pick([2,3]),c=pick([2,3,4]);const A=FM(rmI(r,c,-5,9));const T=mT(A);
+  return{kind:'Transponovaná matica',prompt:`Nájdi transponovanú maticu.<div class="eq">${lab('A',A)}</div><div class="eq">Aᵀ = ?</div>`,input:grid(c,r),answer:flat(T),
+  solution:`<p>Riadky a stĺpce sa vymenia: z matice ${r}×${c} vznikne matica ${c}×${r}.</p><div class="eq">${mx(T)}</div>`}});
+gMat.push(()=>{const c1=pick([2,3,5,-1,-2,4]),c2=pick([2,3,-1,-2,-3]);const A1=FM(rmI(2,2,-4,5)),A2=FM(rmI(2,2,-4,5));const T1=mSc(F(c1),A1),T2=mSc(F(c2),A2);const Rm=mAdd(T1,T2);
+  return{kind:'Lineárna kombinácia',prompt:`Vypočítaj lineárnu kombináciu.<div class="eq">${lab('A<sub>1</sub>',A1)} <span class="gap"></span> ${lab('A<sub>2</sub>',A2)}</div><div class="eq">${sg(c1)}·A<sub>1</sub> + (${sg(c2)})·A<sub>2</sub> = ?</div>`,input:grid(2,2),answer:flat(Rm),
+  solution:`<p>Najprv vynásobíme každú maticu jej koeficientom, potom ich sčítame.</p><div class="eq">${mx(T1)} + ${mx(T2)} = ${mx(Rm)}</div>`}});
+gMat.push(()=>{const p=R(2,4),q=R(2,4),n=R(2,4),def=Math.random()<.6;const s=def?q:pick([2,3,4].filter(x=>x!==q));
+  const NO='A·B nie je definovaný';let cor,pool;
+  if(def){cor=`${p}×${n}`;pool=[`${n}×${p}`,`${p}×${q}`,`${q}×${n}`,`${q}×${s}`,NO]}else{cor=NO;pool=[`${p}×${n}`,`${p}×${s}`,`${q}×${n}`,`${q}×${s}`]}
+  const wrong=shuf([...new Set(pool)].filter(x=>x!==cor)).slice(0,3);const ch=choice([cor,...wrong],cor);
+  return{kind:'Rozmer súčinu',prompt:`Matica A má rozmer ${p}×${q} a matica B má rozmer ${s}×${n}. Čo platí pre súčin A·B?`,...ch,
+  solution:def?`<p>Počet stĺpcov A (${q}) sa rovná počtu riadkov B (${s}), takže súčin existuje. Výsledok má rozmer (riadky A)×(stĺpce B) = ${p}×${n}.</p>`:`<p>Počet stĺpcov A je ${q}, ale počet riadkov B je ${s}. Nerovnajú sa, preto súčin nie je definovaný.</p>`}});
+gMat.push(()=>{const A=FM(rmI(2,2,-2,3));const B=Math.random()<.3?pick([mSc(F(2),A),mmul(A,A),mI(2)]):FM(rmI(2,2,-2,3));const AB=mmul(A,B),BA=mmul(B,A);const same=mEq(AB,BA);
+  const ch=choice(['Áno, A·B = B·A','Nie, A·B ≠ B·A'],same?'Áno, A·B = B·A':'Nie, A·B ≠ B·A');
+  return{kind:'Komutatívnosť',prompt:`Platí pre tieto matice A·B = B·A?<div class="eq">${lab('A',A)} <span class="gap"></span> ${lab('B',B)}</div>`,...ch,
+  solution:`<p>Násobenie matíc vo všeobecnosti nie je komutatívne, preto musíme obe poradia spočítať.</p><div class="eq">A·B = ${mx(AB)}</div><div class="eq">B·A = ${mx(BA)}</div><p>${same?'Výsledky sa rovnajú (tu je to výnimka).':'Výsledky sa líšia.'}</p>`}});
+
+/* ========== 2. SÚSTAVY LINEÁRNYCH ROVNÍC ========== */
+const rnd2=()=>{let a,b,c,d;do{a=R(-4,5);b=R(-4,5);c=R(-4,5);d=R(-4,5)}while(a*d-b*c===0||!a||!b||!c||!d);return[[a,b],[c,d]]};
+const gSys=[];
+gSys.push(()=>{const[r1,r2]=rnd2();const x=R(-4,5),y=R(-4,5);const b1=r1[0]*x+r1[1]*y,b2=r2[0]*x+r2[1]*y;let cx=x,cy=y;
+  if(Math.random()<.5){const m=R(0,2);if(m===0){cx=y;cy=x}else if(m===1)cx=x+pick([-1,1]);else cy=y+pick([-2,2])}
+  const l1=r1[0]*cx+r1[1]*cy,l2=r2[0]*cx+r2[1]*cy;const ok=l1===b1&&l2===b2;const ch=choice(['Je riešením','Nie je riešením'],ok?'Je riešením':'Nie je riešením');
+  return{kind:'Skúška správnosti',prompt:`Je usporiadaná dvojica [x, y] = [${sg(cx)}, ${sg(cy)}] riešením sústavy?${sys([[...r1,b1],[...r2,b2]],['x','y'])}`,...ch,
+  solution:`<p>Dosadíme x = ${sg(cx)}, y = ${sg(cy)} do každej rovnice. Riešenie musí vyhovovať všetkým rovniciam.</p><ul><li>1. rovnica: ĽS = ${P(r1[0])}·${P(cx)} + ${P(r1[1])}·${P(cy)} = ${sg(l1)}, PS = ${sg(b1)} ${l1===b1?'✓':'✗'}</li><li>2. rovnica: ĽS = ${P(r2[0])}·${P(cx)} + ${P(r2[1])}·${P(cy)} = ${sg(l2)}, PS = ${sg(b2)} ${l2===b2?'✓':'✗'}</li></ul>${ok?'':`<p>Skutočné riešenie je [x, y] = [${sg(x)}, ${sg(y)}]. Záleží aj na poradí čísel.</p>`}`}});
+gSys.push(()=>{const[r1,r2]=rnd2();const x=R(-4,5),y=R(-4,5);const b1=r1[0]*x+r1[1]*y,b2=r2[0]*x+r2[1]*y;const aug=FM([[...r1,b1],[...r2,b2]]);const{M,steps}=gj(aug);
+  return{kind:'Riešenie sústavy',prompt:`Vyrieš sústavu.${sys([[...r1,b1],[...r2,b2]],['x','y'])}`,input:lines([['x =',null],['y =',null]]),answer:[F(x),F(y)],
+  solution:`<p>Použijeme elementárne riadkové operácie na rozšírenú maticu.</p>${stepsHtml(aug,2,steps)}<p>Riešenie: [x, y] = [${sg(x)}, ${sg(y)}]</p>`}});
+gSys.push(()=>{const kind=pick(['one','none','inf']);let r1,r2;
+  if(kind==='one'){[r1,r2]=rnd2().map((r,i)=>[...r,R(-6,8)])}
+  else{let a,b;do{a=R(-3,4);b=R(-3,4)}while(!a||!b);const c=R(-5,6),k=pick([2,3,-1,-2]);r1=[a,b,c];
+    r2=kind==='inf'?[k*a,k*b,k*c]:[k*a,k*b,k*c+pick([-3,-2,-1,1,2,3,4])];}
+  const names={one:'Práve jedno riešenie',none:'Žiadne riešenie',inf:'Nekonečne veľa riešení'};const ch=choice(Object.values(names),names[kind]);
+  const D=r1[0]*r2[1]-r1[1]*r2[0];
+  const sol=kind==='one'?`<p>Determinant koeficientov ${r1[0]}·${P(r2[1])} − ${P(r1[1])}·${P(r2[0])} = ${sg(D)} ≠ 0. Priamky sa pretnú v jednom bode, riešenie je jedno.</p>`
+   :kind==='none'?`<p>Ľavá strana 2. rovnice je násobok ľavej strany 1. rovnice, ale pravá strana nie je. Po eliminácii dostaneme nepravdivú rovnosť 0 = ${sg(r2[2]-(r2[0]/r1[0])*r1[2])}. Priamky sú rovnobežné, riešenie neexistuje.</p>`
+   :`<p>2. rovnica je násobkom 1. rovnice (aj pravá strana). Po eliminácii dostaneme 0 = 0, čo platí vždy. Priamky sú totožné, riešení je nekonečne veľa.</p>`;
+  return{kind:'Počet riešení',prompt:`Koľko riešení má sústava?${sys([r1,r2],['x','y'])}`,...ch,solution:sol}});
+gSys.push(()=>{let a,b;do{a=R(-3,4);b=R(-4,4)}while(!a);const c=R(-5,7),k=pick([2,3,4]);const p=F(c,a),q=F(-b,a);
+  return{kind:'Parametrické riešenie',prompt:`Sústava má nekonečne veľa riešení. Zvoľ y = t, t ∈ ℝ, a vyjadri x pomocou t.${sys([[a,b,c],[k*a,k*b,k*c]],['x','y'])}<p class="muted">Zlomky píš ako 2/3. Koeficient pri t môže byť záporný.</p>`,
+  input:lines([['x =',null,'+',null,'· t']]),answer:[p,q],
+  solution:`<p>2. rovnica je ${k}-násobok 1. rovnice, stačí jedna z nich: ${eqStr([a,b],c,['x','y'])}.</p><p>Dosadíme y = t do ${eqStr([a,b],c,['x','y'])}: ${a}x = ${c} − (${b})·t, teda x = ${fs(p)} + (${fs(q)})·t.</p>`}});
+gSys.push(()=>{const rows=pick([2,3]),vars=pick([2,3]);const A=rmI(rows,vars,-4,5).map(r=>r.map(x=>Math.random()<.2?0:x));A.forEach(r=>{if(r.every(x=>x===0))r[0]=1});const bb=Array.from({length:rows},()=>R(-5,9));
+  const M=FM(A.map((r,i)=>[...r,bb[i]]));const v=vars===2?['x','y']:['x','y','z'];
+  return{kind:'Rozšírená matica',prompt:`Zapíš rozšírenú (augmentovanú) maticu sústavy. Chýbajúci člen má koeficient 0.${sys(A.map((r,i)=>[...r,bb[i]]),v)}`,input:grid(rows,vars+1,vars),answer:flat(M),
+  solution:`<p>Do riadkov píšeme koeficienty pri ${v.join(', ')} a za zvislú čiaru pravé strany.</p><div class="eq">${mx(M,vars)}</div>`}});
+
+/* ========== 3. GAUSSOVA ELIMINÁCIA ========== */
+function rrefReason(M){let last=-1,zero=false;
+  for(let i=0;i<M.length;i++){const p=M[i].findIndex(x=>!isZ(x));if(p<0){zero=true;continue}
+    if(zero)return`Nulový riadok je nad nenulovým riadkom ${i+1}. Nulové riadky patria na koniec.`;
+    if(!eq(M[i][p],F(1)))return`Prvé nenulové číslo v riadku ${i+1} nie je 1 (je ${fs(M[i][p])}).`;
+    if(p<=last)return`Pivot v riadku ${i+1} nie je vpravo od pivota z predošlého riadku, tvar nie je schodovitý.`;
+    for(let k=0;k<M.length;k++)if(k!==i&&!isZ(M[k][p]))return`Nad alebo pod pivotom riadku ${i+1} je v stĺpci ${p+1} nenulové číslo (riadok ${k+1}). Mimo pivotov majú byť v ich stĺpcoch samé nuly.`;
+    last=p}
+  return null}
+function rrefRand(rows,cols){const r=R(1,rows);const pc=shuf([...Array(cols).keys()]).slice(0,r).sort((a,b)=>a-b);
+  const M=Array.from({length:rows},()=>Array(cols).fill(0));
+  for(let i=0;i<r;i++){M[i][pc[i]]=1;for(let c=pc[i]+1;c<cols;c++)if(!pc.includes(c))M[i][c]=R(-4,6)}
+  return{M,r,pc}}
+const rrefAug=type=>{const a=R(-4,4),c=R(-4,4),b=R(-5,7),d=R(-5,7);
+  if(type==='one')return{M:[[1,0,0,b],[0,1,0,d],[0,0,1,c]],rank:3};
+  if(type==='none')return pick([{M:[[1,0,a,b],[0,1,c,d],[0,0,0,1]],rank:2},{M:[[1,a,0,b],[0,0,1,c],[0,0,0,1]],rank:2},{M:[[1,0,0,b],[0,1,0,d],[0,0,0,1]],rank:2}]);
+  return pick([{M:[[1,0,a,b],[0,1,c,d],[0,0,0,0]],rank:2,v:1},{M:[[1,a,0,b],[0,0,1,c],[0,0,0,0]],rank:2,v:2},{M:[[1,a,c,b],[0,0,0,0],[0,0,0,0]],rank:1,v:3}])};
+const gGau=[];
+gGau.push(()=>{const A=rmI(3,4,-4,6);const type=pick(['add','add','scale','swap']);const i=R(0,2);let j;do{j=R(0,2)}while(j===i);let op,tg,newRow;
+  if(type==='add'){const k=pick([-3,-2,-1,2,3]);const Af=FM(A);newRow=Af[j].map((x,c)=>add(x,mul(F(k),Af[i][c])));op=addOp(k,i,j);tg=j}
+  else if(type==='scale'){let k;if(Math.random()<.35){A[i]=A[i].map(()=>2*R(-3,4));k=F(1,2)}else k=F(pick([2,3,-1,-2]));newRow=FM(A)[i].map(x=>mul(k,x));op=scaleOp(k,i);tg=i}
+  else{newRow=FM(A)[j];op=swapOp(i,j);tg=i}
+  const M=FM(A);const after=M.map(r=>r.slice());after[tg]=newRow;
+  return{kind:'Elementárna operácia',prompt:`Na rozšírenú maticu použijeme operáciu ${OP(op)}.<div class="eq">${mx(M,3)}</div>Napíš nový ${tg+1}. riadok.`,input:grid(1,4,3),answer:newRow,
+  solution:`<p>Operácia ${OP(op)} zmení iba ${tg+1}. riadok, ostatné ostanú rovnaké.</p><div class="eq">${mx(after,3)}</div>`}});
+gGau.push(()=>{const rows=3,cols=pick([3,4,5]);const{M,r}=rrefRand(rows,cols);const m=M.map(x=>x.slice());
+  const opts=[];if(r>=2)opts.push('above');opts.push('scale');if(r>=2)opts.push('swap');if(r<3)opts.push('zero');
+  if(Math.random()<.6){const o=pick(opts);
+    if(o==='above'){const p1=m[1].findIndex(x=>x!==0);m[0][p1]=pick([-3,-2,2,3,4])}
+    else if(o==='scale'){const i=R(0,r-1),k=pick([2,-1,3]);m[i]=m[i].map(x=>x*k)}
+    else if(o==='swap'){[m[0],m[1]]=[m[1],m[0]]}
+    else{[m[2],m[r-1]]=[m[r-1],m[2]]}}
+  const MF=FM(m);const reason=rrefReason(MF);const ch=choice(YN,reason===null?'Áno':'Nie');
+  return{kind:'Redukovaný echelónový tvar',prompt:`Je táto matica v redukovanom echelónovom tvare?<div class="eq">${mx(MF)}</div>`,...ch,
+  solution:reason===null?`<p>Áno. Prvé nenulové číslo v každom nenulovom riadku je 1, pivoty idú schodovito zľava doprava, v stĺpcoch pivotov sú inak samé nuly a nulové riadky sú dole.</p>`:`<p>Nie. ${reason}</p>`}});
+gGau.push(()=>{const n=pick([3,4]);const b=Array.from({length:n},()=>R(-5,7));const M=FM(Array.from({length:n},(_,i)=>[...Array.from({length:n},(_,j)=>i===j?1:0),b[i]]));
+  return{kind:'Čítanie riešenia',prompt:`Rozšírená matica sústavy je v redukovanom tvare. Prečítaj riešenie.<div class="eq">${mx(M,n)}</div>`,input:lines(XV(n).map(v=>[`${v} =`,null])),answer:b.map(x=>F(x)),
+  solution:`<p>Každý riadok hovorí 1·x<sub>i</sub> = číslo vpravo, takže riešenie môžeme prečítať priamo: [${b.map(sg).join(', ')}].</p>`}});
+gGau.push(()=>{const type=pick(['one','none','inf','inf']);const{M,v}=rrefAug(type);const MF=FM(M);const names={one:'Práve jedno riešenie',none:'Žiadne riešenie',inf:'Nekonečne veľa riešení'};const ch=choice(Object.values(names),names[type]);
+  return{kind:'Typ riešenia z matice',prompt:`Sústava troch rovníc o troch neznámych má rozšírenú maticu v redukovanom tvare. Koľko má riešení?<div class="eq">${mx(MF,3)}</div>`,...ch,
+  solution:type==='one'?`<p>Každý stĺpec koeficientov má pivot, neznáme sú jednoznačne určené: práve jedno riešenie.</p>`:type==='none'?`<p>Riadok 0 0 0 | 1 znamená 0·x = 1, čo nie je možné. Sústava je nekonzistentná.</p>`:`<p>Sústava je konzistentná a niektorá neznáma nemá pivot. Tú môžeme zvoliť ako parameter, riešení je nekonečne veľa.</p>`}});
+gGau.push(()=>{const{M,rank}=rrefAug('inf');const MF=FM(M);const piv=M.map(r=>r.findIndex(x=>x!==0)).filter(x=>x>=0&&x<3);const free=[0,1,2].filter(c=>!piv.includes(c));
+  return{kind:'Počet parametrov',prompt:`Sústava je konzistentná. Koľko parametrov bude mať jej všeobecné riešenie?<div class="eq">${mx(MF,3)}</div>`,input:lines([['počet parametrov =',null]]),answer:[F(3-rank)],
+  solution:`<p>Neznámych je 3, pivotov ${rank}. Voľné neznáme (bez pivota): ${free.map(c=>'x'+sub_(c+1)).join(', ')}. Parametrov je ${3-rank}.</p>`}});
+gGau.push(()=>{const a=pick([-4,-3,-2,-1,1,2,3,4]),c=pick([-4,-3,-2,-1,1,2,3,4]),b=R(-5,7),d=R(-5,7);const v=pick([1,2]);
+  if(v===1){const M=FM([[1,0,a,b],[0,1,c,d],[0,0,0,0]]);
+    return{kind:'Všeobecné riešenie',prompt:`Rozšírená matica je v redukovanom tvare. Zvoľ x₃ = t, t ∈ ℝ, a vyjadri x₁ a x₂.<div class="eq">${mx(M,3)}</div>`,input:lines([['x₁ =',null,'+',null,'· t'],['x₂ =',null,'+',null,'· t']]),answer:[F(b),F(-a),F(d),F(-c)],
+    solution:`<p>1. riadok: x₁ + ${P(a)}t = ${sg(b)}, teda x₁ = ${sg(b)} + (${sg(-a)})·t.</p><p>2. riadok: x₂ + ${P(c)}t = ${sg(d)}, teda x₂ = ${sg(d)} + (${sg(-c)})·t.</p>`}}
+  const M=FM([[1,a,0,b],[0,0,1,d],[0,0,0,0]]);
+  return{kind:'Všeobecné riešenie',prompt:`Rozšírená matica je v redukovanom tvare. Stĺpec x₂ nemá pivot, zvoľ x₂ = t, t ∈ ℝ. Vyjadri x₁ a x₃.<div class="eq">${mx(M,3)}</div>`,input:lines([['x₁ =',null,'+',null,'· t'],['x₃ =',null]]),answer:[F(b),F(-a),F(d)],
+  solution:`<p>1. riadok: x₁ + ${P(a)}t = ${sg(b)}, teda x₁ = ${sg(b)} + (${sg(-a)})·t.</p><p>2. riadok: x₃ = ${sg(d)}.</p>`}});
+gGau.push(()=>{let A;do{A=rmI(3,3,-3,4)}while(det(FM(A)).n===0);const x=[R(-3,4),R(-3,4),R(-3,4)];const bb=A.map(r=>r.reduce((s,a,i)=>s+a*x[i],0));const aug=FM(A.map((r,i)=>[...r,bb[i]]));const{steps}=gj(aug);
+  return{kind:'Gaussova–Jordanova metóda',prompt:`Vyrieš sústavu eliminačnou metódou.${sys(A.map((r,i)=>[...r,bb[i]]),['x','y','z'])}`,input:lines([['x =',null],['y =',null],['z =',null]]),answer:x.map(v=>F(v)),
+  solution:`<p>Rozšírenú maticu upravujeme riadkovými operáciami na redukovaný tvar.</p>${stepsHtml(aug,3,steps)}<p>Riešenie: [x, y, z] = [${x.map(sg).join(', ')}]</p>`}});
+
+/* ========== 4. INVERZNÁ MATICA ========== */
+const rand2d=(lo,hi,ok)=>{let A;do{A=rmI(2,2,lo,hi)}while(!ok(A[0][0]*A[1][1]-A[0][1]*A[1][0]));return A};
+const gInv=[];
+gInv.push(()=>{const m=Math.random()<.5;const A=rand2d(-4,5,d=>d!==0&&(m?Math.abs(d)===1:Math.abs(d)<=7));const Af=FM(A);const I=inv(Af);const d=A[0][0]*A[1][1]-A[0][1]*A[1][0];
+  return{kind:'Inverzná matica 2×2',prompt:`Nájdi inverznú maticu.<div class="eq">${lab('A',Af)}</div><div class="eq">A⁻¹ = ?</div><p class="muted">Zlomky píš ako 2/7.</p>`,input:grid(2,2),answer:flat(I),
+  solution:`<p>det(A) = ${A[0][0]}·${P(A[1][1])} − ${P(A[0][1])}·${P(A[1][0])} = ${sg(d)}</p><p>A⁻¹ = 1/det(A) · [ d −b ; −c a ]</p><div class="eq">${lab('A⁻¹',I)}</div>`}});
+gInv.push(()=>{const sing=Math.random()<.5;let A;
+  if(sing){let a,b;do{a=R(-4,5);b=R(-4,5)}while(!a||!b);const k=pick([2,3,-1,-2]);A=[[a,b],[k*a,k*b]]}else A=rand2d(-4,5,d=>d!==0);
+  const d=A[0][0]*A[1][1]-A[0][1]*A[1][0];const ch=choice(['Je invertibilná','Je singulárna'],d!==0?'Je invertibilná':'Je singulárna');
+  return{kind:'Invertibilita',prompt:`Je matica A invertibilná?<div class="eq">${lab('A',FM(A))}</div>`,...ch,
+  solution:`<p>det(A) = ${A[0][0]}·${P(A[1][1])} − ${P(A[0][1])}·${P(A[1][0])} = ${sg(d)}.</p><p>${d!==0?'Determinant je nenulový, inverzná matica existuje.':'Determinant je nula (riadky sú násobky), inverzná matica neexistuje. Matica je singulárna.'}</p>`}});
+gInv.push(()=>{const A=rand2d(-3,4,d=>Math.abs(d)===1);const Af=FM(A);let B=inv(Af);const good=Math.random()<.5;
+  if(!good){B=B.map(r=>r.slice());const i=R(0,1),j=R(0,1);B[i][j]=add(B[i][j],F(pick([-1,1])))}
+  const AB=mmul(Af,B);const ch=choice(['Áno, B je inverzná k A','Nie, B nie je inverzná k A'],good?'Áno, B je inverzná k A':'Nie, B nie je inverzná k A');
+  return{kind:'Overenie inverznej matice',prompt:`Je B inverzná matica k A?<div class="eq">${lab('A',Af)} <span class="gap"></span> ${lab('B',B)}</div>`,...ch,
+  solution:`<p>Stačí overiť, či A·B = I.</p><div class="eq">A·B = ${mx(AB)}</div><p>${good?'Vyšla jednotková matica, takže B = A⁻¹.':'Nevyšla jednotková matica, takže B nie je inverzná k A.'}</p>`}});
+gInv.push(()=>{const A=rand2d(-3,5,d=>d!==0&&Math.abs(d)<=7);const x=R(-4,5),y=R(-4,5);const b=[A[0][0]*x+A[0][1]*y,A[1][0]*x+A[1][1]*y];const Af=FM(A);const I=inv(Af);
+  return{kind:'Sústava cez inverznú maticu',prompt:`Vyrieš sústavu pomocou inverznej matice, x = A⁻¹·b.${sys([[...A[0],b[0]],[...A[1],b[1]]],['x','y'])}`,input:lines([['x =',null],['y =',null]]),answer:[F(x),F(y)],
+  solution:`<p>A = ${mx(Af)}, b = ${mx(FM([[b[0]],[b[1]]]))}</p><p>Inverzná matica:</p><div class="eq">${lab('A⁻¹',I)}</div><div class="eq">${mx(I)} · ${mx(FM([[b[0]],[b[1]]]))} = ${mx(FM([[x],[y]]))}</div>`}});
+gInv.push(()=>{const A=rand2d(-2,3,d=>d!==0&&Math.abs(d)<=2),B=rand2d(-2,3,d=>d!==0&&Math.abs(d)<=2);const Af=FM(A),Bf=FM(B);const AB=mmul(Af,Bf);const I=inv(AB);
+  return{kind:'Inverzia súčinu',prompt:`Nájdi (A·B)⁻¹.<div class="eq">${lab('A',Af)} <span class="gap"></span> ${lab('B',Bf)}</div><p class="muted">Zlomky píš ako 2/7.</p>`,input:grid(2,2),answer:flat(I),
+  solution:`<p>Pravidlo: (A·B)⁻¹ = B⁻¹·A⁻¹, poradie sa mení.</p><div class="eq">${lab('A·B',AB)}</div><div class="eq">${lab('B⁻¹',inv(Bf))} <span class="gap"></span> ${lab('A⁻¹',inv(Af))}</div><div class="eq">${lab('(A·B)⁻¹',I)}</div>`}});
+gInv.push(()=>{let M,tries=0;do{M=mI(3);for(let s=0;s<R(4,6);s++){const i=R(0,2);let j;do{j=R(0,2)}while(j===i);if(Math.random()<.2)[M[i],M[j]]=[M[j],M[i]];else{const k=F(pick([-2,-1,1,2]));M[j]=M[j].map((x,c)=>add(x,mul(k,M[i][c])))}}
+    tries++}while((M.flat().some(x=>Math.abs(x.n)>9)||mEq(M,mI(3)))&&tries<50);
+  const I=inv(M);const aug=M.map((r,i)=>[...r,...mI(3)[i]]);const{steps}=gj(aug);
+  return{kind:'Inverzná matica 3×3',prompt:`Nájdi inverznú maticu Gaussovou–Jordanovou metódou.<div class="eq">${lab('A',M)}</div><div class="eq">A⁻¹ = ?</div>`,input:grid(3,3),answer:flat(I),
+  solution:`<p>Upravujeme maticu [A | I] riadkovými operáciami, kým vľavo nevznikne I. Vpravo potom je A⁻¹.</p>${stepsHtml(aug,3,steps)}<div class="eq">${lab('A⁻¹',I)}</div>`}});
+gInv.push(()=>{const type=pick(['add','add','scale','swap']);const i=R(0,2);let j;do{j=R(0,2)}while(j===i);let op,E=mI(3);
+  if(type==='add'){const k=pick([-3,-2,-1,2,3]);op=addOp(k,i,j);E[j]=E[j].map((x,c)=>add(x,mul(F(k),E[i][c])))}
+  else if(type==='scale'){const k=pick([2,3,4,5,-1,-2,-3]);op=scaleOp(k,i);E[i]=E[i].map(x=>mul(F(k),x))}
+  else{op=swapOp(i,j);[E[i],E[j]]=[E[j],E[i]]}
+  return{kind:'Elementárna matica',prompt:`Napíš elementárnu maticu E (3×3), ktorá vznikne z jednotkovej matice operáciou ${OP(op)}.`,input:grid(3,3),answer:flat(E),
+  solution:`<p>Elementárnu maticu dostaneme tak, že tú istú operáciu použijeme na jednotkovú maticu. Násobenie E·A potom spraví túto operáciu na matici A.</p><div class="eq">${lab('E',E)}</div>`}});
+gInv.push(()=>{const type=pick(['add','add','scale','swap']);const i=R(0,2);let j;do{j=R(0,2)}while(j===i);let orig,cor,pool,why;
+  if(type==='add'){const k=pick([-3,-2,-1,2,3,4]);orig=addOp(k,i,j);cor=addOp(-k,i,j);pool=[addOp(k,j,i),addOp(k,i,j),swapOp(i,j),addOp(F(1,k),i,j),addOp(-k,j,i),scaleOp(k,i)];why=`Operáciu zrušíme tak, že rovnaký násobok riadku R${i+1} opäť pripočítame, ale s opačným znamienkom.`}
+  else if(type==='scale'){const c=pick([2,3,4,5,-2,-3]);orig=scaleOp(c,i);cor=scaleOp(F(1,c),i);pool=[scaleOp(-c,i),scaleOp(c,i),swapOp(i,j),addOp(c,i,j),scaleOp(F(-1,c),i),scaleOp(F(1,c),j)];why=`Násobenie číslom ${c} zrušíme násobením jeho prevrátenou hodnotou 1/c.`}
+  else{orig=swapOp(i,j);cor=orig;pool=[scaleOp(-1,i),addOp(-1,i,j),addOp(1,i,j),addOp(-1,j,i),scaleOp(-1,j)];why='Výmena dvoch riadkov je sama sebe inverzná.'}
+  const wrong=shuf([...new Set(pool)].filter(x=>x!==cor)).slice(0,3);const ch=choice([cor,...wrong],cor);
+  return{kind:'Inverzná operácia',prompt:`Ktorá operácia zruší operáciu ${OP(orig)}?`,...ch,solution:`<p>${why}</p><p>Správne: ${OP(cor)}</p>`}});
+
+/* ========== 5. DETERMINANTY ========== */
+const gDet=[];
+gDet.push(()=>{const A=rmI(2,2,-5,7);const d=A[0][0]*A[1][1]-A[0][1]*A[1][0];
+  return{kind:'Determinant 2×2',prompt:`Vypočítaj determinant.<div class="eq">${lab('A',FM(A))}</div><div class="eq">det A = ?</div>`,input:lines([['det A =',null]]),answer:[F(d)],
+  solution:`<p>det A = a·d − b·c = ${P(A[0][0])}·${P(A[1][1])} − ${P(A[0][1])}·${P(A[1][0])} = ${sg(d)}</p>`}});
+gDet.push(()=>{const A=rmI(3,3,-3,5);const d=det(FM(A));const a=A;
+  const t=[a[0][0]*a[1][1]*a[2][2],a[0][1]*a[1][2]*a[2][0],a[0][2]*a[1][0]*a[2][1],a[0][2]*a[1][1]*a[2][0],a[0][0]*a[1][2]*a[2][1],a[0][1]*a[1][0]*a[2][2]];
+  return{kind:'Determinant 3×3',prompt:`Vypočítaj determinant (Sarrusovo pravidlo alebo rozvoj).<div class="eq">${lab('A',FM(A))}</div><div class="eq">det A = ?</div>`,input:lines([['det A =',null]]),answer:[d],
+  solution:`<p>Súčiny po hlavnej diagonále (s +): ${sg(t[0])}, ${sg(t[1])}, ${sg(t[2])}.</p><p>Súčiny po vedľajšej diagonále (s −): ${sg(t[3])}, ${sg(t[4])}, ${sg(t[5])}.</p><p>det A = (${sg(t[0])} + ${sg(t[1])} + ${sg(t[2])}) − (${sg(t[3])} + ${sg(t[4])} + ${sg(t[5])}) = ${fs(d)}</p>`}});
+gDet.push(()=>{const A=FM(rmI(3,3,-4,5));const i=R(0,2),j=R(0,2);const M=minor(A,i,j);const dm=det(M);const C=cof(A,i,j);
+  return{kind:'Kofaktor',prompt:`Vypočítaj kofaktor C<sub>${i+1}${j+1}</sub> matice A.<div class="eq">${lab('A',A)}</div>`,input:lines([[`C<sub>${i+1}${j+1}</sub> =`,null]]),answer:[C],
+  solution:`<p>Minor M<sub>${i+1}${j+1}</sub> vznikne vynechaním ${i+1}. riadku a ${j+1}. stĺpca:</p><div class="eq">${mx(M)}</div><p>det M<sub>${i+1}${j+1}</sub> = ${fs(dm)}</p><p>C<sub>${i+1}${j+1}</sub> = (−1)<sup>${i+1}+${j+1}</sup> · ${fs(dm)} = ${fs(C)}</p>`}});
+gDet.push(()=>{const byCol=Math.random()<.5;const i=R(0,3),j=R(0,3);let A=rmI(4,4,-3,4);let a;do{a=R(-3,4)}while(!a);
+  if(byCol){for(let r=0;r<4;r++)A[r][j]=0;A[i][j]=a}else{for(let c=0;c<4;c++)A[i][c]=0;A[i][j]=a}
+  const Af=FM(A);const M=minor(Af,i,j);const dm=det(M);const d=det(Af);
+  return{kind:'Rozvoj determinantu 4×4',prompt:`Vypočítaj determinant. Vyber si ${byCol?'stĺpec':'riadok'} s najviac nulami.<div class="eq">${lab('A',Af)}</div>`,input:lines([['det A =',null]]),answer:[d],
+  solution:`<p>${byCol?`${j+1}. stĺpec`:`${i+1}. riadok`} má jediný nenulový prvok a<sub>${i+1}${j+1}</sub> = ${sg(a)}, rozvoj podľa neho má iba jeden člen.</p><p>det A = ${sg(a)} · (−1)<sup>${i+1}+${j+1}</sup> · det M<sub>${i+1}${j+1}</sub></p><div class="eq">M<sub>${i+1}${j+1}</sub> = ${mx(M)}</div><p>det M<sub>${i+1}${j+1}</sub> = ${fs(dm)}, takže det A = ${fs(d)}</p>`}});
+gDet.push(()=>{const up=Math.random()<.5;const A=Array.from({length:4},(_,i)=>Array.from({length:4},(_,j)=>i===j?pick([-3,-2,-1,1,2,3,4]):(up?j>i:j<i)?R(-4,6):0));
+  const d=A.reduce((p,r,i)=>p*r[i],1);
+  return{kind:'Trojuholníková matica',prompt:`Vypočítaj determinant ${up?'hornej':'dolnej'} trojuholníkovej matice.<div class="eq">${lab('A',FM(A))}</div>`,input:lines([['det A =',null]]),answer:[F(d)],
+  solution:`<p>Determinant trojuholníkovej matice je súčin prvkov na hlavnej diagonále: ${A.map((r,i)=>P(r[i])).join('·')} = ${sg(d)}</p>`}});
+gDet.push(()=>{const d=pick([-6,-5,-4,-3,-2,2,3,4,5,6]);const t=pick(['swap','scale','add','prod','inv']);const i=R(1,3);let j;do{j=R(1,3)}while(j===i);let q,ans,why;
+  if(t==='swap'){q=`vymeníme riadky R${i} a R${j}`;ans=F(-d);why='Výmena dvoch riadkov mení znamienko determinantu.'}
+  else if(t==='scale'){const k=pick([2,3,-1,-2,4]);q=`jeden riadok (R${i}) vynásobíme číslom ${sg(k)}`;ans=F(d*k);why=`Vynásobenie jedného riadku číslom k vynásobí determinant číslom k: ${sg(k)}·${sg(d)}.`}
+  else if(t==='add'){const k=pick([2,3,-2,-3]);q=`k riadku R${j} pripočítame ${sg(k)}-násobok riadku R${i}`;ans=F(d);why='Pripočítanie násobku iného riadku determinant nemení.'}
+  else if(t==='prod'){const e=pick([-3,-2,2,3,4]);q=`maticu A vynásobíme maticou B, pričom det B = ${sg(e)}. Aký je det(A·B)`;ans=F(d*e);why=`det(A·B) = det A · det B = ${sg(d)}·${P(e)}.`}
+  else{q='vytvoríme inverznú maticu. Aký je det(A⁻¹)';ans=F(1,d);why=`det(A⁻¹) = 1/det(A) = 1/${P(d)}.`}
+  return{kind:'Vlastnosti determinantu',prompt:`Matica A (3×3) má det A = ${sg(d)}. Aký bude determinant, ak ${q}?<p class="muted">Zlomky píš ako 1/4.</p>`,input:lines([['výsledok =',null]]),answer:[ans],solution:`<p>${why}</p>`}});
+gDet.push(()=>{const sing=Math.random()<.5;let A;
+  if(sing){const a=pick([-2,-1,1,2]),b=pick([-2,-1,1,2]);const r1=rmI(1,3,-3,4)[0],r2=rmI(1,3,-3,4)[0];A=[r1,r2,r1.map((x,k)=>a*x+b*r2[k])]}else{do{A=rmI(3,3,-3,5)}while(det(FM(A)).n===0)}
+  const d=det(FM(A));const ch=choice(['Je invertibilná','Je singulárna'],d.n!==0?'Je invertibilná':'Je singulárna');
+  return{kind:'Invertibilita a determinant',prompt:`Rozhodni, či je matica invertibilná.<div class="eq">${lab('A',FM(A))}</div>`,...ch,
+  solution:`<p>Štvorcová matica je invertibilná práve vtedy, keď det A ≠ 0. Tu det A = ${fs(d)}.</p>${d.n===0?'<p>Tretí riadok je lineárnou kombináciou prvých dvoch, preto je determinant nula.</p>':''}`}});
+gDet.push(()=>{const A=FM(rmI(3,3,-2,3));const C=A.map((r,i)=>r.map((_,j)=>cof(A,i,j)));const adj=mT(C);const d=det(A);
+  return{kind:'Adjungovaná matica',prompt:`Nájdi adjungovanú maticu adj(A).<div class="eq">${lab('A',A)}</div>`,input:grid(3,3),answer:flat(adj),
+  solution:`<p>Najprv spočítame všetky kofaktory C<sub>ij</sub> = (−1)<sup>i+j</sup>·M<sub>ij</sub>:</p><div class="eq">${lab('C',C)}</div><p>Potom maticu kofaktorov transponujeme:</p><div class="eq">${lab('adj(A)',adj)}</div>${d.n!==0?`<p>det A = ${fs(d)}, takže A⁻¹ = 1/det(A) · adj(A).</p>`:'<p>Tu je det A = 0, inverzná matica neexistuje.</p>'}`}});
+
+/* ========== témy a zhrnutia ========== */
+const TOPICS=[
+ {id:'mat',name:'Matice a operácie',short:'súčet, súčin, transpozícia',gens:gMat,theory:`<ul>
+  <li><b>Rozmer</b> m×n: m riadkov, n stĺpcov. A<sub>ij</sub> je prvok v i-tom riadku a j-tom stĺpci.</li>
+  <li><b>Súčet a rozdiel</b> existujú len pre rovnaký rozmer, počítame prvok po prvku.</li>
+  <li><b>Skalárny násobok</b> c·A: každý prvok vynásobíme c.</li>
+  <li><b>Súčin</b> A·B: A je m×r, B je r×n, výsledok je m×n. Prvok (i,j) je súčet súčinov i-teho riadku A a j-teho stĺpca B.</li>
+  <li><b>Transpozícia</b> Aᵀ: výmena riadkov a stĺpcov.</li>
+  <li>Násobenie matíc <b>nie je komutatívne</b>, A·B ≠ B·A. Platí asociatívnosť a distributívnosť, matice sa nedajú krátiť.</li>
+  <li>Lineárna kombinácia: c₁A₁ + c₂A₂ + … + cₙAₙ.</li></ul>`},
+ {id:'sys',name:'Sústavy rovníc',short:'riešenia, parametre, rozšírená matica',gens:gSys,theory:`<ul>
+  <li>Sústavu zapíšeme ako A·x = b, rozšírená matica je [A | b].</li>
+  <li>Riešenie dosadíme do <b>všetkých</b> rovníc, vždy musí platiť ĽS = PS. Záleží na poradí čísel.</li>
+  <li>Sústava má <b>jedno</b> riešenie (priamky sa pretínajú), <b>žiadne</b> (rovnobežné, vyjde nepravda 0 = 6) alebo <b>nekonečne veľa</b> (totožné, vyjde 0 = 0).</li>
+  <li>Pri nekonečne veľa riešeniach jednu neznámu zvolíme ako parameter t ∈ ℝ a ostatné cez ňu vyjadríme.</li></ul>`},
+ {id:'gauss',name:'Gaussova eliminácia',short:'riadkové operácie, echelónový tvar',gens:gGau,theory:`<ul>
+  <li>Elementárne riadkové operácie: <b>c·Rᵢ</b> (c ≠ 0), <b>Rᵢ ↔ Rⱼ</b>, <b>c·Rᵢ + Rⱼ → Rⱼ</b>.</li>
+  <li><b>Redukovaný echelónový tvar</b>: prvé nenulové číslo riadku je 1 (pivot), pivoty idú schodovito doprava, v stĺpci pivota sú inak samé nuly, nulové riadky sú dole.</li>
+  <li>Riadok 0 0 0 | 1 znamená <b>žiadne riešenie</b>. Neznáme bez pivota sú <b>parametre</b>, vtedy je riešení nekonečne veľa.</li>
+  <li>Gauss = dopredný postup (nuly pod pivotmi), Jordan = spätný postup (nuly nad pivotmi).</li></ul>`},
+ {id:'inv',name:'Inverzná matica',short:'2×2, 3×3, elementárne matice',gens:gInv,theory:`<ul>
+  <li>A je invertibilná, ak existuje B s A·B = B·A = I. Inverzná matica je len jedna.</li>
+  <li><b>2×2</b>: pre A = [a b; c d] je A⁻¹ = 1/(ad−bc) · [d −b; −c a], ak ad − bc ≠ 0.</li>
+  <li><b>Gaussova–Jordanova metóda</b>: [A | I] → [I | A⁻¹].</li>
+  <li>(A·B)⁻¹ = B⁻¹·A⁻¹ (zmena poradia). Sústava A·x = b má riešenie x = A⁻¹·b.</li>
+  <li>Elementárna matica vznikne z I jednou riadkovou operáciou. Inverzia: c·Rᵢ ↔ (1/c)·Rᵢ, c·Rᵢ + Rⱼ ↔ (−c)·Rᵢ + Rⱼ, výmena ↔ výmena.</li></ul>`},
+ {id:'det',name:'Determinanty',short:'rozvoj, vlastnosti, adjungovaná',gens:gDet,theory:`<ul>
+  <li>2×2: det A = a·d − b·c. 3×3: Sarrusovo pravidlo alebo rozvoj podľa riadku či stĺpca.</li>
+  <li><b>Minor</b> M<sub>ij</sub>: determinant po vynechaní i-teho riadku a j-teho stĺpca. <b>Kofaktor</b> C<sub>ij</sub> = (−1)<sup>i+j</sup>·M<sub>ij</sub>.</li>
+  <li>Rozvoj: det A = a<sub>i1</sub>C<sub>i1</sub> + … + a<sub>in</sub>C<sub>in</sub>. Najlepšie rozvíjať podľa riadku alebo stĺpca s nulami.</li>
+  <li>Trojuholníková a diagonálna matica: det = súčin prvkov na diagonále.</li>
+  <li>Výmena riadkov: det ×(−1). Vynásobenie riadku k: det ×k. Pripočítanie násobku riadku: det sa nemení.</li>
+  <li>det(A·B) = det A · det B, det(A⁻¹) = 1/det A. A je invertibilná ⇔ det A ≠ 0.</li>
+  <li>adj(A) je transponovaná matica kofaktorov, A⁻¹ = 1/det(A) · adj(A).</li></ul>`}
+];
+/* ---------- plná teória (príklady sa počítajú rovnakým kódom ako generátory) ---------- */
+const tsec=(h,b)=>`<section class="tsec"><h4>${h}</h4>${b}</section>`;
+const tex=b=>`<div class="tex">${b}</div>`;
+(()=>{
+  const A=FM([[1,2],[3,4]]),B=FM([[5,6],[7,8]]);
+  const M1=FM([[1,2,4],[2,6,0]]),M2=FM([[4,1,4,3],[0,-1,3,1],[2,7,5,2]]);
+  const nA=FM([[-1,0],[2,3]]),nB=FM([[1,2],[3,0]]);
+  const cA=FM([[0,1],[0,2]]),cB=FM([[1,1],[3,4]]),cC=FM([[2,5],[3,4]]),zB=FM([[3,7],[0,0]]);
+  const mat=
+   tsec('Čo je matica',`<p>Matica je obdĺžnikové pole čísel s <b>m riadkami</b> a <b>n stĺpcami</b>, hovoríme, že má rozmer m×n. Prvok a<sub>ij</sub> leží v i-tom riadku a j-tom stĺpci. Vektor je jednorozmerný (riadkový alebo stĺpcový) a skalár je jedno číslo.</p>${tex(`${lab('A',A)} <span class="gap"></span> ${lab('b',FM([[1,2,3]]))} <span class="gap"></span> ${lab('c',FM([[1],[2],[3]]))}`)}<p class="muted">Matice označujeme veľkými písmenami, vektory a skaláre malými.</p>`)+
+   tsec('Špeciálne matice',`<ul><li><b>Štvorcová</b> matica má rovnaký počet riadkov a stĺpcov. Jej <b>hlavná diagonála</b> je a<sub>11</sub>, a<sub>22</sub>, …</li><li><b>Jednotková</b> matica I má na diagonále jednotky a inde nuly.</li><li><b>Diagonálna</b> matica má nenulové prvky len na diagonále.</li><li><b>Nulová</b> matica má samé nuly.</li></ul>${tex(`${lab('I',mI(3))} <span class="gap"></span> ${lab('D',FM([[1,0,0],[0,-4,0],[0,0,5]]))}`)}`)+
+   tsec('Rovnosť, súčet a rozdiel',`<p>Dve matice sa rovnajú, ak majú rovnaký rozmer a rovnaké zodpovedajúce prvky. Sčítať a odčítať sa dajú len matice rovnakého rozmeru, po prvkoch.</p>${tex(`A + B = ${mx(mAdd(A,B))} <span class="gap"></span> A − B = ${mx(mAdd(A,B,-1))}`)}`)+
+   tsec('Skalárny násobok',`<p>Číslo c vynásobí každý prvok matice.</p>${tex(`5·A = ${mx(mSc(F(5),A))}`)}`)+
+   tsec('Násobenie matíc',`<p>Ak má A rozmer <b>m×r</b> a B rozmer <b>r×n</b>, súčin A·B má rozmer <b>m×n</b>. Prvok (i,j) je súčet súčinov i-teho riadku A a j-teho stĺpca B. Vnútorné rozmery sa musia rovnať.</p>${tex(`${mx(M1)} · ${mx(M2)} = ${mx(mmul(M1,M2))}<p class="muted">Napríklad a<sub>11</sub> = 1·4 + 2·0 + 4·2 = 12 a a<sub>23</sub> = 2·4 + 6·3 + 0·5 = 26.</p>`)}`)+
+   tsec('Transponovaná matica',`<p>Aᵀ vznikne výmenou riadkov a stĺpcov. Z matice m×n je matica n×m.</p>${tex(`${mx(M1)}<sup>T</sup> = ${mx(mT(M1))}`)}`)+
+   tsec('Lineárna kombinácia',`<p>Pre matice rovnakého rozmeru A<sub>1</sub>…A<sub>n</sub> a skaláre c<sub>1</sub>…c<sub>n</sub> je výraz c<sub>1</sub>A<sub>1</sub> + … + c<sub>n</sub>A<sub>n</sub> ich lineárna kombinácia.</p>`)+
+   tsec('Algebraické vlastnosti',`<ul><li>A + B = B + A (sčítanie je komutatívne).</li><li>A + (B + C) = (A + B) + C, A·(B·C) = (A·B)·C (asociatívnosť, rozmery musia sedieť).</li><li>A·(B + C) = A·B + A·C a (B + C)·A = B·A + C·A. Poradie sa nemení.</li><li><b>Násobenie nie je komutatívne</b>: zvyčajne A·B ≠ B·A.</li></ul>${tex(`${lab('A·B',mmul(nA,nB))} <span class="gap"></span> ${lab('B·A',mmul(nB,nA))}`)}<p>Platí (A+B)² = A·A + A·B + B·A + B·B, lebo A·B a B·A sa nemusia rovnať.</p>`)+
+   tsec('Čo nefunguje ako pri číslach',`<p><b>Krátenie:</b> z A·B = A·C nevyplýva B = C.</p>${tex(`A·B = ${mx(mmul(cA,cB))} = A·C = ${mx(mmul(cA,cC))}, ale B ≠ C`)}<p><b>Nulový súčin:</b> súčin dvoch nenulových matíc môže byť nulová matica.</p>${tex(`${mx(cA)} · ${mx(zB)} = ${mx(mmul(cA,zB))}`)}<p><b>Neutrálne prvky:</b> A·I = I·A = A a A + 0 = A.</p>`);
+
+  const ex1=FM([[1,-1,1],[2,1,6]]);
+  const sysT=
+   tsec('Lineárna rovnica a sústava',`<p>Lineárna rovnica má tvar a<sub>1</sub>x<sub>1</sub> + a<sub>2</sub>x<sub>2</sub> + … + a<sub>n</sub>x<sub>n</sub> = b. Neznáme sa nesmú násobiť ani byť v mocnine alebo pod odmocninou (x², xy, √x nie sú lineárne). Ak je b = 0, rovnica je <b>homogénna</b>. Sústava je viac rovníc o tých istých neznámych.</p>${sys([[1,3,7],[1,-1,2]],['x','y'])}`)+
+   tsec('Čo je riešenie',`<p>Riešenie je usporiadaná n-tica čísel, po dosadení ktorej platí ĽS = PS vo <b>všetkých</b> rovniciach. Záleží na poradí: [1, −2] nie je to isté ako [−2, 1].</p>`)+
+   tsec('Koľko riešení môže byť',`<ul><li><b>Jedno</b>: priamky sa pretínajú (2D), roviny sa stretnú v bode (3D).</li><li><b>Žiadne</b>: rovnobežné priamky. Po eliminácii vyjde nepravda, napríklad 12 = 6.</li><li><b>Nekonečne veľa</b>: totožné priamky. Po eliminácii vyjde 0 = 0, jednu neznámu zvolíme ako parameter t.</li></ul>${tex(`<p>Jedno riešenie: x − y = 1, 2x + y = 6. Sčítaním 3x = 7, x = 7/3, y = 4/3.</p><p>Žiadne: x + y = 4, 3x + 3y = 6. Dosadením x = 4 − y vyjde 12 = 6.</p><p>Nekonečne veľa: 4x − 2y = 1, 16x − 8y = 4. Zvolíme y = t, x = (1 + 2t)/4.</p>`)}`)+
+   tsec('Rozšírená matica',`<p>Koeficienty zapíšeme do matice a pravé strany pridáme ako posledný stĺpec za zvislú čiaru. Matica bez posledného stĺpca je matica sústavy A, celá je rozšírená matica [A | b].</p>${tex(`${mx(ex1,2)} <span class="muted">pre x − y = 1, 2x + y = 6</span>`)}`)+
+   tsec('Elementárne operácie',`<p>Tieto operácie nemenia množinu riešení. Robíme ich s riadkami rozšírenej matice:</p><ol><li>vynásobíme riadok nenulovou konštantou (c·R<sub>i</sub>),</li><li>vymeníme dva riadky (R<sub>i</sub> ↔ R<sub>j</sub>),</li><li>pripočítame násobok jedného riadku k inému (c·R<sub>i</sub> + R<sub>j</sub> → R<sub>j</sub>).</li></ol>`)+
+   tsec('Maticový zápis',`<p>Sústavu zapíšeme ako A·x = b, kde A je matica koeficientov, x vektor neznámych a b vektor pravých strán.</p>${tex(`${mx(FM([[1,-1],[2,1]]))} · <span class="mx"><table><tr><td>x</td></tr><tr><td>y</td></tr></table></span> = ${mx(FM([[1],[6]]))}`)}`);
+
+  const gE=FM([[1,1,2,9],[2,4,-3,1],[3,6,-5,0]]);const gs=gj(gE);
+  const gaussT=
+   tsec('Postup',`<p>Rozšírenú maticu upravujeme riadkovými operáciami. Gaussova (dopredná) časť vytvorí nuly pod pivotmi a Jordanova (spätná) časť nuly nad pivotmi.</p>`)+
+   tsec('Redukovaný echelónový tvar',`<ol><li>Prvé nenulové číslo v nenulovom riadku je 1 (pivot).</li><li>Pivot ďalšieho riadku je vpravo od pivota predošlého riadku (schodovitý tvar).</li><li>Nulové riadky sú na konci.</li><li>V stĺpci s pivotom sú okrem pivota samé nuly.</li></ol>${tex(`${mx(FM([[1,0,0,4],[0,1,0,7],[0,0,1,-1]]))} <span class="muted">áno</span> <span class="gap"></span> ${mx(FM([[1,4,-3,7],[0,1,6,2],[0,0,1,5]]))} <span class="muted">nie, nad pivotmi nie sú nuly</span>`)}`)+
+   tsec('Príklad od začiatku do konca',`<p>x + y + 2z = 9, 2x + 4y − 3z = 1, 3x + 6y − 5z = 0</p>${stepsHtml(gE,3,gs.steps)}<p>Riešenie: [x, y, z] = [1, 2, 3].</p>`)+
+   tsec('Čo vidno z výslednej matice',`<ul><li><b>Jedno riešenie</b>: každá neznáma má pivot, riešenie prečítame priamo.</li><li><b>Žiadne riešenie</b>: je tam riadok 0 0 0 | 1, teda 0 = 1.</li><li><b>Nekonečne veľa</b>: neznáma bez pivota je parameter.</li></ul>${tex(`${mx(FM([[1,0,3,-1],[0,1,2,1],[0,0,0,0]]),3)} → x₃ = t, x₂ = 1 − 2t, x₁ = −1 − 3t`)}<p>Počet parametrov je počet neznámych bez pivota. Zápis riešenia pomocou parametrov je <b>všeobecné riešenie</b> sústavy.</p>`);
+
+  const iA=FM([[6,1],[5,2]]);const iG=FM([[1,2,3],[2,5,3],[1,0,8]]);const iGs=gj(iG.map((r,i)=>[...r,...mI(3)[i]]));
+  const pA=FM([[1,2],[1,3]]),pB=FM([[3,2],[2,2]]);
+  const invT=
+   tsec('Definícia',`<p>Štvorcová matica A je <b>invertibilná</b> (regulárna), ak existuje B s A·B = B·A = I. Potom B = A⁻¹ a je určená jednoznačne. Ak taká B neexistuje, A je <b>singulárna</b>. Singulárna matica má napríklad nulový riadok alebo stĺpec.</p>`)+
+   tsec('Inverzná matica 2×2',`<p>Pre A = [a b; c d] platí A⁻¹ = 1/(ad − bc) · [d −b; −c a] a existuje práve vtedy, keď ad − bc ≠ 0.</p>${tex(`${lab('A',iA)} <span class="muted">det = 12 − 5 = 7</span><div class="eq">${lab('A⁻¹',inv(iA))}</div>`)}`)+
+   tsec('Gaussova–Jordanova metóda',`<p>K matici A pripíšeme jednotkovú maticu a upravujeme riadkami, kým vľavo nevznikne I. Vpravo potom stojí A⁻¹.</p>${stepsHtml(iG.map((r,i)=>[...r,...mI(3)[i]]),3,iGs.steps)}<div class="eq">${lab('A⁻¹',inv(iG))}</div>`)+
+   tsec('Sústava cez inverznú maticu',`<p>Ak je A invertibilná, A·x = b má práve jedno riešenie x = A⁻¹·b. Hodí sa, keď riešime viac sústav s rovnakou ľavou stranou.</p>`)+
+   tsec('Vlastnosti',`<ul><li>(A·B)⁻¹ = B⁻¹·A⁻¹, poradie sa mení.</li><li>(A⁻¹)⁻¹ = A, (Aᵐ)⁻¹ = (A⁻¹)ᵐ, (k·A)⁻¹ = (1/k)·A⁻¹.</li><li>Mocniny: A⁰ = I, Aᵐ = A·A·…·A, A⁻ᵐ = (A⁻¹)ᵐ.</li></ul>${tex(`${lab('A·B',mmul(pA,pB))} <span class="muted">(A·B)⁻¹ =</span> ${mx(inv(mmul(pA,pB)))}`)}`)+
+   tsec('Elementárne matice',`<p>Elementárna matica E vznikne z I jednou riadkovou operáciou. Súčin E·A spraví tú istú operáciu na matici A. Inverzná operácia: c·R<sub>i</sub> ↔ (1/c)·R<sub>i</sub>, c·R<sub>i</sub> + R<sub>j</sub> ↔ (−c)·R<sub>i</sub> + R<sub>j</sub>, výmena riadkov ↔ výmena.</p>${tex(`${OP('(−2)·R1 + R2 → R2')} → ${mx(FM([[1,0,0],[-2,1,0],[0,0,1]]))}`)}`)+
+   tsec('Veta o ekvivalencii',`<p>Pre štvorcovú maticu A sú tieto tvrdenia ekvivalentné:</p><ol><li>A je invertibilná.</li><li>A·x = 0 má len triviálne riešenie.</li><li>Redukovaný tvar A je I.</li><li>A sa dá zapísať ako súčin elementárnych matíc.</li><li>A·x = b je konzistentná.</li><li>A·x = b má pre každé b práve jedno riešenie.</li></ol><p>Navyše platí: A je invertibilná ⇔ det A ≠ 0.</p>`);
+
+  const dA=FM([[3,1,0],[-2,-4,3],[5,4,-2]]);const dR=FM([[0,1,5],[3,-6,9],[2,6,1]]);const dJ=FM([[3,2,-1],[1,6,3],[2,-4,0]]);
+  const dC=dJ.map((r,i)=>r.map((_,j)=>cof(dJ,i,j)));
+  const detT=
+   tsec('Determinant',`<p>Determinant štvorcovej matice je číslo, ktoré o nej veľa prezradí. Pre 2×2 je det A = a·d − b·c (hlavná diagonála mínus vedľajšia).</p>`)+
+   tsec('Minor a kofaktor',`<p><b>Minor</b> M<sub>ij</sub> je matica po vynechaní i-teho riadku a j-teho stĺpca. <b>Kofaktor</b> je C<sub>ij</sub> = (−1)<sup>i+j</sup>·det M<sub>ij</sub>. Znamienka tvoria šachovnicu: + − + − …</p>${tex(`${lab('A',FM([[1,2,3],[4,5,6],[7,8,9]]))} <span class="gap"></span> ${lab('M<sub>11</sub>',minor(FM([[1,2,3],[4,5,6],[7,8,9]]),0,0))}`)}`)+
+   tsec('Rozvoj podľa riadku alebo stĺpca',`<p>Výsledok je rovnaký pre ľubovoľný riadok či stĺpec, preto vyberáme ten s najviac nulami: det A = a<sub>i1</sub>C<sub>i1</sub> + a<sub>i2</sub>C<sub>i2</sub> + … + a<sub>in</sub>C<sub>in</sub>.</p>${tex(`${lab('A',dA)}<p>Rozvoj podľa 1. riadku: 3·C₁₁ + 1·C₁₂ + 0·C₁₃ = 3·${fs(cof(dA,0,0))} + 1·(${fs(cof(dA,0,1))}) + 0·C₁₃ = ${fs(det(dA))}</p>`)}`)+
+   tsec('Sarrusovo pravidlo (3×3)',`<p>Súčty súčinov po hlavných diagonálach (s +) mínus súčty súčinov po vedľajších (s −):</p><p class="muted">a<sub>11</sub>a<sub>22</sub>a<sub>33</sub> + a<sub>12</sub>a<sub>23</sub>a<sub>31</sub> + a<sub>13</sub>a<sub>21</sub>a<sub>32</sub> − a<sub>13</sub>a<sub>22</sub>a<sub>31</sub> − a<sub>11</sub>a<sub>23</sub>a<sub>32</sub> − a<sub>12</sub>a<sub>21</sub>a<sub>33</sub></p>`)+
+   tsec('Špeciálne matice',`<p>Pre diagonálnu a trojuholníkovú (hornú či dolnú) maticu je determinant súčin prvkov na hlavnej diagonále.</p>`)+
+   tsec('Riadkové operácie a determinant',`<ul><li>Vynásobenie jedného riadku číslom k: det sa vynásobí k.</li><li>Výmena dvoch riadkov: det zmení znamienko.</li><li>Pripočítanie násobku iného riadku: det sa nezmení.</li><li>Nulový riadok alebo stĺpec: det = 0.</li></ul>${tex(`${lab('A',dR)} <span class="muted">po riadkovej redukcii na trojuholníkový tvar</span> det A = ${fs(det(dR))}`)}`)+
+   tsec('Súčin a inverzia',`<p>det(A·B) = det A · det B. Štvorcová matica je invertibilná ⇔ det A ≠ 0. Vtedy det(A⁻¹) = 1/det A.</p>`)+
+   tsec('Adjungovaná matica',`<p>adj(A) je transponovaná matica kofaktorov a platí A⁻¹ = 1/det(A) · adj(A).</p>${tex(`${lab('A',dJ)}<div class="eq">${lab('kofaktory C',dC)} <span class="gap"></span> ${lab('adj(A)',mT(dC))}</div>`)}`);
+
+  const full={mat,sys:sysT,gauss:gaussT,inv:invT,det:detT};
+  TOPICS.forEach(t=>t.full=full[t.id]);
+})();
+/* ---------- stav a uloženie ---------- */
+const KEY='adm-cvicebnica-v1';
+let ST={stats:{},streak:0,best:0};
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.stats)ST=s}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(ST))}catch(e){}};
+let S={view:'practice',topic:'mix',q:null,qt:null,sel:null,counted:false,done:false,shown:false};
+const $=s=>document.querySelector(s);
+const tstat=id=>ST.stats[id]||(ST.stats[id]={ok:0,total:0});
+
+/* ---------- navigácia ---------- */
+function renderNav(){
+  const all=Object.values(ST.stats).reduce((a,s)=>({ok:a.ok+s.ok,total:a.total+s.total}),{ok:0,total:0});
+  const btn=(id,name,short,st)=>`<button class="tbtn" data-id="${id}" aria-pressed="${S.topic===id}"><span class="n"><span>${name}</span><em>${st.ok}/${st.total}</em></span><span class="s">${short}</span><div class="bar"><i style="width:${st.total?Math.round(100*st.ok/st.total):0}%"></i></div></button>`;
+  $('#nav').innerHTML=(S.view==='theory'?'':btn('mix','Všetko dokopy','náhodná téma',all))+TOPICS.map(t=>btn(t.id,t.name,t.short,tstat(t.id))).join('')+`<button class="reset" id="reset">Vynulovať štatistiku</button>`;
+  $('#nav').querySelectorAll('.tbtn').forEach(b=>b.onclick=()=>{S.topic=b.dataset.id;renderTheory();if(S.view==='theory')window.scrollTo({top:0});next()});
+  $('#reset').onclick=()=>{ST={stats:{},streak:0,best:0};save();renderNav();renderScore()};
+  renderScore()}
+function renderScore(){
+  const all=Object.values(ST.stats).reduce((a,s)=>({ok:a.ok+s.ok,total:a.total+s.total}),{ok:0,total:0});
+  $('#score').innerHTML=`<div><b>${all.ok}/${all.total}</b><span>správne na 1. pokus</span></div><div><b>${ST.streak}</b><span>v rade</span></div><div><b>${ST.best}</b><span>najlepšia séria</span></div>`}
+function renderTheory(){
+  const t=TOPICS.find(x=>x.id===S.topic),d=$('#theory'),p=$('#tpane');
+  if(!t){d.hidden=true;p.innerHTML='';return}
+  d.hidden=false;d.querySelector('summary').textContent='Zhrnutie z poznámok: '+t.name;d.querySelector('.in').innerHTML=t.theory;
+  p.innerHTML=`<h3>${t.name}</h3>${t.full}`}
+function setView(v){
+  S.view=v;$('#app').dataset.view=v;
+  document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v));
+  if(v==='theory'&&S.topic==='mix'){S.topic='mat';renderTheory();next()}else{renderTheory();renderNav()}
+  $('#tpane').scrollTop=0}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setView(b.dataset.v));
+
+/* ---------- otázky ---------- */
+function next(){
+  const pool=S.topic==='mix'?TOPICS:TOPICS.filter(t=>t.id===S.topic);
+  let q=null,t=null;
+  for(let k=0;k<6&&!q;k++){try{t=pick(pool);q=pick(t.gens)()}catch(e){q=null}}
+  S={...S,q,qt:t,sel:null,counted:false,done:false,shown:false};
+  renderNav();renderCard();
+  const cd=$('#card');if(cd.getBoundingClientRect().top<0)cd.scrollIntoView({block:'start',behavior:'auto'});
+  const f=$('#card input.cell');if(f&&matchMedia('(hover:hover)').matches)f.focus({preventScroll:true})}
+function inputsHtml(inp){
+  if(inp.t==='grid'){let k=0;const rows=[];for(let i=0;i<inp.r;i++){let tds='';for(let j=0;j<inp.c;j++){tds+=`<td class="${j===inp.aug?'aug':''}"><input class="cell" id="c${k}" aria-label="riadok ${i+1}, stĺpec ${j+1}" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text"></td>`;k++}rows.push(`<tr>${tds}</tr>`)}
+    return`<div class="answer"><span class="lbl2">Tvoja odpoveď</span><div><span class="mx in"><table>${rows.join('')}</table></span></div></div>`}
+  if(inp.t==='lines'){let k=0;return`<div class="answer"><span class="lbl2">Tvoja odpoveď</span>${inp.lines.map(l=>`<div class="ln">${l.map(x=>x===null?`<input class="cell" id="c${k++}" aria-label="pole ${k}" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text">`:`<span class="t">${x}</span>`).join('')}</div>`).join('')}</div>`}
+  return`<div class="opts" role="radiogroup" aria-label="Možnosti">${inp.opts.map((o,i)=>`<button class="opt" role="radio" aria-checked="false" data-i="${i}">${o}</button>`).join('')}</div>`}
+function renderCard(){
+  const q=S.q,c=$('#card');
+  if(!q){c.innerHTML='<p>Príklad sa nepodarilo vytvoriť. Skús ďalší.</p><div class="actions"><button class="btn main" id="nx">Ďalší príklad</button></div>';$('#nx').onclick=next;return}
+  c.innerHTML=`<div class="meta"><span class="chip">${q.kind}</span><span>${S.qt.name}</span></div>
+   <div class="prompt">${q.prompt}</div>${inputsHtml(q.input)}
+   ${q.input.t!=='choice'?'<div class="muted">Celé čísla alebo zlomky, napríklad <kbd>−3</kbd> alebo <kbd>2/7</kbd>. Enter skočí na ďalšie pole.</div>':''}
+   <div id="fb" role="status" aria-live="polite"></div>
+   <div class="actions"><button class="btn main" id="chk">Skontrolovať</button><button class="btn" id="shw">Ukáž riešenie</button><button class="btn" id="nx">Ďalší príklad</button></div>
+   <div id="sol" class="sol" hidden></div>`;
+  $('#chk').onclick=check;$('#shw').onclick=reveal;$('#nx').onclick=next;
+  c.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(S.done)return;S.sel=+b.dataset.i;c.querySelectorAll('.opt').forEach(o=>{o.setAttribute('aria-checked',o===b);o.classList.remove('bad','ok')})});
+  const ins=[...c.querySelectorAll('input.cell')];
+  ins.forEach((el,i)=>el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if(S.done)return next();if(i<ins.length-1)ins[i+1].focus();else check()}}))}
+function fb(cls,txt){$('#fb').innerHTML=`<div class="fb ${cls}">${txt}</div>`}
+function record(ok){
+  const s=tstat(S.qt.id);s.total++;if(ok){s.ok++;ST.streak++;ST.best=Math.max(ST.best,ST.streak)}else ST.streak=0;
+  S.counted=true;save();renderNav()}
+function check(){
+  if(S.done||S.shown)return;
+  const q=S.q;let ok=false,hit=0,total=q.answer.length;
+  if(q.input.t==='choice'){
+    if(S.sel==null){fb('warn','Vyber jednu možnosť.');return}
+    ok=S.sel===q.answer[0];
+    $('#card').querySelectorAll('.opt').forEach((o,i)=>{if(i===S.sel)o.classList.add(ok?'ok':'bad')})}
+  else{
+    const ins=[...$('#card').querySelectorAll('input.cell')];const vals=ins.map(i=>parseF(i.value));
+    if(vals.some(v=>v===null)){fb('warn','Vyplň všetky polia číslom alebo zlomkom, napríklad −3 alebo 2/7.');return}
+    vals.forEach((v,i)=>{const g=eq(v,q.answer[i]);ins[i].classList.toggle('ok',g);ins[i].classList.toggle('bad',!g);if(g)hit++});
+    ok=hit===total}
+  if(!S.counted)record(ok);
+  if(ok){S.done=true;fb('ok','Správne.'+(S.counted?'':''));lockInputs();showSol(false);$('#chk').disabled=true;$('#nx').classList.add('main');$('#chk').classList.remove('main');$('#nx').focus({preventScroll:true})}
+  else fb('bad',q.input.t==='choice'?'Zatiaľ nie. Skús inú možnosť alebo si zobraz riešenie.':`Správne ${hit} z ${total} polí. Červené polia oprav alebo si zobraz riešenie.`)}
+function lockInputs(){$('#card').querySelectorAll('input.cell').forEach(i=>i.readOnly=true);$('#card').querySelectorAll('.opt').forEach(o=>o.disabled=true)}
+function showSol(open){const s=$('#sol');s.hidden=false;s.innerHTML=`<h3>Postup</h3>${S.q.solution}`;if(open)s.scrollIntoView({block:'nearest',behavior:'smooth'})}
+function reveal(){
+  if(!S.counted)record(false);
+  S.shown=true;
+  if(S.q.input.t==='choice')$('#card').querySelectorAll('.opt').forEach((o,i)=>{o.disabled=true;if(i===S.q.answer[0])o.classList.add('ok')});
+  else{const ins=[...$('#card').querySelectorAll('input.cell')];ins.forEach((el,i)=>{el.value=fs(S.q.answer[i]);el.classList.add('ok');el.readOnly=true})}
+  if(!S.done)fb('warn','Riešenie je zobrazené, tento príklad sa počíta ako nesprávny.');
+  $('#chk').disabled=true;showSol(true)}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&(S.done||S.shown)&&e.target===document.body)next()});
+renderTheory();next();
+</script>
+
+</body></html>
