@@ -18,10 +18,20 @@ Funkcie, polynómy a racionálne funkcie, elementárne funkcie, limity a spojito
 ### Spoločné vlastnosti
 - Príklady sa generujú náhodne, nikdy sa nezopakujú.
 - Kontrola odpovede: čísla, zlomky (`2/7`), výrazy (`sqrt(3)/2`, `pi/6`), zoznamy, výber z možností. Pri deriváciách sa porovnáva funkcia, nie tvar zápisu.
-- Postup riešenia ku každému príkladu, pri niektorých aj s grafom.
-- Karta **Teória + cvičenie**: teória z prednášok vedľa príkladov, aby si ju hneď vyskúšal.
-- Štatistika za každú tému a séria správnych odpovedí v rade (ukladá sa v prehliadači).
+- Postup riešenia ku každému príkladu, pri mnohých aj s obrázkom (graf, stavový diagram, priamky sústavy).
+- **Teória + cvičenie:** teória z prednášok vedľa príkladov. Po chybe je pri správe odkaz na teóriu k danej téme.
+- **Skúška:** vyber témy, počet príkladov a časový limit. Odpovede sa nekontrolujú hneď, na konci je výsledok, rozbor po témach a postupy.
+- **Slabé miesta:** stránka si pamätá typy príkladov, ktoré ti nešli, a môže ich ponúkať častejšie.
+- **Ťahák:** zhrnutie všetkých tém na jednej strane, ktorú sa dá vytlačiť.
+- **Kartičky:** pojmy a pravidlá, otočíš a označíš, či si to vedel.
+- **Pracovný list na tlač:** príklady s prázdnymi riadkami a riešeniami na ďalšej strane.
+- **Štatistika:** úspešnosť za tému, séria správnych odpovedí v rade. Dá sa exportovať do súboru a importovať na inom zariadení.
 - Svetlý aj tmavý režim, funguje na mobile.
+
+### Obrázky a interaktívne pomôcky
+- **MA:** grafy základných funkcií, limity, dotyčnice a Taylorove polynómy, a posuvníky: parametre sínusovky, dotyčnica a jej bod, funkcia a jej derivácia, stupeň Taylorovho polynómu, kubická funkcia s extrémami a ε–δ pri limite.
+- **PPI:** stavové diagramy automatov Moore a Mealy, prehrávač po krokoch so zvýraznením stavu a časové diagramy preklápacích obvodov D, T a JK.
+- **ADM:** sústava dvoch rovníc ako dve priamky s priesečníkom.
 
 ## Ako to vzniklo
 

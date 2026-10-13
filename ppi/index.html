@@ -154,6 +154,13 @@ sub{font-size:.72em;line-height:0}
 .circ-box{margin-top:8px}
 svg.circ{display:block;max-width:none;height:auto}
 svg.aut{display:block;max-width:100%;height:auto}
+svg.tim{display:block;max-width:100%;height:auto}
+.tdw{margin:10px 0}
+svg.tim .vg{stroke:var(--rule);stroke-width:1;stroke-dasharray:3 3}
+svg.tim .wv{fill:none;stroke:var(--muted);stroke-width:2}
+svg.tim .wv.in{stroke:var(--blue)}
+svg.tim .wv.q{stroke:var(--red);stroke-width:2.4}
+svg.tim .tl{fill:var(--fg);font:600 12px var(--f-mono)}
 .autw{max-width:100%;margin:8px 0}
 svg.aut .st{fill:var(--card);stroke:var(--fg);stroke-width:1.8}
 svg.aut .e{fill:none;stroke:var(--wire);stroke-width:1.6}
@@ -214,6 +221,80 @@ code.w{font:500 1rem var(--f-mono);background:var(--soft);padding:1px 8px;border
     </main>
   </div>
 </div>
+<style>
+/* --- nadstavby: skúška, ťahák, kartičky, tlač --- */
+.xv,#printarea{display:none}
+.app[data-view="exam"] #xv-exam,.app[data-view="sheet"] #xv-sheet,.app[data-view="cards"] #xv-cards{display:block}
+.app[data-view="exam"] .layout,.app[data-view="sheet"] .layout,.app[data-view="cards"] .layout{display:none}
+.xcard{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:18px 20px 20px;margin-bottom:14px}
+.xcard h3,.xv h4{font:700 1.7rem/1.1 var(--f-display);color:var(--red);margin:0 0 6px}
+.xv h4{font-size:1.3rem;color:var(--green);margin:14px 0 6px}
+.xgrid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:20px}
+@media (max-width:760px){.xgrid{grid-template-columns:minmax(0,1fr)}}
+.chks{display:flex;flex-direction:column;gap:4px}
+.chk,.fld{display:flex;gap:8px;align-items:flex-start;font-size:.95rem}
+.chk input{margin-top:.3em;accent-color:var(--blue)}
+.fld{flex-direction:column;gap:4px;margin:8px 0;font-weight:600}
+.fld select{font:500 1rem var(--f-body);padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);color:var(--fg);max-width:100%}
+.xhead{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;margin-bottom:12px;padding:10px 14px;background:var(--card);border:1.5px solid var(--line);border-radius:12px}
+.xtime{font:600 1.3rem var(--f-mono);font-variant-numeric:tabular-nums;color:var(--blue)}.xtime.low{color:var(--red)}
+.weak{margin:4px 0;padding-left:1.2em}
+details.rev{background:var(--card);border:1.5px solid var(--line);border-radius:10px;margin:8px 0;padding:0 14px}
+details.rev summary{cursor:pointer;padding:10px 0;font-weight:600;list-style:none}
+details.rev .mark{display:inline-block;width:1.5em;text-align:center;font-weight:700}
+details.rev.ok{border-color:var(--green)}details.rev.ok .mark{color:var(--green)}
+details.rev.bad{border-color:var(--red)}details.rev.bad .mark{color:var(--red)}
+details.rev[open]{padding-bottom:12px}
+.chl{margin:6px 0;padding-left:1.2em}.chl .right{color:var(--green)}
+.golink{all:unset;cursor:pointer;margin-left:12px;color:var(--blue);text-decoration:underline;font-weight:500}
+.golink:focus-visible{outline:3px solid var(--blue)}
+label.focus{display:flex;gap:8px;align-items:flex-start;font-size:.82rem;color:var(--muted);padding:6px 2px}
+label.focus input{accent-color:var(--blue);margin-top:.2em}
+.io{display:flex;flex-direction:column;gap:2px}
+.sheetgrid{columns:2 320px;column-gap:20px}
+.sheetgrid section{break-inside:avoid;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:2px 14px 10px;margin:0 0 14px;font-size:.9rem}
+.sheetgrid ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:4px}
+.flash{background:var(--soft);border-radius:12px;padding:18px 20px;margin:12px 0;min-height:7em}
+.flash.back{border:2px solid var(--green)}
+.flash .ans{margin:12px 0;padding:8px 12px;background:var(--ok-bg);border-radius:8px}
+.lab{border:1.5px solid var(--line);border-radius:12px;background:var(--soft);padding:10px 14px 14px;margin:14px 0}
+.lab h5{font:700 1.25rem var(--f-display);color:var(--red);margin:0 0 6px}
+.lab .ctr{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;margin-top:8px}
+.lab label{display:grid;grid-template-columns:minmax(7em,auto) minmax(0,1fr) 3.6em;gap:8px;align-items:center;font-size:.9rem}
+.lab label b{font:500 .85rem var(--f-mono);text-align:right}
+.lab input[type=range]{width:100%;accent-color:var(--blue)}
+.lab select{font:500 .95rem var(--f-body);padding:5px 8px;border:1.5px solid var(--line);border-radius:7px;background:var(--card);color:var(--fg);max-width:100%}
+.lab .out{margin-top:6px;font-size:.92rem;min-height:2.6em}
+.lab .plotw{margin:0 auto}
+.apl{border:1.5px solid var(--line);border-radius:12px;background:var(--soft);padding:10px 14px 14px;margin:12px 0}
+.apl h5{font:700 1.25rem var(--f-display);color:var(--red);margin:0 0 6px}
+.apl .wd{display:flex;gap:4px;flex-wrap:wrap;margin:6px 0}
+.apl .wd span{min-width:2em;text-align:center;padding:3px 6px;border:1.5px solid var(--line);border-radius:6px;background:var(--card);font:500 1rem var(--f-mono)}
+.apl .wd span.cur{border-color:var(--blue);background:var(--blue);color:#fff}
+.apl .wd span.done{color:var(--muted)}
+.apl .st-out{font-size:.92rem;min-height:2.2em;margin:4px 0}
+.apl .ctl{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.apl .ctl button{all:unset;cursor:pointer;padding:6px 14px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);font-weight:600;font-size:.9rem}
+.apl .ctl button:hover{border-color:var(--blue)}
+.apl .ctl button:focus-visible{outline:3px solid var(--blue)}
+svg.aut .st.on{fill:var(--blue);stroke:var(--blue)}
+svg.aut .st.on ~ .sn,svg.aut .st.on ~ .so{fill:#fff}
+svg.aut .e.on{stroke:var(--blue);stroke-width:3}
+@media print{
+  body{background:#fff!important;color:#000!important;padding:0!important;background-image:none!important}
+  .app[data-view="sheet"]>*:not(#xv-sheet){display:none!important}
+  .noprint{display:none!important}
+  .sheetgrid{columns:2;column-gap:14px;font-size:9.5pt}
+  .sheetgrid section{border:1px solid #888;background:#fff}
+  body.ws .app{display:none!important}
+  body.ws #printarea{display:block;font-size:11pt}
+  #printarea h2{font:700 18pt var(--f-body);margin:0 0 6px}
+  .wsq{break-inside:avoid;margin:0 0 14px;padding-bottom:8px;border-bottom:1px dashed #999}
+  .wsl{margin-top:12px}
+  .pbreak{break-after:page}
+  #printarea .sol{display:none}
+}
+</style>
 <script>
 'use strict';
 /* ================= náhoda a pomôcky ================= */
@@ -662,21 +743,42 @@ function autDiagram(a){
     if(i===j){const dx=P[0]-cx,dy=P[1]-cy,L=Math.hypot(dx,dy)||1,d=m===2?[i?1:-1,0]:[dx/L,dy/L];
       const rot=(v,t)=>[v[0]*Math.cos(t)-v[1]*Math.sin(t),v[0]*Math.sin(t)+v[1]*Math.cos(t)];
       const A=rot(d,-.55),B=rot(d,.55),C1=rot(d,-.95),C2=rot(d,.95),Lb=[P[0]+d[0]*(r+36),P[1]+d[1]*(r+36)];
-      s+=`<path class="e" marker-end="url(#ah)" d="M${(P[0]+A[0]*r).toFixed(1)} ${(P[1]+A[1]*r).toFixed(1)}C${(P[0]+C1[0]*(r+44)).toFixed(1)} ${(P[1]+C1[1]*(r+44)).toFixed(1)} ${(P[0]+C2[0]*(r+44)).toFixed(1)} ${(P[1]+C2[1]*(r+44)).toFixed(1)} ${(P[0]+B[0]*(r+2)).toFixed(1)} ${(P[1]+B[1]*(r+2)).toFixed(1)}"/><text class="lb" x="${Lb[0].toFixed(1)}" y="${(Lb[1]+4).toFixed(1)}" text-anchor="middle">${lab}</text>`;return}
+      s+=`<path class="e" data-e="${k}" marker-end="url(#ah)" d="M${(P[0]+A[0]*r).toFixed(1)} ${(P[1]+A[1]*r).toFixed(1)}C${(P[0]+C1[0]*(r+44)).toFixed(1)} ${(P[1]+C1[1]*(r+44)).toFixed(1)} ${(P[0]+C2[0]*(r+44)).toFixed(1)} ${(P[1]+C2[1]*(r+44)).toFixed(1)} ${(P[0]+B[0]*(r+2)).toFixed(1)} ${(P[1]+B[1]*(r+2)).toFixed(1)}"/><text class="lb" x="${Lb[0].toFixed(1)}" y="${(Lb[1]+4).toFixed(1)}" text-anchor="middle">${lab}</text>`;return}
     const Q=pos[j],mx=(P[0]+Q[0])/2,my=(P[1]+Q[1])/2,dx=Q[0]-P[0],dy=Q[1]-P[1],L=Math.hypot(dx,dy),n=[-dy/L,dx/L];
     const both=E[j+'>'+i]!==undefined,off=both?22:12;const C=[mx+n[0]*off*2,my+n[1]*off*2];
     const sh=(A,Cc,rr)=>{const u=[Cc[0]-A[0],Cc[1]-A[1]],l=Math.hypot(u[0],u[1]);return[A[0]+u[0]/l*rr,A[1]+u[1]/l*rr]};
     const S0=sh(P,C,r),T0=sh(Q,C,r+3);
     const lx=.25*P[0]+.5*C[0]+.25*Q[0]+n[0]*12,ly=.25*P[1]+.5*C[1]+.25*Q[1]+n[1]*12;
-    s+=`<path class="e" marker-end="url(#ah)" d="M${S0[0].toFixed(1)} ${S0[1].toFixed(1)}Q${C[0].toFixed(1)} ${C[1].toFixed(1)} ${T0[0].toFixed(1)} ${T0[1].toFixed(1)}"/><text class="lb" x="${lx.toFixed(1)}" y="${(ly+4).toFixed(1)}" text-anchor="middle">${lab}</text>`});
+    s+=`<path class="e" data-e="${k}" marker-end="url(#ah)" d="M${S0[0].toFixed(1)} ${S0[1].toFixed(1)}Q${C[0].toFixed(1)} ${C[1].toFixed(1)} ${T0[0].toFixed(1)} ${T0[1].toFixed(1)}"/><text class="lb" x="${lx.toFixed(1)}" y="${(ly+4).toFixed(1)}" text-anchor="middle">${lab}</text>`});
   pos.forEach((P,i)=>{
     if(i===0){const dx=P[0]-cx,dy=P[1]-cy,L=Math.hypot(dx,dy)||1,d=m===2?[-1,0]:[dx/L,dy/L];
       const a1=[P[0]+d[0]*(r+40),P[1]+d[1]*(r+40)],a2=[P[0]+d[0]*(r+3),P[1]+d[1]*(r+3)];
       s+=`<path class="e s0" marker-end="url(#ah)" d="M${a1[0].toFixed(1)} ${a1[1].toFixed(1)}L${a2[0].toFixed(1)} ${a2[1].toFixed(1)}"/>`}
-    s+=`<circle class="st" cx="${P[0].toFixed(1)}" cy="${P[1].toFixed(1)}" r="${r}"/>`;
+    s+=`<circle class="st" data-s="${i+1}" cx="${P[0].toFixed(1)}" cy="${P[1].toFixed(1)}" r="${r}"/>`;
     if(a.type==='moore')s+=`<text class="sn" x="${P[0].toFixed(1)}" y="${(P[1]-2).toFixed(1)}" text-anchor="middle">${i+1}</text><text class="so" x="${P[0].toFixed(1)}" y="${(P[1]+13).toFixed(1)}" text-anchor="middle">y=${a.y[i]}</text>`;
     else s+=`<text class="sn" x="${P[0].toFixed(1)}" y="${(P[1]+5).toFixed(1)}" text-anchor="middle">${i+1}</text>`});
   return`<div class="autw">${s}</svg><div class="muted">${a.type==='moore'?'Šípka je prechod pri vstupe x, vo vnútri kruhu je stav a výstup y.':'Šípka je prechod s označením x/y: vstup x a výstup y.'} Šípka zvonku označuje začiatočný stav.</div></div>`}
+/* prehrávač automatu: krok po kroku s farebným zvýraznením stavu */
+function autPlayer(a,word){
+  const j=o=>JSON.stringify(o).replace(/"/g,'&quot;');
+  return`<div class="apl" data-a="${j(a)}" data-w="${j(word)}" data-t="0"><h5>Prehraj automat po krokoch</h5><div class="wd">${word.map((x,i)=>`<span data-i="${i}">${x}</span>`).join('')}</div>${autDiagram(a)}<div class="st-out"></div><div class="ctl"><button type="button" data-act="back">‹ Späť</button><button type="button" data-act="step">Krok ›</button><button type="button" data-act="reset">Od začiatku</button></div></div>`}
+
+/* časový diagram preklápacieho obvodu */
+function tdiag(type){
+  const N=8,X=i=>66+i*58,W=X(N)+10,rowH=34,names=type==='D'?['CLK','D','Q']:type==='T'?['CLK','T','Q']:['CLK','J','K','Q'];
+  const inp={D:[[1,1,0,1,0,0,1,1]],T:[[1,0,1,1,0,1,1,0]],JK:[[1,0,1,0,1,1,0,0],[0,1,1,0,0,1,1,0]]}[type];
+  let q=0;const Q=[];
+  for(let i=0;i<N;i++){if(type==='D')q=inp[0][i];else if(type==='T')q=q^inp[0][i];else{const J=inp[0][i],K=inp[1][i];q=(J&&!q)||(!K&&q)?1:0}Q.push(q)}
+  const H=names.length*rowH+14,y=(row,v)=>8+row*rowH+(v?4:rowH-10);
+  let s=`<svg class="tim" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Časový diagram preklápacieho obvodu ${type}">`;
+  for(let i=0;i<N;i++)s+=`<line class="vg" x1="${X(i)}" y1="4" x2="${X(i)}" y2="${H-8}"/>`;
+  names.forEach((n,r)=>{s+=`<text class="tl" x="4" y="${y(r,0)-2}">${n}</text>`});
+  // hodiny
+  let d=`M${X(0)-30} ${y(0,0)}`;for(let i=0;i<N;i++){d+=`H${X(i)}V${y(0,1)}H${X(i)+29}V${y(0,0)}`}d+=`H${X(N-1)+58}`;s+=`<path class="wv" d="${d}"/>`;
+  const wave=(row,vals,shift)=>{let p=`M${X(0)-30} ${y(row,vals.init||0)}`;let prev=vals.init||0;vals.v.forEach((v,i)=>{const x=X(i)+shift;if(v!==prev){p+=`H${x}V${y(row,v)}`;prev=v}});return p+`H${X(N-1)+58}`};
+  inp.forEach((arr,k)=>{s+=`<path class="wv in" d="${wave(k+1,{v:arr,init:arr[0]===1?0:0},-29)}"/>`});
+  s+=`<path class="wv q" d="${wave(names.length-1,{v:Q,init:0},0)}"/>`;
+  return`<div class="tdw"><div class="muted"><b>${type}</b>: ${type==='D'?'Q(t+1) = D. Po nábežnej hrane hodín sa výstup nastaví na hodnotu vstupu D.':type==='T'?'Q(t+1) = T ⊕ Q. Pri T = 1 sa výstup po nábežnej hrane preklopí, pri T = 0 zostane.':'Q(t+1) = J·Q̄ + K̄·Q. JK = 00 zachová, 01 vynuluje, 10 nastaví, 11 preklopí.'}</div>${s}</svg></div>`}
 const autBoth=a=>`<div class="duo">${autTable(a)}${autDiagram(a)}</div>`;
 function simulate(a,word,s0){let s=s0;const rows=[];for(let t=0;t<word.length;t++){const x=word[t];const y=a.type==='moore'?a.y[s-1]:a.y[s-1][x];const ns=a.p[s-1][x];rows.push({t,x,s,y,ns});s=ns}return{rows,end:s}}
 const simTable=(a,sim)=>`<div class="ttwrap"><table class="tt"><thead><tr><th>t</th><th>x(t)</th><th>s(t)</th><th>y(t)</th><th>s(t+1)</th></tr></thead><tbody>${sim.rows.map(r=>`<tr><td>${r.t}</td><td>${r.x}</td><td>${r.s}</td><td class="o">${r.y}</td><td>${r.ns}</td></tr>`).join('')}</tbody></table></div>`;
@@ -693,7 +795,7 @@ const wordHtml=w=>`<code class="w">${w.join(' ')}</code>`;
 const G6=[
  ()=>{const type=pick(['moore','mealy']),a=makeAut(type,pick([3,4])),n=6;const word=Array.from({length:n},()=>R(0,1));const sim=simulate(a,word,1);
   return{kind:type==='moore'?'Simulácia automatu Moore':'Simulácia automatu Mealy',prompt:`Konečný automat typu <b>${type==='moore'?'Moore':'Mealy'}</b> je daný tabuľkou. Začiatočný stav S₀ = 1. Na vstup postupne prichádza slovo x = ${wordHtml(word)} (zľava doprava). Zapíš výstupné slovo y(0) až y(${n-1}) a stav po spracovaní celého slova.${autBoth(a)}`,input:linesIn([['y(0..'+(n-1)+') =',...Array(n).fill(TK)],['koncový stav =',NUL]]),answer:[...sim.rows.map(r=>String(r.y)),sim.end],
-   solution:`<p>Platí s(t+1) = p[s(t), x(t)] a ${type==='moore'?'y(t) = v[s(t)] (výstup závisí iba od stavu)':'y(t) = v[s(t), x(t)] (výstup závisí od stavu aj vstupu)'}.</p>${simTable(a,sim)}<p>Výstupné slovo: ${wordHtml(sim.rows.map(r=>r.y))}, koncový stav: ${sim.end}.</p>`}},
+   solution:`<p>Platí s(t+1) = p[s(t), x(t)] a ${type==='moore'?'y(t) = v[s(t)] (výstup závisí iba od stavu)':'y(t) = v[s(t), x(t)] (výstup závisí od stavu aj vstupu)'}.</p>${simTable(a,sim)}<p>Výstupné slovo: ${wordHtml(sim.rows.map(r=>r.y))}, koncový stav: ${sim.end}.</p>${autPlayer(a,word)}`}},
  ()=>{const type=pick(['moore','mealy']),a=makeAut(type,pick([3,4]));const s=R(1,a.m),x=R(0,1);const ns=a.p[s-1][x];const y=type==='moore'?a.y[s-1]:a.y[s-1][x];
   return{kind:'Prechod a výstup',prompt:`Automat typu ${type==='moore'?'Moore':'Mealy'} je v stave ${s} a na vstupe je x = ${x}. Aký bude nasledujúci stav a aký výstup y automat v tomto takte vydá?${autBoth(a)}`,input:linesIn([['s(t+1) =',NUL],['y(t) =',NUL]]),answer:[ns,y],
    solution:`<p>Nasledujúci stav je p(${s}, ${x}) = ${ns}.</p><p>Výstup ${type==='moore'?`závisí iba od stavu: v(${s}) = ${y}`:`závisí od stavu aj vstupu: v(${s}, ${x}) = ${y}`}.</p>`}},
@@ -863,14 +965,15 @@ function buildCircuit(names,gates){const nIn=names.length;const envs=Array.from(
   const aut=
    tsec('Sekvenčný obvod a konečný automat',`<p>Výstup sekvenčného obvodu nezávisí iba od vstupu, ale aj od stavu, teda od histórie na vstupe. Obvod preto potrebuje <b>pamäť</b>. Správanie opisuje konečný automat A = (X, S, Y, p, v, S₀):</p><ul><li>X – vstupy, Y – výstupy, S – stavy, S₀ – začiatočný stav,</li><li>p: S × X → S – <b>prechodová funkcia</b>, s(t+1) = p[s(t), x(t)],</li><li>v – <b>výstupná funkcia</b>.</li></ul>`)+
    tsec('Moore a Mealy',tbl(['','Moore','Mealy'],[['Výstupná funkcia','v: S → Y','v: S × X → Y'],['Výstup','y(t) = v[s(t)]','y(t) = v[s(t), x(t)]'],['Závisí od','iba od stavu','od stavu aj vstupu'],['Dynamika','oneskoruje výstupné slovo o <b>jeden takt</b>','reaguje okamžite']])+`<p>Zápis: prechodová tabuľka (riadky stavy, stĺpce vstupy) alebo prechodový graf (stavy sú uzly, prechody orientované hrany).</p>`)+
-   tsec('Príklad: Moore',`<p>Začiatočný stav S₀ = 1, vstupné slovo x = ${wordHtml(w)}.</p>${autBoth(M0)}${simTable(M0,sm)}<p>Výstupné slovo y = ${wordHtml(sm.rows.map(r=>r.y))}. Prvý výstup vznikol ešte pred prvým vstupom, preto Moore oneskoruje.</p>`)+
-   tsec('Príklad: Mealy',`${autBoth(A0)}${simTable(A0,sa)}<p>Výstupné slovo y = ${wordHtml(sa.rows.map(r=>r.y))}.</p>`);
+   tsec('Príklad: Moore',`<p>Začiatočný stav S₀ = 1, vstupné slovo x = ${wordHtml(w)}.</p>${autBoth(M0)}${simTable(M0,sm)}${autPlayer(M0,w)}<p>Výstupné slovo y = ${wordHtml(sm.rows.map(r=>r.y))}. Prvý výstup vznikol ešte pred prvým vstupom, preto Moore oneskoruje.</p>`)+
+   tsec('Príklad: Mealy',`${autBoth(A0)}${simTable(A0,sa)}${autPlayer(A0,w)}<p>Výstupné slovo y = ${wordHtml(sa.rows.map(r=>r.y))}.</p>`);
 
   const ff=
    tsec('Preklápací obvod',`<p>Preklápací obvod (PO) má dva stavy a dve výstupné premenné: stav 0 (Q = 0, Q̄ = 1) a stav 1 (Q = 1, Q̄ = 0). Synchrónne PO menia stav iba v okamihu určenom synchronizačnou premennou h (aktívna hodnota alebo hrana).</p>`)+
    tsec('Typy a ich správanie',tbl(['PO','Vstupy','Správanie','Q(t+1)'],[['D','D','oneskorenie vstupu o jeden takt','D'],['T','T','T = 1 preklopí, T = 0 zachová','T ⊕ Q'],['JK','J, K','00 zachová, 01 nuluje, 10 nastaví, 11 preklopí (univerzálny)','J·Q̄ + K̄·Q'],['SR','S, R','00 zachová, 01 nuluje, 10 nastaví, 11 zakázané (S·R = 0)','S + R̄·Q']])+`<p>Základom realizácie PO-D je asynchrónny PO-SR. V praxi má význam dvojčinný (master-slave) PO-JK z dvoch asynchrónnych PO-SR a logických členov.</p>`)+
    tsec('Inverzná prechodová funkcia p⁻¹',`<p>Pre každý prechod r → u udáva, aké vstupy musí PO mať, aby sa prechod uskutočnil. Používa sa pri návrhu budiacich funkcií. <b>x</b> znamená, že na hodnote nezáleží.</p>`+(()=>{const t=['00','01','10','11'];return`<div class="ttwrap"><table class="tt"><thead><tr><th>r → u</th><th class="o">D</th><th class="o">T</th><th class="o" colspan="2">J K</th><th class="o" colspan="2">S R</th></tr></thead><tbody>${t.map(k=>`<tr><td>${k[0]} → ${k[1]}</td><td class="o">${FFS.D.t[k][0]}</td><td class="o">${FFS.T.t[k][0]}</td><td class="o">${FFS.JK.t[k][0]}</td><td class="o">${FFS.JK.t[k][1]}</td><td class="o">${FFS.SR.t[k][0]}</td><td class="o">${FFS.SR.t[k][1]}</td></tr>`).join('')}</tbody></table></div>`})())+
-   tsec('Podmienky správnej synchronizácie',`<p>Pamäťová časť P (preklápacie obvody) a kombinačná časť K tvoria slučku. Perióda hodinového signálu musí byť dosť dlhá, aby sa signál ustálil: <b>E ≥ Pₘₐₓ + Kₘₐₓ</b>, frekvencia <b>f = 1/E</b>. Šírka impulzu: <b>šₘᵢₙ ≤ š ≤ Pₘᵢₙ + Kₘᵢₙ</b>. Dvojčinné PO s krátkym vzorkovaním túto požiadavku uľahčujú.</p>`);
+   tsec('Podmienky správnej synchronizácie',`<p>Pamäťová časť P (preklápacie obvody) a kombinačná časť K tvoria slučku. Perióda hodinového signálu musí byť dosť dlhá, aby sa signál ustálil: <b>E ≥ Pₘₐₓ + Kₘₐₓ</b>, frekvencia <b>f = 1/E</b>. Šírka impulzu: <b>šₘᵢₙ ≤ š ≤ Pₘᵢₙ + Kₘᵢₙ</b>. Dvojčinné PO s krátkym vzorkovaním túto požiadavku uľahčujú.</p>`)+
+   tsec('Časové diagramy',`<p>Čiary zvisle označujú nábežné hrany hodín, v ktorých sa stav mení. Vstup musí byť v tom okamihu ustálený.</p>${tdiag('D')}${tdiag('T')}${tdiag('JK')}`);
 
   const SA={m:4,type:'mealy',p:[[2,1],[3,1],[4,2],[1,3]],y:[[0,0],[0,0],[0,0],[0,1]],codes:[0,3,1,2]};
   const FD=ssoFuncs(SA,'D'),FJ=ssoFuncs(SA,'JK');
@@ -943,7 +1046,7 @@ document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setView(b.dataset.v))
 function next(){
   const pool=S.topic==='mix'?TOPICS:TOPICS.filter(t=>t.id===S.topic);
   let q=null,t=null;
-  for(let k=0;k<8&&!q;k++){try{t=pick(pool);q=pick(t.gens)()}catch(e){q=null}}
+  for(let k=0;k<8&&!q;k++){try{t=pick(pool);q=pickGen(t)()}catch(e){q=null}}
   S={...S,q,qt:t,sel:null,rows:q&&q.input.t==='rows'?q.input.rows.map(()=>null):[],counted:false,done:false,shown:false};
   renderNav();renderCard();
   const cd=$('#card');if(cd.getBoundingClientRect().top<0)cd.scrollIntoView({block:'start',behavior:'auto'});
@@ -1023,4 +1126,246 @@ function reveal(){
   const s=$('#sol');s.hidden=false;s.innerHTML=`<h3>Postup</h3>${inp.t==='expr'?`<div class="eq">Správna odpoveď: ${q.ref}</div>`:''}${q.solution}`;s.scrollIntoView({block:'nearest',behavior:'smooth'})}
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&(S.done||S.shown)&&e.target===document.body)next()});
 renderTheory();next();
+const getS=()=>S;
+/* ===== Spoločné nadstavby pre všetky cvičebnice =====
+   Skúška s časovačom, slabé miesta, ťahák, kartičky, pracovný list, export/import štatistiky,
+   odkaz na teóriu po chybe. Spolieha sa na globály stránky: getS(), TOPICS, ST, save, tstat, next,
+   renderNav, renderCard, check, record, fb, setView, renderTheory, $ */
+const xh=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const xpick=a=>a[Math.floor(Math.random()*a.length)];
+const xshuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const xapp=document.getElementById('app');
+const xTabs=document.querySelector('.tabs');
+let LASTGI=0;
+
+/* ---------- slabé miesta: vážený výber generátora ---------- */
+const wkey=(t,i)=>t.id+'|'+i;
+function pickGen(t){
+  const w=ST.weak||(ST.weak={}),f=ST.focus?3:.7;
+  const ws=t.gens.map((g,i)=>1+f*(w[wkey(t,i)]||0));
+  let r=Math.random()*ws.reduce((a,b)=>a+b,0),i=0;
+  for(;i<ws.length-1&&r>=ws[i];i++)r-=ws[i];
+  LASTGI=i;return t.gens[i]}
+function weakUpd(ok,q,t){
+  const w=ST.weak||(ST.weak={}),k=wkey(t,LASTGI);
+  const v=ok?Math.max(0,(w[k]||0)-1):Math.min(5,(w[k]||0)+2);
+  if(v)w[k]=v;else delete w[k];
+  (ST.kinds||(ST.kinds={}))[k]=q.kind}
+
+/* ---------- úprava existujúcich funkcií stránky ---------- */
+let EX=null;
+const _record=record;
+record=function(ok){
+  const S_=getS();
+  if(EX&&EX.run){if(EX.busy)return;EX.busy=true;setTimeout(()=>examAdvance(ok,false),0);return}
+  weakUpd(ok,S_.q,S_.qt);_record(ok)};
+const _fb=fb;
+fb=function(cls,txt){
+  _fb(cls,txt);
+  if(cls==='bad'&&!(EX&&EX.run)&&getS().view!=='theory'){
+    const el=document.getElementById('fb');
+    if(el&&!el.querySelector('.golink')){const b=document.createElement('button');b.type='button';b.className='golink';b.textContent='Pozri si teóriu k tejto téme';
+      b.onclick=()=>{const S_=getS();if(S_.qt){S_.topic=S_.qt.id}renderTheory();setView('theory');window.scrollTo({top:0,behavior:'smooth'})};
+      el.firstChild.appendChild(b)}}};
+const _renderNav=renderNav;
+renderNav=function(){
+  _renderNav();
+  const n=document.getElementById('nav');if(!n)return;
+  const wk=Object.keys(ST.weak||{}).length;
+  n.insertAdjacentHTML('beforeend',`<label class="focus"><input type="checkbox" id="xfocus" ${ST.focus?'checked':''}> Viac príkladov z mojich slabých miest${wk?` (${wk})`:''}</label><div class="io"><button class="reset" id="xexp">Exportovať štatistiku</button><button class="reset" id="ximp">Importovať</button></div>`);
+  document.getElementById('xfocus').onchange=e=>{ST.focus=e.target.checked;save()};
+  document.getElementById('xexp').onclick=()=>{
+    const b=new Blob([JSON.stringify(ST)],{type:'application/json'}),a=document.createElement('a');
+    a.href=URL.createObjectURL(b);a.download='cvicebnica-statistika.json';document.body.appendChild(a);a.click();a.remove()};
+  document.getElementById('ximp').onclick=()=>{
+    const i=document.createElement('input');i.type='file';i.accept='application/json,.json';
+    i.onchange=()=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(o&&o.stats){ST=o;save();renderNav();if(typeof renderScore==='function')renderScore()}else alert_('Súbor nemá správny formát.')}catch(e){alert_('Súbor sa nepodarilo načítať.')}};r.readAsText(f)};
+    i.click()}};
+function alert_(m){const el=document.getElementById('fb');if(el)_fb('warn',m)}
+const _setView=setView;
+setView=function(v){leaveExam();_setView(v)};
+
+/* ---------- ďalšie karty (taby) ---------- */
+const XTABS=[['exam','Skúška'],['sheet','Ťahák'],['cards','Kartičky']];
+XTABS.forEach(([v,n])=>{
+  const b=document.createElement('button');b.className='tab';b.setAttribute('role','tab');b.dataset.v=v;b.textContent=n;b.setAttribute('aria-selected','false');
+  b.onclick=()=>xview(v);xTabs.appendChild(b);
+  const s=document.createElement('section');s.className='xv';s.id='xv-'+v;s.setAttribute('aria-label',n);xapp.appendChild(s)});
+const pa=document.createElement('div');pa.id='printarea';document.body.appendChild(pa);
+function xview(v){
+  if(v!=='exam')leaveExam();
+  getS().view=v;xapp.dataset.view=v;
+  document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v));
+  if(v==='exam')renderExam();else if(v==='sheet')renderSheet();else if(v==='cards')renderCards();
+  window.scrollTo({top:0})}
+
+/* ---------- skúška ---------- */
+let XCFG={topics:null,n:10,min:0};
+function topicChecks(){
+  if(!XCFG.topics)XCFG.topics=TOPICS.map(t=>t.id);
+  return TOPICS.map(t=>`<label class="chk"><input type="checkbox" data-t="${t.id}" ${XCFG.topics.includes(t.id)?'checked':''}> <span>${t.name}</span></label>`).join('')}
+function readCfg(){
+  const box=document.getElementById('xv-exam');
+  XCFG.topics=[...box.querySelectorAll('input[data-t]:checked')].map(i=>i.dataset.t);
+  XCFG.n=+box.querySelector('#xn').value;XCFG.min=+box.querySelector('#xm').value;return XCFG}
+function renderExam(){
+  const box=document.getElementById('xv-exam');
+  const w=ST.weak||{},ks=Object.keys(w).sort((a,b)=>w[b]-w[a]).slice(0,8);
+  box.innerHTML=`<div class="xcard"><h3>Skúška</h3>
+   <p class="muted">Príklady sa nekontrolujú hneď. Odpovedáš po jednom, na konci dostaneš výsledok, rozbor a postupy. Skúška sa započíta do štatistiky a slabých miest.</p>
+   <div class="xgrid"><div><h4>Témy</h4><div class="chks">${topicChecks()}</div><button class="reset" id="xall">označiť všetko / nič</button></div>
+   <div><h4>Nastavenie</h4><label class="fld">Počet príkladov<select id="xn">${[5,10,15,20,30].map(n=>`<option ${n===XCFG.n?'selected':''}>${n}</option>`).join('')}</select></label>
+   <label class="fld">Časový limit<select id="xm">${[[0,'bez limitu'],[10,'10 minút'],[20,'20 minút'],[30,'30 minút'],[45,'45 minút'],[60,'60 minút']].map(([m,l])=>`<option value="${m}" ${m===XCFG.min?'selected':''}>${l}</option>`).join('')}</select></label>
+   <div class="actions"><button class="btn main" id="xstart">Začať skúšku</button><button class="btn" id="xprint">Vytlačiť pracovný list</button></div>
+   <p class="muted">Pracovný list: príklady a prázdne riadky na odpovede, riešenia sú na konci, ďalšia strana.</p></div></div>
+   ${ks.length?`<h4>Tvoje slabé miesta</h4><ul class="weak">${ks.map(k=>`<li>${xh((ST.kinds||{})[k]||k)} <span class="muted">(váha ${w[k]})</span></li>`).join('')}</ul><p class="muted">Tieto typy sa objavujú častejšie, keď je zapnuté „Viac príkladov z mojich slabých miest“ v zozname tém.</p>`:'<p class="muted">Zatiaľ nemáš slabé miesta. Objavia sa po prvých chybách.</p>'}
+  </div><div id="xrun"></div>`;
+  box.querySelector('#xall').onclick=()=>{const cs=[...box.querySelectorAll('input[data-t]')],on=cs.some(c=>!c.checked);cs.forEach(c=>c.checked=on)};
+  box.querySelector('#xstart').onclick=()=>{readCfg();if(!XCFG.topics.length){return}startExam(XCFG)};
+  box.querySelector('#xprint').onclick=()=>{readCfg();if(!XCFG.topics.length)return;printSheet(XCFG)}}
+function genItems(cfg){
+  const ts=xshuf(cfg.topics.map(id=>TOPICS.find(t=>t.id===id)).filter(Boolean)),out=[];
+  for(let i=0;i<cfg.n;i++){
+    const t=ts[i%ts.length];let q=null,gi=0;
+    for(let k=0;k<12&&!q;k++){try{q=pickGen(t)();gi=LASTGI}catch(e){q=null}}
+    if(q)out.push({t,q,gi})}
+  return out}
+function startExam(cfg){
+  const items=genItems(cfg);if(!items.length)return;
+  EX={run:true,qs:items,i:0,log:[],start:Date.now(),limit:cfg.min*60000,busy:false};
+  const box=document.getElementById('xv-exam');
+  box.innerHTML=`<div class="xhead"><b id="xprog"></b><span id="xtime" class="xtime"></span><button class="btn" id="xend">Ukončiť skúšku</button></div><div id="xrun"></div>`;
+  box.querySelector('#xend').onclick=()=>finishExam(true);
+  EX.timer=setInterval(xtick,1000);xtick();showExamQ()}
+function xtick(){
+  if(!EX||!EX.run)return;const el=document.getElementById('xtime');
+  const el_=Date.now()-EX.start;
+  if(EX.limit){const r=EX.limit-el_;if(r<=0){finishExam(true);return}const s=Math.ceil(r/1000);if(el)el.textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;if(el)el.classList.toggle('low',r<60000)}
+  else if(el){const s=Math.floor(el_/1000);el.textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`}}
+function showExamQ(){
+  const it=EX.qs[EX.i],S_=getS();
+  Object.assign(S_,{q:it.q,qt:it.t,sel:null,rows:it.q.input.t==='rows'?it.q.input.rows.map(()=>null):[],counted:false,done:false,shown:false});
+  LASTGI=it.gi;EX.busy=false;
+  document.getElementById('xprog').textContent=`Príklad ${EX.i+1} z ${EX.qs.length}`;
+  const run=document.getElementById('xrun'),card=document.getElementById('card');
+  run.appendChild(card);renderCard();
+  const ac=card.querySelector('.actions');
+  ac.style.display='none';ac.insertAdjacentHTML('afterend','<div class="actions"><button class="btn main" id="xok">Potvrdiť a ďalej</button><button class="btn" id="xskip">Preskočiť</button></div>');
+  card.querySelector('#xok').onclick=()=>{if(EX.busy)return;getS().counted=false;check()};
+  card.querySelector('#xskip').onclick=()=>{if(EX.busy)return;EX.busy=true;examAdvance(false,true)};
+  const f=card.querySelector('input.cell');if(f&&matchMedia('(hover:hover)').matches)f.focus({preventScroll:true})}
+function examAdvance(ok,skipped){
+  if(!EX||!EX.run)return;
+  const it=EX.qs[EX.i];
+  EX.log.push({t:it.t,q:it.q,ok,skipped});
+  LASTGI=it.gi;weakUpd(ok,it.q,it.t);
+  const s=tstat(it.t.id);s.total++;if(ok)s.ok++;save();
+  EX.i++;
+  if(EX.i>=EX.qs.length)finishExam(false);else showExamQ()}
+function leaveExam(){
+  if(!EX||!EX.run)return;
+  EX.run=false;clearInterval(EX.timer);
+  const card=document.getElementById('card'),split=document.querySelector('.split');
+  if(card&&split&&card.parentNode!==split)split.appendChild(card);
+  next()}
+function finishExam(forced){
+  if(!EX||!EX.run)return;
+  const rest=EX.qs.slice(EX.log.length);
+  rest.forEach(it=>{EX.log.push({t:it.t,q:it.q,ok:false,skipped:true,missed:true});LASTGI=it.gi;weakUpd(false,it.q,it.t);const s=tstat(it.t.id);s.total++;save()});
+  const dur=Date.now()-EX.start,log=EX.log,t0=EX.qs;
+  EX.run=false;clearInterval(EX.timer);
+  const card=document.getElementById('card'),split=document.querySelector('.split');
+  if(card&&split)split.appendChild(card);
+  next();
+  const ok=log.filter(l=>l.ok).length,n=log.length,pct=Math.round(100*ok/n);
+  const by={};log.forEach(l=>{const b=by[l.t.name]||(by[l.t.name]={ok:0,n:0});b.n++;if(l.ok)b.ok++});
+  const msg=pct>=90?'Výborne.':pct>=70?'Dobre, ešte pár chýb.':pct>=50?'Zatiaľ hranica, pozri si chyby nižšie.':'Treba ešte precvičovať, ale tvoje slabé miesta sú teraz zaznamenané.';
+  const sec=Math.round(dur/1000);
+  const box=document.getElementById('xv-exam');
+  box.innerHTML=`<div class="xcard"><h3>Výsledok: ${ok} z ${n} (${pct} %)</h3><p>${msg} Čas: ${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}.</p>
+   <div class="ttwrap"><table class="tt"><thead><tr><th>Téma</th><th>Správne</th></tr></thead><tbody>${Object.entries(by).map(([k,v])=>`<tr><td style="text-align:left">${k}</td><td>${v.ok} / ${v.n}</td></tr>`).join('')}</tbody></table></div>
+   <div class="actions"><button class="btn main" id="xagain">Nová skúška</button><button class="btn" id="xwrong">Zopakovať len chybné témy</button></div></div>
+   <h4>Rozbor</h4>${log.map((l,i)=>`<details class="rev ${l.ok?'ok':'bad'}"><summary><span class="mark">${l.ok?'✓':'✗'}</span> ${i+1}. ${l.q.kind} <span class="muted">· ${l.t.name}${l.missed?' · nestihol si':l.skipped?' · preskočené':''}</span></summary><div class="prompt">${l.q.prompt}${choiceList(l.q)}</div><div class="sol"><h3>Postup</h3>${l.q.solution}</div></details>`).join('')}`;
+  box.querySelector('#xagain').onclick=renderExam;
+  box.querySelector('#xwrong').onclick=()=>{const ids=[...new Set(log.filter(l=>!l.ok).map(l=>l.t.id))];XCFG.topics=ids.length?ids:XCFG.topics;renderExam()};
+  EX=null;window.scrollTo({top:0})}
+function choiceList(q){
+  const inp=q.input;if(inp.t==='choice')return`<ul class="chl">${inp.opts.map((o,i)=>`<li class="${i===q.answer[0]?'right':''}">${o}${i===q.answer[0]?' <b>(správne)</b>':''}</li>`).join('')}</ul>`;
+  if(inp.t==='rows')return`<ul class="chl">${inp.rows.map((r,i)=>`<li>${r.label} <b>→ ${r.opts[q.answer[i]]}</b></li>`).join('')}</ul>`;
+  return''}
+
+/* ---------- pracovný list na tlač ---------- */
+function printSheet(cfg){
+  const items=genItems(cfg);if(!items.length)return;
+  const task=it=>{const inp=it.q.input;let extra='';
+    if(inp.t==='choice')extra=`<ol class="wsc" type="A">${inp.opts.map(o=>`<li>${o}</li>`).join('')}</ol>`;
+    else if(inp.t==='rows')extra=`<ul class="wsc">${inp.rows.map(r=>`<li>${r.label} (${r.opts.join(' / ')})</li>`).join('')}</ul>`;
+    else extra='<div class="wsl">Odpoveď: ______________________________</div>';
+    return extra};
+  document.getElementById('printarea').innerHTML=`<h2>Pracovný list: ${document.title}</h2><p class="muted">Meno: ______________________ &nbsp; Dátum: ____________</p>`+
+    items.map((it,i)=>`<div class="wsq"><b>${i+1}.</b> <span class="kd">(${it.q.kind})</span><div class="prompt">${stripAnswerUi(it.q.prompt)}</div>${task(it)}</div>`).join('')+
+    `<div class="pbreak"></div><h2>Riešenia</h2>`+items.map((it,i)=>`<div class="wsq"><b>${i+1}. ${it.q.kind}</b>${choiceList(it.q)}<div>${it.q.solution}</div></div>`).join('');
+  document.body.classList.add('ws');
+  const done=()=>{document.body.classList.remove('ws');window.removeEventListener('afterprint',done)};
+  window.addEventListener('afterprint',done);
+  try{window.print()}catch(e){done()}}
+function stripAnswerUi(h){return h}
+
+/* ---------- ťahák ---------- */
+function renderSheet(){
+  const box=document.getElementById('xv-sheet');
+  box.innerHTML=`<div class="xhead noprint"><b>Ťahák: najdôležitejšie z každej témy</b><button class="btn main" id="spr">Vytlačiť</button></div>
+   <div class="sheetgrid">${TOPICS.map(t=>`<section><h4>${t.name}</h4>${t.theory}</section>`).join('')}</div>`;
+  box.querySelector('#spr').onclick=()=>{try{window.print()}catch(e){}}}
+
+/* ---------- kartičky ---------- */
+let CD={topic:'all',q:null,flip:false,known:0,seen:0};
+function newCard(){
+  const pool=CD.topic==='all'?TOPICS:TOPICS.filter(t=>t.id===CD.topic);
+  CD.q=null;CD.flip=false;
+  for(let k=0;k<60&&!CD.q;k++){
+    const t=xpick(pool);let q=null;try{q=xpick(t.gens)()}catch(e){q=null}
+    if(q&&q.input&&q.input.t==='choice'){CD.q=q;CD.t=t}}
+  drawCard()}
+function renderCards(){
+  const box=document.getElementById('xv-cards');
+  box.innerHTML=`<div class="xcard"><h3>Kartičky</h3><p class="muted">Pojmy a pravidlá. Najprv si odpovedz v hlave, potom kartičku otoč.</p>
+   <label class="fld">Téma<select id="cdt"><option value="all">Všetky témy</option>${TOPICS.map(t=>`<option value="${t.id}" ${CD.topic===t.id?'selected':''}>${t.name}</option>`).join('')}</select></label>
+   <div id="cdbox"></div><p class="muted" id="cdstat"></p></div>`;
+  box.querySelector('#cdt').onchange=e=>{CD.topic=e.target.value;newCard()};
+  newCard()}
+function drawCard(){
+  const b=document.getElementById('cdbox');if(!b)return;
+  document.getElementById('cdstat').textContent=`Videl si ${CD.seen} kartičiek, vedel ${CD.known}.`;
+  if(!CD.q){b.innerHTML='<p>Pre túto tému nie sú kartičky.</p>';return}
+  const q=CD.q;
+  b.innerHTML=CD.flip?`<div class="flash back"><div class="prompt">${q.prompt}</div><div class="ans"><b>Odpoveď:</b> ${q.input.opts[q.answer[0]]}</div><div class="sol">${q.solution}</div></div>
+   <div class="actions"><button class="btn main" id="cdk">Vedel som</button><button class="btn" id="cdn">Nevedel som</button></div>`:
+   `<div class="flash"><div class="prompt">${q.prompt}</div></div><div class="actions"><button class="btn main" id="cdf">Otočiť kartičku</button><button class="btn" id="cdx">Preskočiť</button></div>`;
+  const g=id=>b.querySelector(id);
+  if(CD.flip){g('#cdk').onclick=()=>{CD.seen++;CD.known++;newCard()};g('#cdn').onclick=()=>{CD.seen++;newCard()}}
+  else{g('#cdf').onclick=()=>{CD.flip=true;drawCard()};g('#cdx').onclick=newCard}}
+/* ===== prehrávač automatov ===== */
+function aplRender(el){
+  const a=JSON.parse(el.dataset.a),w=JSON.parse(el.dataset.w);let t=+el.dataset.t||0;
+  const tr=[{s:1,prev:null,x:null,y:null}];let s=1;
+  w.forEach(x=>{const y=a.type==='moore'?null:a.y[s-1][x],ns=a.p[s-1][x];tr.push({s:ns,prev:s,x,y});s=ns});
+  t=Math.max(0,Math.min(w.length,t));el.dataset.t=t;const c=tr[t];
+  el.querySelectorAll('.wd span').forEach(sp=>{const i=+sp.dataset.i;sp.classList.toggle('cur',i===t);sp.classList.toggle('done',i<t)});
+  el.querySelectorAll('.st[data-s]').forEach(n=>n.classList.toggle('on',+n.dataset.s===c.s));
+  el.querySelectorAll('.e[data-e]').forEach(n=>n.classList.toggle('on',!!c.prev&&n.dataset.e===`${c.prev-1}>${c.s-1}`));
+  const outs=a.type==='moore'?tr.slice(0,t+1).map(o=>a.y[o.s-1]):tr.slice(1,t+1).map(o=>o.y);
+  const msg=t===0?`Začiatok: automat je v stave 1.${a.type==='moore'?` Moore vydá hneď výstup y(0) = ${a.y[0]}.`:''}`:
+    `Prečítaný vstup x(${t-1}) = ${c.x}: prechod ${c.prev} → ${c.s}${a.type==='mealy'?`, výstup y(${t-1}) = ${c.y}`:`, nový stav ${c.s} vydá výstup ${a.y[c.s-1]}`}.`;
+  el.querySelector('.st-out').innerHTML=`${msg}<br>Výstupné slovo zatiaľ: <code class="w">${outs.length?outs.join(' '):'-'}</code>${t===w.length?' (koniec slova)':''}`;
+  el.querySelector('[data-act="step"]').disabled=t>=w.length;el.querySelector('[data-act="back"]').disabled=t<=0}
+document.addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('.apl [data-act]');if(!b)return;
+  const el=b.closest('.apl'),act=b.dataset.act;let t=+el.dataset.t||0;
+  el.dataset.t=act==='step'?t+1:act==='back'?t-1:0;aplRender(el)});
+const _rtp=renderTheory;renderTheory=function(){_rtp();document.querySelectorAll('.apl').forEach(aplRender)};
+const _sol=showSol,_rev=reveal;
+showSol=function(o){_sol(o);document.querySelectorAll('#sol .apl').forEach(aplRender)};
+reveal=function(){_rev();document.querySelectorAll('#sol .apl').forEach(aplRender)};
+renderTheory();
 </script>

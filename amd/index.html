@@ -1,4 +1,3 @@
-<style>.backlink{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-weight:600;font-size:.9rem;padding:6px 12px 6px 10px;border:1.5px solid var(--line);border-radius:99px;background:var(--card);transition:border-color .15s,color .15s}.backlink:hover{color:var(--blue);border-color:var(--blue)}.backlink:focus-visible{outline:3px solid var(--blue);outline-offset:2px}</style>
 <title>Cvičebnica ADM</title>
 <meta property="og:type" content="website">
 <meta property="og:title" content="Cvičebnica ADM">
@@ -131,8 +130,15 @@ kbd{font:500 .8em var(--f-mono);background:var(--soft);padding:1px 6px;border-ra
   .tbtn .s{display:none}
   h1{font-size:2.2rem}.card{padding:16px}
 }
+svg.sysplot{display:block;max-width:100%;height:auto;background:var(--card);border:1px solid var(--line);border-radius:8px}
+.spw{margin:10px 0;max-width:280px}
+svg.sysplot .g{stroke:var(--rule);stroke-width:1}svg.sysplot .ax{stroke:var(--fg);stroke-width:1.4}
+svg.sysplot .l1{stroke:var(--blue);stroke-width:2.4}svg.sysplot .l2{stroke:var(--red);stroke-width:2.4}
+svg.sysplot .pp{fill:var(--green);stroke:var(--card);stroke-width:2}
+svg.sysplot .pl{fill:var(--fg);font:600 11px var(--f-body)}svg.sysplot .tk{fill:var(--muted);font:9px var(--f-mono)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+<style>.backlink{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-weight:600;font-size:.9rem;padding:6px 12px 6px 10px;border:1.5px solid var(--line);border-radius:99px;background:var(--card);transition:border-color .15s,color .15s}.backlink:hover{color:var(--blue);border-color:var(--blue)}.backlink:focus-visible{outline:3px solid var(--blue);outline-offset:2px}</style>
 <div class="app" id="app" data-view="practice">
   <a class="backlink" href="../">← Cvičebnice</a>
   <header class="top">
@@ -151,6 +157,80 @@ kbd{font:500 .8em var(--f-mono);background:var(--soft);padding:1px 6px;border-ra
     </main>
   </div>
 </div>
+<style>
+/* --- nadstavby: skúška, ťahák, kartičky, tlač --- */
+.xv,#printarea{display:none}
+.app[data-view="exam"] #xv-exam,.app[data-view="sheet"] #xv-sheet,.app[data-view="cards"] #xv-cards{display:block}
+.app[data-view="exam"] .layout,.app[data-view="sheet"] .layout,.app[data-view="cards"] .layout{display:none}
+.xcard{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:18px 20px 20px;margin-bottom:14px}
+.xcard h3,.xv h4{font:700 1.7rem/1.1 var(--f-display);color:var(--red);margin:0 0 6px}
+.xv h4{font-size:1.3rem;color:var(--green);margin:14px 0 6px}
+.xgrid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:20px}
+@media (max-width:760px){.xgrid{grid-template-columns:minmax(0,1fr)}}
+.chks{display:flex;flex-direction:column;gap:4px}
+.chk,.fld{display:flex;gap:8px;align-items:flex-start;font-size:.95rem}
+.chk input{margin-top:.3em;accent-color:var(--blue)}
+.fld{flex-direction:column;gap:4px;margin:8px 0;font-weight:600}
+.fld select{font:500 1rem var(--f-body);padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);color:var(--fg);max-width:100%}
+.xhead{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;margin-bottom:12px;padding:10px 14px;background:var(--card);border:1.5px solid var(--line);border-radius:12px}
+.xtime{font:600 1.3rem var(--f-mono);font-variant-numeric:tabular-nums;color:var(--blue)}.xtime.low{color:var(--red)}
+.weak{margin:4px 0;padding-left:1.2em}
+details.rev{background:var(--card);border:1.5px solid var(--line);border-radius:10px;margin:8px 0;padding:0 14px}
+details.rev summary{cursor:pointer;padding:10px 0;font-weight:600;list-style:none}
+details.rev .mark{display:inline-block;width:1.5em;text-align:center;font-weight:700}
+details.rev.ok{border-color:var(--green)}details.rev.ok .mark{color:var(--green)}
+details.rev.bad{border-color:var(--red)}details.rev.bad .mark{color:var(--red)}
+details.rev[open]{padding-bottom:12px}
+.chl{margin:6px 0;padding-left:1.2em}.chl .right{color:var(--green)}
+.golink{all:unset;cursor:pointer;margin-left:12px;color:var(--blue);text-decoration:underline;font-weight:500}
+.golink:focus-visible{outline:3px solid var(--blue)}
+label.focus{display:flex;gap:8px;align-items:flex-start;font-size:.82rem;color:var(--muted);padding:6px 2px}
+label.focus input{accent-color:var(--blue);margin-top:.2em}
+.io{display:flex;flex-direction:column;gap:2px}
+.sheetgrid{columns:2 320px;column-gap:20px}
+.sheetgrid section{break-inside:avoid;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:2px 14px 10px;margin:0 0 14px;font-size:.9rem}
+.sheetgrid ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:4px}
+.flash{background:var(--soft);border-radius:12px;padding:18px 20px;margin:12px 0;min-height:7em}
+.flash.back{border:2px solid var(--green)}
+.flash .ans{margin:12px 0;padding:8px 12px;background:var(--ok-bg);border-radius:8px}
+.lab{border:1.5px solid var(--line);border-radius:12px;background:var(--soft);padding:10px 14px 14px;margin:14px 0}
+.lab h5{font:700 1.25rem var(--f-display);color:var(--red);margin:0 0 6px}
+.lab .ctr{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;margin-top:8px}
+.lab label{display:grid;grid-template-columns:minmax(7em,auto) minmax(0,1fr) 3.6em;gap:8px;align-items:center;font-size:.9rem}
+.lab label b{font:500 .85rem var(--f-mono);text-align:right}
+.lab input[type=range]{width:100%;accent-color:var(--blue)}
+.lab select{font:500 .95rem var(--f-body);padding:5px 8px;border:1.5px solid var(--line);border-radius:7px;background:var(--card);color:var(--fg);max-width:100%}
+.lab .out{margin-top:6px;font-size:.92rem;min-height:2.6em}
+.lab .plotw{margin:0 auto}
+.apl{border:1.5px solid var(--line);border-radius:12px;background:var(--soft);padding:10px 14px 14px;margin:12px 0}
+.apl h5{font:700 1.25rem var(--f-display);color:var(--red);margin:0 0 6px}
+.apl .wd{display:flex;gap:4px;flex-wrap:wrap;margin:6px 0}
+.apl .wd span{min-width:2em;text-align:center;padding:3px 6px;border:1.5px solid var(--line);border-radius:6px;background:var(--card);font:500 1rem var(--f-mono)}
+.apl .wd span.cur{border-color:var(--blue);background:var(--blue);color:#fff}
+.apl .wd span.done{color:var(--muted)}
+.apl .st-out{font-size:.92rem;min-height:2.2em;margin:4px 0}
+.apl .ctl{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.apl .ctl button{all:unset;cursor:pointer;padding:6px 14px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);font-weight:600;font-size:.9rem}
+.apl .ctl button:hover{border-color:var(--blue)}
+.apl .ctl button:focus-visible{outline:3px solid var(--blue)}
+svg.aut .st.on{fill:var(--blue);stroke:var(--blue)}
+svg.aut .st.on ~ .sn,svg.aut .st.on ~ .so{fill:#fff}
+svg.aut .e.on{stroke:var(--blue);stroke-width:3}
+@media print{
+  body{background:#fff!important;color:#000!important;padding:0!important;background-image:none!important}
+  .app[data-view="sheet"]>*:not(#xv-sheet){display:none!important}
+  .noprint{display:none!important}
+  .sheetgrid{columns:2;column-gap:14px;font-size:9.5pt}
+  .sheetgrid section{border:1px solid #888;background:#fff}
+  body.ws .app{display:none!important}
+  body.ws #printarea{display:block;font-size:11pt}
+  #printarea h2{font:700 18pt var(--f-body);margin:0 0 6px}
+  .wsq{break-inside:avoid;margin:0 0 14px;padding-bottom:8px;border-bottom:1px dashed #999}
+  .wsl{margin-top:12px}
+  .pbreak{break-after:page}
+  #printarea .sol{display:none}
+}
+</style>
 <script>
 'use strict';
 /* ---------- zlomky ---------- */
@@ -251,6 +331,18 @@ gMat.push(()=>{const A=FM(rmI(2,2,-2,3));const B=Math.random()<.3?pick([mSc(F(2)
 
 /* ========== 2. SÚSTAVY LINEÁRNYCH ROVNÍC ========== */
 const rnd2=()=>{let a,b,c,d;do{a=R(-4,5);b=R(-4,5);c=R(-4,5);d=R(-4,5)}while(a*d-b*c===0||!a||!b||!c||!d);return[[a,b],[c,d]]};
+/* geometrický pohľad: sústava dvoch rovníc ako dve priamky */
+function sysPlot(eqs,pt){
+  const W=280,L=Math.max(6,Math.ceil(Math.max(...(pt?[Math.abs(pt[0]),Math.abs(pt[1])]:[0]))+2)),sx=x=>W/2+x/L*(W/2-14),sy=y=>W/2-y/L*(W/2-14);
+  let s=`<svg class="sysplot" viewBox="0 0 ${W} ${W}" width="${W}" height="${W}" role="img" aria-label="Priamky sústavy">`;
+  for(let i=-L;i<=L;i++){if(i===0)continue;s+=`<line class="g" x1="${sx(i)}" y1="${sy(-L)}" x2="${sx(i)}" y2="${sy(L)}"/><line class="g" x1="${sx(-L)}" y1="${sy(i)}" x2="${sx(L)}" y2="${sy(i)}"/>`;if(L<=9||i%2===0)s+=`<text class="tk" x="${sx(i)}" y="${sy(0)+12}" text-anchor="middle">${i}</text><text class="tk" x="${sx(0)-4}" y="${sy(i)+3}" text-anchor="end">${i}</text>`}
+  s+=`<line class="ax" x1="${sx(-L)}" y1="${sy(0)}" x2="${sx(L)}" y2="${sy(0)}"/><line class="ax" x1="${sx(0)}" y1="${sy(-L)}" x2="${sx(0)}" y2="${sy(L)}"/><text class="tk" x="${W-6}" y="${sy(0)-5}">x</text><text class="tk" x="${sx(0)+5}" y="10">y</text>`;
+  eqs.forEach((e,k)=>{const[a,b,c]=e;let p1,p2;
+    if(b===0){p1=[c/a,-L*3];p2=[c/a,L*3]}else{p1=[-L*3,(c-a*-L*3)/b];p2=[L*3,(c-a*L*3)/b]}
+    s+=`<line class="l${k+1}" x1="${sx(p1[0])}" y1="${sy(p1[1])}" x2="${sx(p2[0])}" y2="${sy(p2[1])}"/>`});
+  if(pt)s+=`<circle class="pp" cx="${sx(pt[0])}" cy="${sy(pt[1])}" r="5"/><text class="pl" x="${sx(pt[0])+8}" y="${sy(pt[1])-8}">[${pt[0]}; ${pt[1]}]</text>`;
+  return s+'</svg>'}
+const spW=(eqs,pt,cap)=>`<div class="spw">${sysPlot(eqs,pt)}<div class="muted">${cap}</div></div>`;
 const gSys=[];
 gSys.push(()=>{const[r1,r2]=rnd2();const x=R(-4,5),y=R(-4,5);const b1=r1[0]*x+r1[1]*y,b2=r2[0]*x+r2[1]*y;let cx=x,cy=y;
   if(Math.random()<.5){const m=R(0,2);if(m===0){cx=y;cy=x}else if(m===1)cx=x+pick([-1,1]);else cy=y+pick([-2,2])}
@@ -259,7 +351,7 @@ gSys.push(()=>{const[r1,r2]=rnd2();const x=R(-4,5),y=R(-4,5);const b1=r1[0]*x+r1
   solution:`<p>Dosadíme x = ${sg(cx)}, y = ${sg(cy)} do každej rovnice. Riešenie musí vyhovovať všetkým rovniciam.</p><ul><li>1. rovnica: ĽS = ${P(r1[0])}·${P(cx)} + ${P(r1[1])}·${P(cy)} = ${sg(l1)}, PS = ${sg(b1)} ${l1===b1?'✓':'✗'}</li><li>2. rovnica: ĽS = ${P(r2[0])}·${P(cx)} + ${P(r2[1])}·${P(cy)} = ${sg(l2)}, PS = ${sg(b2)} ${l2===b2?'✓':'✗'}</li></ul>${ok?'':`<p>Skutočné riešenie je [x, y] = [${sg(x)}, ${sg(y)}]. Záleží aj na poradí čísel.</p>`}`}});
 gSys.push(()=>{const[r1,r2]=rnd2();const x=R(-4,5),y=R(-4,5);const b1=r1[0]*x+r1[1]*y,b2=r2[0]*x+r2[1]*y;const aug=FM([[...r1,b1],[...r2,b2]]);const{M,steps}=gj(aug);
   return{kind:'Riešenie sústavy',prompt:`Vyrieš sústavu.${sys([[...r1,b1],[...r2,b2]],['x','y'])}`,input:lines([['x =',null],['y =',null]]),answer:[F(x),F(y)],
-  solution:`<p>Použijeme elementárne riadkové operácie na rozšírenú maticu.</p>${stepsHtml(aug,2,steps)}<p>Riešenie: [x, y] = [${sg(x)}, ${sg(y)}]</p>`}});
+  solution:`<p>Použijeme elementárne riadkové operácie na rozšírenú maticu.</p>${stepsHtml(aug,2,steps)}<p>Riešenie: [x, y] = [${sg(x)}, ${sg(y)}]</p>${spW([[...r1,b1],[...r2,b2]],[x,y],'Každá rovnica je priamka. Riešenie je ich priesečník.')}`}});
 gSys.push(()=>{const kind=pick(['one','none','inf']);let r1,r2;
   if(kind==='one'){[r1,r2]=rnd2().map((r,i)=>[...r,R(-6,8)])}
   else{let a,b;do{a=R(-3,4);b=R(-3,4)}while(!a||!b);const c=R(-5,6),k=pick([2,3,-1,-2]);r1=[a,b,c];
@@ -269,7 +361,9 @@ gSys.push(()=>{const kind=pick(['one','none','inf']);let r1,r2;
   const sol=kind==='one'?`<p>Determinant koeficientov ${r1[0]}·${P(r2[1])} − ${P(r1[1])}·${P(r2[0])} = ${sg(D)} ≠ 0. Priamky sa pretnú v jednom bode, riešenie je jedno.</p>`
    :kind==='none'?`<p>Ľavá strana 2. rovnice je násobok ľavej strany 1. rovnice, ale pravá strana nie je. Po eliminácii dostaneme nepravdivú rovnosť 0 = ${sg(r2[2]-(r2[0]/r1[0])*r1[2])}. Priamky sú rovnobežné, riešenie neexistuje.</p>`
    :`<p>2. rovnica je násobkom 1. rovnice (aj pravá strana). Po eliminácii dostaneme 0 = 0, čo platí vždy. Priamky sú totožné, riešení je nekonečne veľa.</p>`;
-  return{kind:'Počet riešení',prompt:`Koľko riešení má sústava?${sys([r1,r2],['x','y'])}`,...ch,solution:sol}});
+  let ptx=null;if(kind==='one'){const Dd=r1[0]*r2[1]-r1[1]*r2[0];const xx=(r1[2]*r2[1]-r1[1]*r2[2])/Dd,yy=(r1[0]*r2[2]-r1[2]*r2[0])/Dd;if(Number.isInteger(xx)&&Number.isInteger(yy))ptx=[xx,yy]}
+  const gcap=kind==='one'?'Priamky sa pretínajú v jednom bode.':kind==='none'?'Priamky sú rovnobežné a nemajú spoločný bod.':'Priamky splývajú, majú nekonečne veľa spoločných bodov.';
+  return{kind:'Počet riešení',prompt:`Koľko riešení má sústava?${sys([r1,r2],['x','y'])}`,...ch,solution:sol+(r1[0]||r1[1]?spW([r1,r2],ptx,gcap):'')}});
 gSys.push(()=>{let a,b;do{a=R(-3,4);b=R(-4,4)}while(!a);const c=R(-5,7),k=pick([2,3,4]);const p=F(c,a),q=F(-b,a);
   return{kind:'Parametrické riešenie',prompt:`Sústava má nekonečne veľa riešení. Zvoľ y = t, t ∈ ℝ, a vyjadri x pomocou t.${sys([[a,b,c],[k*a,k*b,k*c]],['x','y'])}<p class="muted">Zlomky píš ako 2/3. Koeficient pri t môže byť záporný.</p>`,
   input:lines([['x =',null,'+',null,'· t']]),answer:[p,q],
@@ -543,7 +637,7 @@ document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setView(b.dataset.v))
 function next(){
   const pool=S.topic==='mix'?TOPICS:TOPICS.filter(t=>t.id===S.topic);
   let q=null,t=null;
-  for(let k=0;k<6&&!q;k++){try{t=pick(pool);q=pick(t.gens)()}catch(e){q=null}}
+  for(let k=0;k<6&&!q;k++){try{t=pick(pool);q=pickGen(t)()}catch(e){q=null}}
   S={...S,q,qt:t,sel:null,counted:false,done:false,shown:false};
   renderNav();renderCard();
   const cd=$('#card');if(cd.getBoundingClientRect().top<0)cd.scrollIntoView({block:'start',behavior:'auto'});
@@ -596,4 +690,223 @@ function reveal(){
   $('#chk').disabled=true;showSol(true)}
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&(S.done||S.shown)&&e.target===document.body)next()});
 renderTheory();next();
+const getS=()=>S;
+/* ===== Spoločné nadstavby pre všetky cvičebnice =====
+   Skúška s časovačom, slabé miesta, ťahák, kartičky, pracovný list, export/import štatistiky,
+   odkaz na teóriu po chybe. Spolieha sa na globály stránky: getS(), TOPICS, ST, save, tstat, next,
+   renderNav, renderCard, check, record, fb, setView, renderTheory, $ */
+const xh=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const xpick=a=>a[Math.floor(Math.random()*a.length)];
+const xshuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const xapp=document.getElementById('app');
+const xTabs=document.querySelector('.tabs');
+let LASTGI=0;
+
+/* ---------- slabé miesta: vážený výber generátora ---------- */
+const wkey=(t,i)=>t.id+'|'+i;
+function pickGen(t){
+  const w=ST.weak||(ST.weak={}),f=ST.focus?3:.7;
+  const ws=t.gens.map((g,i)=>1+f*(w[wkey(t,i)]||0));
+  let r=Math.random()*ws.reduce((a,b)=>a+b,0),i=0;
+  for(;i<ws.length-1&&r>=ws[i];i++)r-=ws[i];
+  LASTGI=i;return t.gens[i]}
+function weakUpd(ok,q,t){
+  const w=ST.weak||(ST.weak={}),k=wkey(t,LASTGI);
+  const v=ok?Math.max(0,(w[k]||0)-1):Math.min(5,(w[k]||0)+2);
+  if(v)w[k]=v;else delete w[k];
+  (ST.kinds||(ST.kinds={}))[k]=q.kind}
+
+/* ---------- úprava existujúcich funkcií stránky ---------- */
+let EX=null;
+const _record=record;
+record=function(ok){
+  const S_=getS();
+  if(EX&&EX.run){if(EX.busy)return;EX.busy=true;setTimeout(()=>examAdvance(ok,false),0);return}
+  weakUpd(ok,S_.q,S_.qt);_record(ok)};
+const _fb=fb;
+fb=function(cls,txt){
+  _fb(cls,txt);
+  if(cls==='bad'&&!(EX&&EX.run)&&getS().view!=='theory'){
+    const el=document.getElementById('fb');
+    if(el&&!el.querySelector('.golink')){const b=document.createElement('button');b.type='button';b.className='golink';b.textContent='Pozri si teóriu k tejto téme';
+      b.onclick=()=>{const S_=getS();if(S_.qt){S_.topic=S_.qt.id}renderTheory();setView('theory');window.scrollTo({top:0,behavior:'smooth'})};
+      el.firstChild.appendChild(b)}}};
+const _renderNav=renderNav;
+renderNav=function(){
+  _renderNav();
+  const n=document.getElementById('nav');if(!n)return;
+  const wk=Object.keys(ST.weak||{}).length;
+  n.insertAdjacentHTML('beforeend',`<label class="focus"><input type="checkbox" id="xfocus" ${ST.focus?'checked':''}> Viac príkladov z mojich slabých miest${wk?` (${wk})`:''}</label><div class="io"><button class="reset" id="xexp">Exportovať štatistiku</button><button class="reset" id="ximp">Importovať</button></div>`);
+  document.getElementById('xfocus').onchange=e=>{ST.focus=e.target.checked;save()};
+  document.getElementById('xexp').onclick=()=>{
+    const b=new Blob([JSON.stringify(ST)],{type:'application/json'}),a=document.createElement('a');
+    a.href=URL.createObjectURL(b);a.download='cvicebnica-statistika.json';document.body.appendChild(a);a.click();a.remove()};
+  document.getElementById('ximp').onclick=()=>{
+    const i=document.createElement('input');i.type='file';i.accept='application/json,.json';
+    i.onchange=()=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(o&&o.stats){ST=o;save();renderNav();if(typeof renderScore==='function')renderScore()}else alert_('Súbor nemá správny formát.')}catch(e){alert_('Súbor sa nepodarilo načítať.')}};r.readAsText(f)};
+    i.click()}};
+function alert_(m){const el=document.getElementById('fb');if(el)_fb('warn',m)}
+const _setView=setView;
+setView=function(v){leaveExam();_setView(v)};
+
+/* ---------- ďalšie karty (taby) ---------- */
+const XTABS=[['exam','Skúška'],['sheet','Ťahák'],['cards','Kartičky']];
+XTABS.forEach(([v,n])=>{
+  const b=document.createElement('button');b.className='tab';b.setAttribute('role','tab');b.dataset.v=v;b.textContent=n;b.setAttribute('aria-selected','false');
+  b.onclick=()=>xview(v);xTabs.appendChild(b);
+  const s=document.createElement('section');s.className='xv';s.id='xv-'+v;s.setAttribute('aria-label',n);xapp.appendChild(s)});
+const pa=document.createElement('div');pa.id='printarea';document.body.appendChild(pa);
+function xview(v){
+  if(v!=='exam')leaveExam();
+  getS().view=v;xapp.dataset.view=v;
+  document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v));
+  if(v==='exam')renderExam();else if(v==='sheet')renderSheet();else if(v==='cards')renderCards();
+  window.scrollTo({top:0})}
+
+/* ---------- skúška ---------- */
+let XCFG={topics:null,n:10,min:0};
+function topicChecks(){
+  if(!XCFG.topics)XCFG.topics=TOPICS.map(t=>t.id);
+  return TOPICS.map(t=>`<label class="chk"><input type="checkbox" data-t="${t.id}" ${XCFG.topics.includes(t.id)?'checked':''}> <span>${t.name}</span></label>`).join('')}
+function readCfg(){
+  const box=document.getElementById('xv-exam');
+  XCFG.topics=[...box.querySelectorAll('input[data-t]:checked')].map(i=>i.dataset.t);
+  XCFG.n=+box.querySelector('#xn').value;XCFG.min=+box.querySelector('#xm').value;return XCFG}
+function renderExam(){
+  const box=document.getElementById('xv-exam');
+  const w=ST.weak||{},ks=Object.keys(w).sort((a,b)=>w[b]-w[a]).slice(0,8);
+  box.innerHTML=`<div class="xcard"><h3>Skúška</h3>
+   <p class="muted">Príklady sa nekontrolujú hneď. Odpovedáš po jednom, na konci dostaneš výsledok, rozbor a postupy. Skúška sa započíta do štatistiky a slabých miest.</p>
+   <div class="xgrid"><div><h4>Témy</h4><div class="chks">${topicChecks()}</div><button class="reset" id="xall">označiť všetko / nič</button></div>
+   <div><h4>Nastavenie</h4><label class="fld">Počet príkladov<select id="xn">${[5,10,15,20,30].map(n=>`<option ${n===XCFG.n?'selected':''}>${n}</option>`).join('')}</select></label>
+   <label class="fld">Časový limit<select id="xm">${[[0,'bez limitu'],[10,'10 minút'],[20,'20 minút'],[30,'30 minút'],[45,'45 minút'],[60,'60 minút']].map(([m,l])=>`<option value="${m}" ${m===XCFG.min?'selected':''}>${l}</option>`).join('')}</select></label>
+   <div class="actions"><button class="btn main" id="xstart">Začať skúšku</button><button class="btn" id="xprint">Vytlačiť pracovný list</button></div>
+   <p class="muted">Pracovný list: príklady a prázdne riadky na odpovede, riešenia sú na konci, ďalšia strana.</p></div></div>
+   ${ks.length?`<h4>Tvoje slabé miesta</h4><ul class="weak">${ks.map(k=>`<li>${xh((ST.kinds||{})[k]||k)} <span class="muted">(váha ${w[k]})</span></li>`).join('')}</ul><p class="muted">Tieto typy sa objavujú častejšie, keď je zapnuté „Viac príkladov z mojich slabých miest“ v zozname tém.</p>`:'<p class="muted">Zatiaľ nemáš slabé miesta. Objavia sa po prvých chybách.</p>'}
+  </div><div id="xrun"></div>`;
+  box.querySelector('#xall').onclick=()=>{const cs=[...box.querySelectorAll('input[data-t]')],on=cs.some(c=>!c.checked);cs.forEach(c=>c.checked=on)};
+  box.querySelector('#xstart').onclick=()=>{readCfg();if(!XCFG.topics.length){return}startExam(XCFG)};
+  box.querySelector('#xprint').onclick=()=>{readCfg();if(!XCFG.topics.length)return;printSheet(XCFG)}}
+function genItems(cfg){
+  const ts=xshuf(cfg.topics.map(id=>TOPICS.find(t=>t.id===id)).filter(Boolean)),out=[];
+  for(let i=0;i<cfg.n;i++){
+    const t=ts[i%ts.length];let q=null,gi=0;
+    for(let k=0;k<12&&!q;k++){try{q=pickGen(t)();gi=LASTGI}catch(e){q=null}}
+    if(q)out.push({t,q,gi})}
+  return out}
+function startExam(cfg){
+  const items=genItems(cfg);if(!items.length)return;
+  EX={run:true,qs:items,i:0,log:[],start:Date.now(),limit:cfg.min*60000,busy:false};
+  const box=document.getElementById('xv-exam');
+  box.innerHTML=`<div class="xhead"><b id="xprog"></b><span id="xtime" class="xtime"></span><button class="btn" id="xend">Ukončiť skúšku</button></div><div id="xrun"></div>`;
+  box.querySelector('#xend').onclick=()=>finishExam(true);
+  EX.timer=setInterval(xtick,1000);xtick();showExamQ()}
+function xtick(){
+  if(!EX||!EX.run)return;const el=document.getElementById('xtime');
+  const el_=Date.now()-EX.start;
+  if(EX.limit){const r=EX.limit-el_;if(r<=0){finishExam(true);return}const s=Math.ceil(r/1000);if(el)el.textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;if(el)el.classList.toggle('low',r<60000)}
+  else if(el){const s=Math.floor(el_/1000);el.textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`}}
+function showExamQ(){
+  const it=EX.qs[EX.i],S_=getS();
+  Object.assign(S_,{q:it.q,qt:it.t,sel:null,rows:it.q.input.t==='rows'?it.q.input.rows.map(()=>null):[],counted:false,done:false,shown:false});
+  LASTGI=it.gi;EX.busy=false;
+  document.getElementById('xprog').textContent=`Príklad ${EX.i+1} z ${EX.qs.length}`;
+  const run=document.getElementById('xrun'),card=document.getElementById('card');
+  run.appendChild(card);renderCard();
+  const ac=card.querySelector('.actions');
+  ac.style.display='none';ac.insertAdjacentHTML('afterend','<div class="actions"><button class="btn main" id="xok">Potvrdiť a ďalej</button><button class="btn" id="xskip">Preskočiť</button></div>');
+  card.querySelector('#xok').onclick=()=>{if(EX.busy)return;getS().counted=false;check()};
+  card.querySelector('#xskip').onclick=()=>{if(EX.busy)return;EX.busy=true;examAdvance(false,true)};
+  const f=card.querySelector('input.cell');if(f&&matchMedia('(hover:hover)').matches)f.focus({preventScroll:true})}
+function examAdvance(ok,skipped){
+  if(!EX||!EX.run)return;
+  const it=EX.qs[EX.i];
+  EX.log.push({t:it.t,q:it.q,ok,skipped});
+  LASTGI=it.gi;weakUpd(ok,it.q,it.t);
+  const s=tstat(it.t.id);s.total++;if(ok)s.ok++;save();
+  EX.i++;
+  if(EX.i>=EX.qs.length)finishExam(false);else showExamQ()}
+function leaveExam(){
+  if(!EX||!EX.run)return;
+  EX.run=false;clearInterval(EX.timer);
+  const card=document.getElementById('card'),split=document.querySelector('.split');
+  if(card&&split&&card.parentNode!==split)split.appendChild(card);
+  next()}
+function finishExam(forced){
+  if(!EX||!EX.run)return;
+  const rest=EX.qs.slice(EX.log.length);
+  rest.forEach(it=>{EX.log.push({t:it.t,q:it.q,ok:false,skipped:true,missed:true});LASTGI=it.gi;weakUpd(false,it.q,it.t);const s=tstat(it.t.id);s.total++;save()});
+  const dur=Date.now()-EX.start,log=EX.log,t0=EX.qs;
+  EX.run=false;clearInterval(EX.timer);
+  const card=document.getElementById('card'),split=document.querySelector('.split');
+  if(card&&split)split.appendChild(card);
+  next();
+  const ok=log.filter(l=>l.ok).length,n=log.length,pct=Math.round(100*ok/n);
+  const by={};log.forEach(l=>{const b=by[l.t.name]||(by[l.t.name]={ok:0,n:0});b.n++;if(l.ok)b.ok++});
+  const msg=pct>=90?'Výborne.':pct>=70?'Dobre, ešte pár chýb.':pct>=50?'Zatiaľ hranica, pozri si chyby nižšie.':'Treba ešte precvičovať, ale tvoje slabé miesta sú teraz zaznamenané.';
+  const sec=Math.round(dur/1000);
+  const box=document.getElementById('xv-exam');
+  box.innerHTML=`<div class="xcard"><h3>Výsledok: ${ok} z ${n} (${pct} %)</h3><p>${msg} Čas: ${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}.</p>
+   <div class="ttwrap"><table class="tt"><thead><tr><th>Téma</th><th>Správne</th></tr></thead><tbody>${Object.entries(by).map(([k,v])=>`<tr><td style="text-align:left">${k}</td><td>${v.ok} / ${v.n}</td></tr>`).join('')}</tbody></table></div>
+   <div class="actions"><button class="btn main" id="xagain">Nová skúška</button><button class="btn" id="xwrong">Zopakovať len chybné témy</button></div></div>
+   <h4>Rozbor</h4>${log.map((l,i)=>`<details class="rev ${l.ok?'ok':'bad'}"><summary><span class="mark">${l.ok?'✓':'✗'}</span> ${i+1}. ${l.q.kind} <span class="muted">· ${l.t.name}${l.missed?' · nestihol si':l.skipped?' · preskočené':''}</span></summary><div class="prompt">${l.q.prompt}${choiceList(l.q)}</div><div class="sol"><h3>Postup</h3>${l.q.solution}</div></details>`).join('')}`;
+  box.querySelector('#xagain').onclick=renderExam;
+  box.querySelector('#xwrong').onclick=()=>{const ids=[...new Set(log.filter(l=>!l.ok).map(l=>l.t.id))];XCFG.topics=ids.length?ids:XCFG.topics;renderExam()};
+  EX=null;window.scrollTo({top:0})}
+function choiceList(q){
+  const inp=q.input;if(inp.t==='choice')return`<ul class="chl">${inp.opts.map((o,i)=>`<li class="${i===q.answer[0]?'right':''}">${o}${i===q.answer[0]?' <b>(správne)</b>':''}</li>`).join('')}</ul>`;
+  if(inp.t==='rows')return`<ul class="chl">${inp.rows.map((r,i)=>`<li>${r.label} <b>→ ${r.opts[q.answer[i]]}</b></li>`).join('')}</ul>`;
+  return''}
+
+/* ---------- pracovný list na tlač ---------- */
+function printSheet(cfg){
+  const items=genItems(cfg);if(!items.length)return;
+  const task=it=>{const inp=it.q.input;let extra='';
+    if(inp.t==='choice')extra=`<ol class="wsc" type="A">${inp.opts.map(o=>`<li>${o}</li>`).join('')}</ol>`;
+    else if(inp.t==='rows')extra=`<ul class="wsc">${inp.rows.map(r=>`<li>${r.label} (${r.opts.join(' / ')})</li>`).join('')}</ul>`;
+    else extra='<div class="wsl">Odpoveď: ______________________________</div>';
+    return extra};
+  document.getElementById('printarea').innerHTML=`<h2>Pracovný list: ${document.title}</h2><p class="muted">Meno: ______________________ &nbsp; Dátum: ____________</p>`+
+    items.map((it,i)=>`<div class="wsq"><b>${i+1}.</b> <span class="kd">(${it.q.kind})</span><div class="prompt">${stripAnswerUi(it.q.prompt)}</div>${task(it)}</div>`).join('')+
+    `<div class="pbreak"></div><h2>Riešenia</h2>`+items.map((it,i)=>`<div class="wsq"><b>${i+1}. ${it.q.kind}</b>${choiceList(it.q)}<div>${it.q.solution}</div></div>`).join('');
+  document.body.classList.add('ws');
+  const done=()=>{document.body.classList.remove('ws');window.removeEventListener('afterprint',done)};
+  window.addEventListener('afterprint',done);
+  try{window.print()}catch(e){done()}}
+function stripAnswerUi(h){return h}
+
+/* ---------- ťahák ---------- */
+function renderSheet(){
+  const box=document.getElementById('xv-sheet');
+  box.innerHTML=`<div class="xhead noprint"><b>Ťahák: najdôležitejšie z každej témy</b><button class="btn main" id="spr">Vytlačiť</button></div>
+   <div class="sheetgrid">${TOPICS.map(t=>`<section><h4>${t.name}</h4>${t.theory}</section>`).join('')}</div>`;
+  box.querySelector('#spr').onclick=()=>{try{window.print()}catch(e){}}}
+
+/* ---------- kartičky ---------- */
+let CD={topic:'all',q:null,flip:false,known:0,seen:0};
+function newCard(){
+  const pool=CD.topic==='all'?TOPICS:TOPICS.filter(t=>t.id===CD.topic);
+  CD.q=null;CD.flip=false;
+  for(let k=0;k<60&&!CD.q;k++){
+    const t=xpick(pool);let q=null;try{q=xpick(t.gens)()}catch(e){q=null}
+    if(q&&q.input&&q.input.t==='choice'){CD.q=q;CD.t=t}}
+  drawCard()}
+function renderCards(){
+  const box=document.getElementById('xv-cards');
+  box.innerHTML=`<div class="xcard"><h3>Kartičky</h3><p class="muted">Pojmy a pravidlá. Najprv si odpovedz v hlave, potom kartičku otoč.</p>
+   <label class="fld">Téma<select id="cdt"><option value="all">Všetky témy</option>${TOPICS.map(t=>`<option value="${t.id}" ${CD.topic===t.id?'selected':''}>${t.name}</option>`).join('')}</select></label>
+   <div id="cdbox"></div><p class="muted" id="cdstat"></p></div>`;
+  box.querySelector('#cdt').onchange=e=>{CD.topic=e.target.value;newCard()};
+  newCard()}
+function drawCard(){
+  const b=document.getElementById('cdbox');if(!b)return;
+  document.getElementById('cdstat').textContent=`Videl si ${CD.seen} kartičiek, vedel ${CD.known}.`;
+  if(!CD.q){b.innerHTML='<p>Pre túto tému nie sú kartičky.</p>';return}
+  const q=CD.q;
+  b.innerHTML=CD.flip?`<div class="flash back"><div class="prompt">${q.prompt}</div><div class="ans"><b>Odpoveď:</b> ${q.input.opts[q.answer[0]]}</div><div class="sol">${q.solution}</div></div>
+   <div class="actions"><button class="btn main" id="cdk">Vedel som</button><button class="btn" id="cdn">Nevedel som</button></div>`:
+   `<div class="flash"><div class="prompt">${q.prompt}</div></div><div class="actions"><button class="btn main" id="cdf">Otočiť kartičku</button><button class="btn" id="cdx">Preskočiť</button></div>`;
+  const g=id=>b.querySelector(id);
+  if(CD.flip){g('#cdk').onclick=()=>{CD.seen++;CD.known++;newCard()};g('#cdn').onclick=()=>{CD.seen++;newCard()}}
+  else{g('#cdf').onclick=()=>{CD.flip=true;drawCard()};g('#cdx').onclick=newCard}}
 </script>

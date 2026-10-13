@@ -221,6 +221,80 @@ svg.plot .tk{fill:var(--muted);font:10px var(--f-mono)}
     </main>
   </div>
 </div>
+<style>
+/* --- nadstavby: skúška, ťahák, kartičky, tlač --- */
+.xv,#printarea{display:none}
+.app[data-view="exam"] #xv-exam,.app[data-view="sheet"] #xv-sheet,.app[data-view="cards"] #xv-cards{display:block}
+.app[data-view="exam"] .layout,.app[data-view="sheet"] .layout,.app[data-view="cards"] .layout{display:none}
+.xcard{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:18px 20px 20px;margin-bottom:14px}
+.xcard h3,.xv h4{font:700 1.7rem/1.1 var(--f-display);color:var(--red);margin:0 0 6px}
+.xv h4{font-size:1.3rem;color:var(--green);margin:14px 0 6px}
+.xgrid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:20px}
+@media (max-width:760px){.xgrid{grid-template-columns:minmax(0,1fr)}}
+.chks{display:flex;flex-direction:column;gap:4px}
+.chk,.fld{display:flex;gap:8px;align-items:flex-start;font-size:.95rem}
+.chk input{margin-top:.3em;accent-color:var(--blue)}
+.fld{flex-direction:column;gap:4px;margin:8px 0;font-weight:600}
+.fld select{font:500 1rem var(--f-body);padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);color:var(--fg);max-width:100%}
+.xhead{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;margin-bottom:12px;padding:10px 14px;background:var(--card);border:1.5px solid var(--line);border-radius:12px}
+.xtime{font:600 1.3rem var(--f-mono);font-variant-numeric:tabular-nums;color:var(--blue)}.xtime.low{color:var(--red)}
+.weak{margin:4px 0;padding-left:1.2em}
+details.rev{background:var(--card);border:1.5px solid var(--line);border-radius:10px;margin:8px 0;padding:0 14px}
+details.rev summary{cursor:pointer;padding:10px 0;font-weight:600;list-style:none}
+details.rev .mark{display:inline-block;width:1.5em;text-align:center;font-weight:700}
+details.rev.ok{border-color:var(--green)}details.rev.ok .mark{color:var(--green)}
+details.rev.bad{border-color:var(--red)}details.rev.bad .mark{color:var(--red)}
+details.rev[open]{padding-bottom:12px}
+.chl{margin:6px 0;padding-left:1.2em}.chl .right{color:var(--green)}
+.golink{all:unset;cursor:pointer;margin-left:12px;color:var(--blue);text-decoration:underline;font-weight:500}
+.golink:focus-visible{outline:3px solid var(--blue)}
+label.focus{display:flex;gap:8px;align-items:flex-start;font-size:.82rem;color:var(--muted);padding:6px 2px}
+label.focus input{accent-color:var(--blue);margin-top:.2em}
+.io{display:flex;flex-direction:column;gap:2px}
+.sheetgrid{columns:2 320px;column-gap:20px}
+.sheetgrid section{break-inside:avoid;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:2px 14px 10px;margin:0 0 14px;font-size:.9rem}
+.sheetgrid ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:4px}
+.flash{background:var(--soft);border-radius:12px;padding:18px 20px;margin:12px 0;min-height:7em}
+.flash.back{border:2px solid var(--green)}
+.flash .ans{margin:12px 0;padding:8px 12px;background:var(--ok-bg);border-radius:8px}
+.lab{border:1.5px solid var(--line);border-radius:12px;background:var(--soft);padding:10px 14px 14px;margin:14px 0}
+.lab h5{font:700 1.25rem var(--f-display);color:var(--red);margin:0 0 6px}
+.lab .ctr{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;margin-top:8px}
+.lab label{display:grid;grid-template-columns:minmax(7em,auto) minmax(0,1fr) 3.6em;gap:8px;align-items:center;font-size:.9rem}
+.lab label b{font:500 .85rem var(--f-mono);text-align:right}
+.lab input[type=range]{width:100%;accent-color:var(--blue)}
+.lab select{font:500 .95rem var(--f-body);padding:5px 8px;border:1.5px solid var(--line);border-radius:7px;background:var(--card);color:var(--fg);max-width:100%}
+.lab .out{margin-top:6px;font-size:.92rem;min-height:2.6em}
+.lab .plotw{margin:0 auto}
+.apl{border:1.5px solid var(--line);border-radius:12px;background:var(--soft);padding:10px 14px 14px;margin:12px 0}
+.apl h5{font:700 1.25rem var(--f-display);color:var(--red);margin:0 0 6px}
+.apl .wd{display:flex;gap:4px;flex-wrap:wrap;margin:6px 0}
+.apl .wd span{min-width:2em;text-align:center;padding:3px 6px;border:1.5px solid var(--line);border-radius:6px;background:var(--card);font:500 1rem var(--f-mono)}
+.apl .wd span.cur{border-color:var(--blue);background:var(--blue);color:#fff}
+.apl .wd span.done{color:var(--muted)}
+.apl .st-out{font-size:.92rem;min-height:2.2em;margin:4px 0}
+.apl .ctl{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.apl .ctl button{all:unset;cursor:pointer;padding:6px 14px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);font-weight:600;font-size:.9rem}
+.apl .ctl button:hover{border-color:var(--blue)}
+.apl .ctl button:focus-visible{outline:3px solid var(--blue)}
+svg.aut .st.on{fill:var(--blue);stroke:var(--blue)}
+svg.aut .st.on ~ .sn{fill:#fff}
+svg.aut .e.on{stroke:var(--blue);stroke-width:3}
+@media print{
+  body{background:#fff!important;color:#000!important;padding:0!important;background-image:none!important}
+  .app[data-view="sheet"]>*:not(#xv-sheet){display:none!important}
+  .noprint{display:none!important}
+  .sheetgrid{columns:2;column-gap:14px;font-size:9.5pt}
+  .sheetgrid section{border:1px solid #888;background:#fff}
+  body.ws .app{display:none!important}
+  body.ws #printarea{display:block;font-size:11pt}
+  #printarea h2{font:700 18pt var(--f-body);margin:0 0 6px}
+  .wsq{break-inside:avoid;margin:0 0 14px;padding-bottom:8px;border-bottom:1px dashed #999}
+  .wsl{margin-top:12px}
+  .pbreak{break-after:page}
+  #printarea .sol{display:none}
+}
+</style>
 <script>
 'use strict';
 /* ===== Matematické jadro: výrazy (AST), parser, derivovanie, vykresľovanie vzorcov a grafov ===== */
@@ -1582,6 +1656,13 @@ THEORY.prb.full+=tsec('Priebeh funkcie na obrázku',p_('Funkcia f(x) = x³ − 3
  {o:{fns:[{f:x=>3*x*x-6*x,cls:'c2'},{f:x=>6*x-6,cls:'c3'}],xr:[-1.5,3.5],yr:[-8,12],pts:[{x:0,y:0},{x:2,y:0},{x:1,y:0}]},c:'f′ (červená): nuly v 0 a 2, f″ (zelená): nula v 1'}
 ]));
 
+THEORY.ele.full+='<div class="lab" data-lab="sin"></div>';
+THEORY.der.full+='<div class="lab" data-lab="deriv"></div>';
+THEORY.app.full+='<div class="lab" data-lab="tan"></div>';
+THEORY.tay.full+='<div class="lab" data-lab="taylor"></div>';
+THEORY.prb.full+='<div class="lab" data-lab="cubic"></div>';
+THEORY.lim.full+='<div class="lab" data-lab="eps"></div>';
+
 /* priradenie teórie témam */
 function attachTheory(){TOPICS.forEach(t=>{const th=THEORY[t.id];if(th){t.theory=th.theory;t.full=th.full}})}
 /* ===== Registrácia tém ===== */
@@ -1631,7 +1712,7 @@ document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setView(b.dataset.v))
 function next(){
   const pool=U.topic==='mix'?TOPICS:TOPICS.filter(t=>t.id===U.topic);
   let q=null,t=null;
-  for(let k=0;k<8&&!q;k++){try{t=pick(pool);q=pick(t.gens)()}catch(e){q=null}}
+  for(let k=0;k<8&&!q;k++){try{t=pick(pool);q=pickGen(t)()}catch(e){q=null}}
   U={...U,q,qt:t,sel:null,rows:q&&q.input.t==='rows'?q.input.rows.map(()=>null):[],counted:false,done:false,shown:false};
   renderNav();renderCard();
   const cd=$('#card');if(cd.getBoundingClientRect().top<0)cd.scrollIntoView({block:'start',behavior:'auto'});
@@ -1696,4 +1777,301 @@ function reveal(){
   const s=$('#sol');s.hidden=false;s.innerHTML=`<h3>Postup</h3>${inp.t==='expr'?`<div class="eq">Správna odpoveď: ${q.ref}</div>`:''}${q.solution}`;s.scrollIntoView({block:'nearest',behavior:'smooth'})}
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&(U.done||U.shown)&&e.target===document.body)next()});
 attachTheory();renderTheory();next();
+const getS=()=>U;
+/* ===== Spoločné nadstavby pre všetky cvičebnice =====
+   Skúška s časovačom, slabé miesta, ťahák, kartičky, pracovný list, export/import štatistiky,
+   odkaz na teóriu po chybe. Spolieha sa na globály stránky: getS(), TOPICS, ST, save, tstat, next,
+   renderNav, renderCard, check, record, fb, setView, renderTheory, $ */
+const xh=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const xpick=a=>a[Math.floor(Math.random()*a.length)];
+const xshuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const xapp=document.getElementById('app');
+const xTabs=document.querySelector('.tabs');
+let LASTGI=0;
+
+/* ---------- slabé miesta: vážený výber generátora ---------- */
+const wkey=(t,i)=>t.id+'|'+i;
+function pickGen(t){
+  const w=ST.weak||(ST.weak={}),f=ST.focus?3:.7;
+  const ws=t.gens.map((g,i)=>1+f*(w[wkey(t,i)]||0));
+  let r=Math.random()*ws.reduce((a,b)=>a+b,0),i=0;
+  for(;i<ws.length-1&&r>=ws[i];i++)r-=ws[i];
+  LASTGI=i;return t.gens[i]}
+function weakUpd(ok,q,t){
+  const w=ST.weak||(ST.weak={}),k=wkey(t,LASTGI);
+  const v=ok?Math.max(0,(w[k]||0)-1):Math.min(5,(w[k]||0)+2);
+  if(v)w[k]=v;else delete w[k];
+  (ST.kinds||(ST.kinds={}))[k]=q.kind}
+
+/* ---------- úprava existujúcich funkcií stránky ---------- */
+let EX=null;
+const _record=record;
+record=function(ok){
+  const S_=getS();
+  if(EX&&EX.run){if(EX.busy)return;EX.busy=true;setTimeout(()=>examAdvance(ok,false),0);return}
+  weakUpd(ok,S_.q,S_.qt);_record(ok)};
+const _fb=fb;
+fb=function(cls,txt){
+  _fb(cls,txt);
+  if(cls==='bad'&&!(EX&&EX.run)&&getS().view!=='theory'){
+    const el=document.getElementById('fb');
+    if(el&&!el.querySelector('.golink')){const b=document.createElement('button');b.type='button';b.className='golink';b.textContent='Pozri si teóriu k tejto téme';
+      b.onclick=()=>{const S_=getS();if(S_.qt){S_.topic=S_.qt.id}renderTheory();setView('theory');window.scrollTo({top:0,behavior:'smooth'})};
+      el.firstChild.appendChild(b)}}};
+const _renderNav=renderNav;
+renderNav=function(){
+  _renderNav();
+  const n=document.getElementById('nav');if(!n)return;
+  const wk=Object.keys(ST.weak||{}).length;
+  n.insertAdjacentHTML('beforeend',`<label class="focus"><input type="checkbox" id="xfocus" ${ST.focus?'checked':''}> Viac príkladov z mojich slabých miest${wk?` (${wk})`:''}</label><div class="io"><button class="reset" id="xexp">Exportovať štatistiku</button><button class="reset" id="ximp">Importovať</button></div>`);
+  document.getElementById('xfocus').onchange=e=>{ST.focus=e.target.checked;save()};
+  document.getElementById('xexp').onclick=()=>{
+    const b=new Blob([JSON.stringify(ST)],{type:'application/json'}),a=document.createElement('a');
+    a.href=URL.createObjectURL(b);a.download='cvicebnica-statistika.json';document.body.appendChild(a);a.click();a.remove()};
+  document.getElementById('ximp').onclick=()=>{
+    const i=document.createElement('input');i.type='file';i.accept='application/json,.json';
+    i.onchange=()=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(o&&o.stats){ST=o;save();renderNav();if(typeof renderScore==='function')renderScore()}else alert_('Súbor nemá správny formát.')}catch(e){alert_('Súbor sa nepodarilo načítať.')}};r.readAsText(f)};
+    i.click()}};
+function alert_(m){const el=document.getElementById('fb');if(el)_fb('warn',m)}
+const _setView=setView;
+setView=function(v){leaveExam();_setView(v)};
+
+/* ---------- ďalšie karty (taby) ---------- */
+const XTABS=[['exam','Skúška'],['sheet','Ťahák'],['cards','Kartičky']];
+XTABS.forEach(([v,n])=>{
+  const b=document.createElement('button');b.className='tab';b.setAttribute('role','tab');b.dataset.v=v;b.textContent=n;b.setAttribute('aria-selected','false');
+  b.onclick=()=>xview(v);xTabs.appendChild(b);
+  const s=document.createElement('section');s.className='xv';s.id='xv-'+v;s.setAttribute('aria-label',n);xapp.appendChild(s)});
+const pa=document.createElement('div');pa.id='printarea';document.body.appendChild(pa);
+function xview(v){
+  if(v!=='exam')leaveExam();
+  getS().view=v;xapp.dataset.view=v;
+  document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v));
+  if(v==='exam')renderExam();else if(v==='sheet')renderSheet();else if(v==='cards')renderCards();
+  window.scrollTo({top:0})}
+
+/* ---------- skúška ---------- */
+let XCFG={topics:null,n:10,min:0};
+function topicChecks(){
+  if(!XCFG.topics)XCFG.topics=TOPICS.map(t=>t.id);
+  return TOPICS.map(t=>`<label class="chk"><input type="checkbox" data-t="${t.id}" ${XCFG.topics.includes(t.id)?'checked':''}> <span>${t.name}</span></label>`).join('')}
+function readCfg(){
+  const box=document.getElementById('xv-exam');
+  XCFG.topics=[...box.querySelectorAll('input[data-t]:checked')].map(i=>i.dataset.t);
+  XCFG.n=+box.querySelector('#xn').value;XCFG.min=+box.querySelector('#xm').value;return XCFG}
+function renderExam(){
+  const box=document.getElementById('xv-exam');
+  const w=ST.weak||{},ks=Object.keys(w).sort((a,b)=>w[b]-w[a]).slice(0,8);
+  box.innerHTML=`<div class="xcard"><h3>Skúška</h3>
+   <p class="muted">Príklady sa nekontrolujú hneď. Odpovedáš po jednom, na konci dostaneš výsledok, rozbor a postupy. Skúška sa započíta do štatistiky a slabých miest.</p>
+   <div class="xgrid"><div><h4>Témy</h4><div class="chks">${topicChecks()}</div><button class="reset" id="xall">označiť všetko / nič</button></div>
+   <div><h4>Nastavenie</h4><label class="fld">Počet príkladov<select id="xn">${[5,10,15,20,30].map(n=>`<option ${n===XCFG.n?'selected':''}>${n}</option>`).join('')}</select></label>
+   <label class="fld">Časový limit<select id="xm">${[[0,'bez limitu'],[10,'10 minút'],[20,'20 minút'],[30,'30 minút'],[45,'45 minút'],[60,'60 minút']].map(([m,l])=>`<option value="${m}" ${m===XCFG.min?'selected':''}>${l}</option>`).join('')}</select></label>
+   <div class="actions"><button class="btn main" id="xstart">Začať skúšku</button><button class="btn" id="xprint">Vytlačiť pracovný list</button></div>
+   <p class="muted">Pracovný list: príklady a prázdne riadky na odpovede, riešenia sú na konci, ďalšia strana.</p></div></div>
+   ${ks.length?`<h4>Tvoje slabé miesta</h4><ul class="weak">${ks.map(k=>`<li>${xh((ST.kinds||{})[k]||k)} <span class="muted">(váha ${w[k]})</span></li>`).join('')}</ul><p class="muted">Tieto typy sa objavujú častejšie, keď je zapnuté „Viac príkladov z mojich slabých miest“ v zozname tém.</p>`:'<p class="muted">Zatiaľ nemáš slabé miesta. Objavia sa po prvých chybách.</p>'}
+  </div><div id="xrun"></div>`;
+  box.querySelector('#xall').onclick=()=>{const cs=[...box.querySelectorAll('input[data-t]')],on=cs.some(c=>!c.checked);cs.forEach(c=>c.checked=on)};
+  box.querySelector('#xstart').onclick=()=>{readCfg();if(!XCFG.topics.length){return}startExam(XCFG)};
+  box.querySelector('#xprint').onclick=()=>{readCfg();if(!XCFG.topics.length)return;printSheet(XCFG)}}
+function genItems(cfg){
+  const ts=xshuf(cfg.topics.map(id=>TOPICS.find(t=>t.id===id)).filter(Boolean)),out=[];
+  for(let i=0;i<cfg.n;i++){
+    const t=ts[i%ts.length];let q=null,gi=0;
+    for(let k=0;k<12&&!q;k++){try{q=pickGen(t)();gi=LASTGI}catch(e){q=null}}
+    if(q)out.push({t,q,gi})}
+  return out}
+function startExam(cfg){
+  const items=genItems(cfg);if(!items.length)return;
+  EX={run:true,qs:items,i:0,log:[],start:Date.now(),limit:cfg.min*60000,busy:false};
+  const box=document.getElementById('xv-exam');
+  box.innerHTML=`<div class="xhead"><b id="xprog"></b><span id="xtime" class="xtime"></span><button class="btn" id="xend">Ukončiť skúšku</button></div><div id="xrun"></div>`;
+  box.querySelector('#xend').onclick=()=>finishExam(true);
+  EX.timer=setInterval(xtick,1000);xtick();showExamQ()}
+function xtick(){
+  if(!EX||!EX.run)return;const el=document.getElementById('xtime');
+  const el_=Date.now()-EX.start;
+  if(EX.limit){const r=EX.limit-el_;if(r<=0){finishExam(true);return}const s=Math.ceil(r/1000);if(el)el.textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;if(el)el.classList.toggle('low',r<60000)}
+  else if(el){const s=Math.floor(el_/1000);el.textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`}}
+function showExamQ(){
+  const it=EX.qs[EX.i],S_=getS();
+  Object.assign(S_,{q:it.q,qt:it.t,sel:null,rows:it.q.input.t==='rows'?it.q.input.rows.map(()=>null):[],counted:false,done:false,shown:false});
+  LASTGI=it.gi;EX.busy=false;
+  document.getElementById('xprog').textContent=`Príklad ${EX.i+1} z ${EX.qs.length}`;
+  const run=document.getElementById('xrun'),card=document.getElementById('card');
+  run.appendChild(card);renderCard();
+  const ac=card.querySelector('.actions');
+  ac.style.display='none';ac.insertAdjacentHTML('afterend','<div class="actions"><button class="btn main" id="xok">Potvrdiť a ďalej</button><button class="btn" id="xskip">Preskočiť</button></div>');
+  card.querySelector('#xok').onclick=()=>{if(EX.busy)return;getS().counted=false;check()};
+  card.querySelector('#xskip').onclick=()=>{if(EX.busy)return;EX.busy=true;examAdvance(false,true)};
+  const f=card.querySelector('input.cell');if(f&&matchMedia('(hover:hover)').matches)f.focus({preventScroll:true})}
+function examAdvance(ok,skipped){
+  if(!EX||!EX.run)return;
+  const it=EX.qs[EX.i];
+  EX.log.push({t:it.t,q:it.q,ok,skipped});
+  LASTGI=it.gi;weakUpd(ok,it.q,it.t);
+  const s=tstat(it.t.id);s.total++;if(ok)s.ok++;save();
+  EX.i++;
+  if(EX.i>=EX.qs.length)finishExam(false);else showExamQ()}
+function leaveExam(){
+  if(!EX||!EX.run)return;
+  EX.run=false;clearInterval(EX.timer);
+  const card=document.getElementById('card'),split=document.querySelector('.split');
+  if(card&&split&&card.parentNode!==split)split.appendChild(card);
+  next()}
+function finishExam(forced){
+  if(!EX||!EX.run)return;
+  const rest=EX.qs.slice(EX.log.length);
+  rest.forEach(it=>{EX.log.push({t:it.t,q:it.q,ok:false,skipped:true,missed:true});LASTGI=it.gi;weakUpd(false,it.q,it.t);const s=tstat(it.t.id);s.total++;save()});
+  const dur=Date.now()-EX.start,log=EX.log,t0=EX.qs;
+  EX.run=false;clearInterval(EX.timer);
+  const card=document.getElementById('card'),split=document.querySelector('.split');
+  if(card&&split)split.appendChild(card);
+  next();
+  const ok=log.filter(l=>l.ok).length,n=log.length,pct=Math.round(100*ok/n);
+  const by={};log.forEach(l=>{const b=by[l.t.name]||(by[l.t.name]={ok:0,n:0});b.n++;if(l.ok)b.ok++});
+  const msg=pct>=90?'Výborne.':pct>=70?'Dobre, ešte pár chýb.':pct>=50?'Zatiaľ hranica, pozri si chyby nižšie.':'Treba ešte precvičovať, ale tvoje slabé miesta sú teraz zaznamenané.';
+  const sec=Math.round(dur/1000);
+  const box=document.getElementById('xv-exam');
+  box.innerHTML=`<div class="xcard"><h3>Výsledok: ${ok} z ${n} (${pct} %)</h3><p>${msg} Čas: ${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}.</p>
+   <div class="ttwrap"><table class="tt"><thead><tr><th>Téma</th><th>Správne</th></tr></thead><tbody>${Object.entries(by).map(([k,v])=>`<tr><td style="text-align:left">${k}</td><td>${v.ok} / ${v.n}</td></tr>`).join('')}</tbody></table></div>
+   <div class="actions"><button class="btn main" id="xagain">Nová skúška</button><button class="btn" id="xwrong">Zopakovať len chybné témy</button></div></div>
+   <h4>Rozbor</h4>${log.map((l,i)=>`<details class="rev ${l.ok?'ok':'bad'}"><summary><span class="mark">${l.ok?'✓':'✗'}</span> ${i+1}. ${l.q.kind} <span class="muted">· ${l.t.name}${l.missed?' · nestihol si':l.skipped?' · preskočené':''}</span></summary><div class="prompt">${l.q.prompt}${choiceList(l.q)}</div><div class="sol"><h3>Postup</h3>${l.q.solution}</div></details>`).join('')}`;
+  box.querySelector('#xagain').onclick=renderExam;
+  box.querySelector('#xwrong').onclick=()=>{const ids=[...new Set(log.filter(l=>!l.ok).map(l=>l.t.id))];XCFG.topics=ids.length?ids:XCFG.topics;renderExam()};
+  EX=null;window.scrollTo({top:0})}
+function choiceList(q){
+  const inp=q.input;if(inp.t==='choice')return`<ul class="chl">${inp.opts.map((o,i)=>`<li class="${i===q.answer[0]?'right':''}">${o}${i===q.answer[0]?' <b>(správne)</b>':''}</li>`).join('')}</ul>`;
+  if(inp.t==='rows')return`<ul class="chl">${inp.rows.map((r,i)=>`<li>${r.label} <b>→ ${r.opts[q.answer[i]]}</b></li>`).join('')}</ul>`;
+  return''}
+
+/* ---------- pracovný list na tlač ---------- */
+function printSheet(cfg){
+  const items=genItems(cfg);if(!items.length)return;
+  const task=it=>{const inp=it.q.input;let extra='';
+    if(inp.t==='choice')extra=`<ol class="wsc" type="A">${inp.opts.map(o=>`<li>${o}</li>`).join('')}</ol>`;
+    else if(inp.t==='rows')extra=`<ul class="wsc">${inp.rows.map(r=>`<li>${r.label} (${r.opts.join(' / ')})</li>`).join('')}</ul>`;
+    else extra='<div class="wsl">Odpoveď: ______________________________</div>';
+    return extra};
+  document.getElementById('printarea').innerHTML=`<h2>Pracovný list: ${document.title}</h2><p class="muted">Meno: ______________________ &nbsp; Dátum: ____________</p>`+
+    items.map((it,i)=>`<div class="wsq"><b>${i+1}.</b> <span class="kd">(${it.q.kind})</span><div class="prompt">${stripAnswerUi(it.q.prompt)}</div>${task(it)}</div>`).join('')+
+    `<div class="pbreak"></div><h2>Riešenia</h2>`+items.map((it,i)=>`<div class="wsq"><b>${i+1}. ${it.q.kind}</b>${choiceList(it.q)}<div>${it.q.solution}</div></div>`).join('');
+  document.body.classList.add('ws');
+  const done=()=>{document.body.classList.remove('ws');window.removeEventListener('afterprint',done)};
+  window.addEventListener('afterprint',done);
+  try{window.print()}catch(e){done()}}
+function stripAnswerUi(h){return h}
+
+/* ---------- ťahák ---------- */
+function renderSheet(){
+  const box=document.getElementById('xv-sheet');
+  box.innerHTML=`<div class="xhead noprint"><b>Ťahák: najdôležitejšie z každej témy</b><button class="btn main" id="spr">Vytlačiť</button></div>
+   <div class="sheetgrid">${TOPICS.map(t=>`<section><h4>${t.name}</h4>${t.theory}</section>`).join('')}</div>`;
+  box.querySelector('#spr').onclick=()=>{try{window.print()}catch(e){}}}
+
+/* ---------- kartičky ---------- */
+let CD={topic:'all',q:null,flip:false,known:0,seen:0};
+function newCard(){
+  const pool=CD.topic==='all'?TOPICS:TOPICS.filter(t=>t.id===CD.topic);
+  CD.q=null;CD.flip=false;
+  for(let k=0;k<60&&!CD.q;k++){
+    const t=xpick(pool);let q=null;try{q=xpick(t.gens)()}catch(e){q=null}
+    if(q&&q.input&&q.input.t==='choice'){CD.q=q;CD.t=t}}
+  drawCard()}
+function renderCards(){
+  const box=document.getElementById('xv-cards');
+  box.innerHTML=`<div class="xcard"><h3>Kartičky</h3><p class="muted">Pojmy a pravidlá. Najprv si odpovedz v hlave, potom kartičku otoč.</p>
+   <label class="fld">Téma<select id="cdt"><option value="all">Všetky témy</option>${TOPICS.map(t=>`<option value="${t.id}" ${CD.topic===t.id?'selected':''}>${t.name}</option>`).join('')}</select></label>
+   <div id="cdbox"></div><p class="muted" id="cdstat"></p></div>`;
+  box.querySelector('#cdt').onchange=e=>{CD.topic=e.target.value;newCard()};
+  newCard()}
+function drawCard(){
+  const b=document.getElementById('cdbox');if(!b)return;
+  document.getElementById('cdstat').textContent=`Videl si ${CD.seen} kartičiek, vedel ${CD.known}.`;
+  if(!CD.q){b.innerHTML='<p>Pre túto tému nie sú kartičky.</p>';return}
+  const q=CD.q;
+  b.innerHTML=CD.flip?`<div class="flash back"><div class="prompt">${q.prompt}</div><div class="ans"><b>Odpoveď:</b> ${q.input.opts[q.answer[0]]}</div><div class="sol">${q.solution}</div></div>
+   <div class="actions"><button class="btn main" id="cdk">Vedel som</button><button class="btn" id="cdn">Nevedel som</button></div>`:
+   `<div class="flash"><div class="prompt">${q.prompt}</div></div><div class="actions"><button class="btn main" id="cdf">Otočiť kartičku</button><button class="btn" id="cdx">Preskočiť</button></div>`;
+  const g=id=>b.querySelector(id);
+  if(CD.flip){g('#cdk').onclick=()=>{CD.seen++;CD.known++;newCard()};g('#cdn').onclick=()=>{CD.seen++;newCard()}}
+  else{g('#cdf').onclick=()=>{CD.flip=true;drawCard()};g('#cdx').onclick=newCard}}
+/* ===== Interaktívne grafy (posuvníky) ===== */
+const lf=(n,d=2)=>String(+(+n).toFixed(d)).replace('-','−').replace('.',',');
+const FN8={
+ 'x2':{n:'x²',f:x=>x*x,d:x=>2*x,xr:[-4,4],yr:[-2,10]},
+ 'x3':{n:'x³',f:x=>x*x*x,d:x=>3*x*x,xr:[-3,3],yr:[-10,10]},
+ 'sin':{n:'sin x',f:Math.sin,d:Math.cos,xr:[-7,7],yr:[-2.5,2.5]},
+ 'exp':{n:'eˣ',f:Math.exp,d:Math.exp,xr:[-4,3],yr:[-1,12]},
+ 'ln':{n:'ln x',f:x=>x>0?Math.log(x):NaN,d:x=>x>0?1/x:NaN,xr:[-.5,7],yr:[-4,3]},
+ 'inv':{n:'1/x',f:x=>x?1/x:NaN,d:x=>x?-1/(x*x):NaN,xr:[-4,4],yr:[-6,6]},
+ 'sqrt':{n:'√x',f:x=>x>=0?Math.sqrt(x):NaN,d:x=>x>0?1/(2*Math.sqrt(x)):NaN,xr:[-.5,8],yr:[-.5,4]},
+ 'atan':{n:'arctg x',f:Math.atan,d:x=>1/(1+x*x),xr:[-6,6],yr:[-2,2]}};
+const fnOpts=Object.entries(FN8).map(([k,v])=>[k,v.n]);
+const lfact=n=>n<2?1:n*lfact(n-1);
+const TAY={
+ sin:{n:'sin x',f:Math.sin,c:k=>k%2?((k-1)/2%2?-1:1)/lfact(k):0,xr:[-7,7],yr:[-3,3]},
+ cos:{n:'cos x',f:Math.cos,c:k=>k%2?0:((k/2)%2?-1:1)/lfact(k),xr:[-7,7],yr:[-3,3]},
+ exp:{n:'eˣ',f:Math.exp,c:k=>1/lfact(k),xr:[-4,3],yr:[-2,12]},
+ ln:{n:'ln(1 + x)',f:x=>x>-1?Math.log(1+x):NaN,c:k=>k?(k%2?1:-1)/k:0,xr:[-.95,3],yr:[-4,3]},
+ geo:{n:'1/(1 − x)',f:x=>x<1?1/(1-x):NaN,c:k=>1,xr:[-3,.95],yr:[-1,8]},
+ atan:{n:'arctg x',f:Math.atan,c:k=>k%2?((k-1)/2%2?-1:1)/k:0,xr:[-4,4],yr:[-2.5,2.5]}};
+const epsDefs={
+ lin:{n:'f(x) = 2x + 1, a = 1',f:x=>2*x+1,a:1,L:3,xr:[-2,4],yr:[-2,8]},
+ sq:{n:'f(x) = x², a = 2',f:x=>x*x,a:2,L:4,xr:[-1,5],yr:[-2,12]},
+ inv:{n:'f(x) = 1/x, a = 1',f:x=>x>0?1/x:NaN,a:1,L:1,xr:[.05,4],yr:[-1,5]}};
+function epsDelta(d,e){
+  const ok=del=>{for(let i=1;i<=300;i++){const t=del*i/300;for(const s of[-1,1]){const y=d.f(d.a+s*t);if(Number.isNaN(y))continue;if(!(Math.abs(y-d.L)<e))return false}}return true};
+  let lo=0,hi=Math.max(1,d.a);for(let i=0;i<40;i++){const m=(lo+hi)/2;if(ok(m))lo=m;else hi=m}return lo}
+const LABDEF={
+ sin:{t:'Sínusovka: hýb parametrami',ctrls:[
+   {k:'a',l:'amplitúda a',min:-3,max:3,step:.1,v:1.5},{k:'b',l:'frekvencia b',min:.2,max:3,step:.1,v:1},
+   {k:'c',l:'posun fázy c',min:-3.2,max:3.2,step:.1,v:0},{k:'d',l:'posun d',min:-2,max:2,step:.1,v:0}],
+  run:p=>({o:{fns:[{f:x=>p.a*Math.sin(p.b*x+p.c)+p.d,cls:'c1'},{f:Math.sin,cls:'c3'}],xr:[-7,7],yr:[-5.5,5.5],label:'f(x) = a·sin(bx + c) + d'},
+   txt:`f(x) = ${lf(p.a,1)}·sin(${lf(p.b,1)}x ${p.c<0?'−':'+'} ${lf(Math.abs(p.c),1)}) ${p.d<0?'−':'+'} ${lf(Math.abs(p.d),1)}<br>Amplitúda ${lf(Math.abs(p.a),1)}, perióda 2π/b = ${lf(2*Math.PI/Math.abs(p.b),2)}. Zelená je základné sin x.`})},
+ tan:{t:'Dotyčnica: posúvaj bod dotyku',ctrls:[{k:'f',l:'funkcia',sel:fnOpts,v:'x2'},{k:'x',l:'bod x₀',min:-3,max:6,step:.1,v:1}],
+  run:p=>{const g=FN8[p.f],x0=p.x,y0=g.f(x0),k=g.d(x0);
+   if(!Number.isFinite(y0)||!Number.isFinite(k))return{o:{fns:[{f:g.f,cls:'c1'}],xr:g.xr,yr:g.yr},txt:'V bode x₀ nie je funkcia definovaná alebo nemá deriváciu.'};
+   const q=y0-k*x0;
+   return{o:{fns:[{f:g.f,cls:'c1'}],xr:g.xr,yr:g.yr,lines:[{k,q,cls:'ln2'}],pts:[{x:x0,y:y0,l:'T'}],label:'dotyčnica'},
+    txt:`f(x₀) = ${lf(y0,3)}, f′(x₀) = ${lf(k,3)}.<br>Dotyčnica: y = ${lf(k,3)}·x ${q<0?'−':'+'} ${lf(Math.abs(q),3)}.${Math.abs(k)>1e-9?` Normála má smernicu ${lf(-1/k,3)}.`:' Smernica je 0, dotyčnica je vodorovná.'}`}}},
+ deriv:{t:'Funkcia a jej derivácia',ctrls:[{k:'f',l:'funkcia',sel:fnOpts,v:'sin'},{k:'x',l:'bod x₀',min:-3,max:6,step:.1,v:1}],
+  run:p=>{const g=FN8[p.f],x0=p.x,y0=g.f(x0),k=g.d(x0);
+   const pts=[];if(Number.isFinite(y0))pts.push({x:x0,y:y0,l:'f'});if(Number.isFinite(k))pts.push({x:x0,y:k,l:'f′',cls:''});
+   return{o:{fns:[{f:g.f,cls:'c1'},{f:g.d,cls:'c2'}],xr:g.xr,yr:[Math.min(g.yr[0],-3),Math.max(g.yr[1],3)],pts,label:'f a f′'},
+    txt:!Number.isFinite(k)?'V tomto bode derivácia neexistuje.':`Modrá: f, červená: f′. V x₀ = ${lf(x0,1)} je f′ = ${lf(k,3)}: ${k>1e-9?'f rastie.':k<-1e-9?'f klesá.':'smernica je nulová (možný extrém).'}`}}},
+ taylor:{t:'Taylorov polynóm: zvyšuj stupeň',ctrls:[{k:'f',l:'funkcia',sel:Object.entries(TAY).map(([k,v])=>[k,v.n]),v:'sin'},{k:'n',l:'stupeň n',min:0,max:11,step:1,v:3},{k:'x',l:'dosadiť x',min:-2,max:2,step:.1,v:1}],
+  run:p=>{const g=TAY[p.f],n=p.n,c=[];for(let k=0;k<=n;k++)c.push(g.c(k));
+   const T=x=>c.reduce((s,v,k)=>s+v*Math.pow(x,k),0);
+   const tl=c.map((v,k)=>({v,k})).filter(o=>o.v).slice(0,6);
+   const terms=tl.map((o,i)=>{const av=Math.abs(o.v),co=(Math.abs(av-1)<1e-9&&o.k>0)?'':lf(av,4),xp=o.k?'x'+(o.k>1?'<sup>'+o.k+'</sup>':''):'';return(i?(o.v<0?' − ':' + '):(o.v<0?'−':''))+co+xp}).join('');
+   const fx=g.f(p.x),tx=T(p.x);
+   return{o:{fns:[{f:g.f,cls:'c1'},{f:T,cls:'c2'}],xr:g.xr,yr:g.yr,pts:Number.isFinite(fx)?[{x:p.x,y:fx}]:[],label:'Taylorov polynóm'},
+    txt:`T<sub>${n}</sub>(x) = ${terms||'0'}${c.filter(Boolean).length>6?' + …':''}<br>Pri x = ${lf(p.x,1)}: f = ${Number.isFinite(fx)?lf(fx,5):'—'}, T<sub>${n}</sub> = ${lf(tx,5)}${Number.isFinite(fx)?`, chyba ${lf(Math.abs(fx-tx),5)}`:''}.`}}},
+ cubic:{t:'Priebeh: kubická funkcia ax³ + bx² + cx + d',ctrls:[
+   {k:'a',l:'a',min:-2,max:2,step:.1,v:1},{k:'b',l:'b',min:-4,max:4,step:.1,v:-3},{k:'c',l:'c',min:-6,max:6,step:.1,v:0},{k:'d',l:'d',min:-4,max:4,step:.1,v:0}],
+  run:p=>{const{a,b,c,d}=p,f=x=>a*x*x*x+b*x*x+c*x+d,f1=x=>3*a*x*x+2*b*x+c;
+   const A=3*a,B=2*b,C=c;let roots=[];
+   if(Math.abs(A)<1e-9){if(Math.abs(B)>1e-9)roots=[-C/B]}else{const D=B*B-4*A*C;if(D>0)roots=[(-B-Math.sqrt(D))/(2*A),(-B+Math.sqrt(D))/(2*A)];else if(Math.abs(D)<1e-9)roots=[-B/(2*A)]}
+   const pts=[],lines=[];roots.forEach(r=>{const s2=6*a*r+2*b;pts.push({x:r,y:f(r),l:s2<-1e-9?'max':s2>1e-9?'min':'sedlo'})});
+   let inf='';if(Math.abs(a)>1e-9){const xi=-b/(3*a);pts.push({x:xi,y:f(xi),l:'inflexia'});inf=`Inflexný bod x = ${lf(xi,2)}.`}
+   return{o:{fns:[{f,cls:'c1'},{f:f1,cls:'c3'}],xr:[-5,5],yr:[-15,15],pts,label:'kubická funkcia'},
+    txt:`f′(x) = ${lf(3*a,1)}x² ${2*b<0?'−':'+'} ${lf(Math.abs(2*b),1)}x ${c<0?'−':'+'} ${lf(Math.abs(c),1)} (zelená).<br>${roots.length?'Kritické body: '+roots.map(r=>'x = '+lf(r,2)).join(', ')+'. ':'f′ nemá reálne korene, funkcia nemá extrémy. '}${inf}`}}},
+ eps:{t:'Limita: ε a δ',ctrls:[{k:'f',l:'funkcia',sel:Object.entries(epsDefs).map(([k,v])=>[k,v.n]),v:'lin'},{k:'e',l:'ε',min:.1,max:3,step:.05,v:1}],
+  run:p=>{const d=epsDefs[p.f],e=p.e,del=epsDelta(d,e);
+   return{o:{fns:[{f:d.f,cls:'c1'}],xr:d.xr,yr:d.yr,hl:[d.L-e,d.L+e],vl:[d.a-del,d.a+del],pts:[{x:d.a,y:d.L}],label:'ε–δ'},
+    txt:`Limita je L = ${d.L}. Pre ε = ${lf(e,2)} stačí δ ≈ ${lf(del,3)}: ak je |x − ${d.a}| < δ, tak |f(x) − ${d.L}| < ε. Menšie ε vyžaduje menšie δ.`}}}
+};
+function initLabs(){
+  document.querySelectorAll('.lab[data-lab]').forEach(el=>{
+    const d=LABDEF[el.dataset.lab];if(!d||el.dataset.ready)return;el.dataset.ready='1';
+    el.innerHTML=`<h5>${d.t}</h5><div class="plotw"></div><div class="ctr">${d.ctrls.map(c=>c.sel?
+      `<label>${c.l}<select data-k="${c.k}">${c.sel.map(([v,n])=>`<option value="${v}" ${v===c.v?'selected':''}>${n}</option>`).join('')}</select><span></span></label>`:
+      `<label>${c.l}<input type="range" data-k="${c.k}" min="${c.min}" max="${c.max}" step="${c.step}" value="${c.v}"><b data-for="${c.k}"></b></label>`).join('')}</div><div class="out" role="status"></div>`;
+    const upd=()=>{const p={};
+      el.querySelectorAll('[data-k]').forEach(c=>{p[c.dataset.k]=c.type==='range'?+c.value:c.value;const b=el.querySelector(`b[data-for="${c.dataset.k}"]`);if(b)b.textContent=lf(c.value,2)});
+      const r=d.run(p);el.querySelector('.plotw').innerHTML=plot(r.o)||'';el.querySelector('.out').innerHTML=r.txt};
+    el.querySelectorAll('[data-k]').forEach(c=>c.addEventListener('input',upd));upd()})}
+const _rtl=renderTheory;renderTheory=function(){_rtl();initLabs()};
+renderTheory();
 </script>
