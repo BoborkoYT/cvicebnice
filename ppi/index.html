@@ -294,6 +294,9 @@ svg.aut .e.on{stroke:var(--blue);stroke-width:3}
   .pbreak{break-after:page}
   #printarea .sol{display:none}
 }
+/* karta sa po odpovedi nesmie zmršťovať: položky si držia výšku, karta sa skrolluje */
+.card>*{flex-shrink:0}
+.answer{flex-shrink:0;overflow-y:hidden}
 </style>
 <script>
 'use strict';
