@@ -1,0 +1,1627 @@
+<title>Cvičebnica MA</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: ľavý panel s témami, vpravo karta s príkladom. Farby skupín v mape sú tokeny --g1 až --g6 */
+:root{
+  --bg:#f3f5f8; --card:#ffffff; --fg:#1c2331; --muted:#5d6678; --rule:#dfe6f0; --line:#cfd8e6;
+  --red:#c42a3c; --blue:#1d5fc4; --green:#1b8450; --amber:#b86e00;
+  --ok-bg:#e3f4ea; --bad-bg:#fbe6e8; --soft:#e9eef7;
+  --g1:#d6336c; --g2:#12875a; --g3:#d9730d; --g4:#6a4fd1; --g5:#0f86c4; --g6:#9a7b00; --wire:#44506a;
+  --f-display:'Caveat','Segoe Print','Bradley Hand',cursive; --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif; --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111620; --card:#192030; --fg:#e7ebf3; --muted:#9aa5ba; --rule:#202a3c; --line:#33415a;
+  --red:#ff7f8c; --blue:#80aaff; --green:#58d28e; --amber:#f0b14a;
+  --ok-bg:#16382a; --bad-bg:#44212a; --soft:#222c40; --g1:#ff7ab0; --g2:#4fd69e; --g3:#ffa94d; --g4:#a99bff; --g5:#5cc6ff; --g6:#e6c24a; --wire:#9fb0cf; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111620; --card:#192030; --fg:#e7ebf3; --muted:#9aa5ba; --rule:#202a3c; --line:#33415a;
+  --red:#ff7f8c; --blue:#80aaff; --green:#58d28e; --amber:#f0b14a;
+  --ok-bg:#16382a; --bad-bg:#44212a; --soft:#222c40; --g1:#ff7ab0; --g2:#4fd69e; --g3:#ffa94d; --g4:#a99bff; --g5:#5cc6ff; --g6:#e6c24a; --wire:#9fb0cf; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.55 var(--f-body);padding-inline:16px;padding-block:20px 40px;
+  background-image:linear-gradient(var(--rule) 1px,transparent 1px);background-size:100% 32px}
+.app{max-width:1060px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font:700 2.6rem/1 var(--f-display);color:var(--red);margin:0;letter-spacing:.01em}
+.top{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:flex-end;justify-content:space-between}
+.sub{margin:4px 0 0;color:var(--muted);font-size:.95rem}
+.score{display:flex;gap:18px;font-variant-numeric:tabular-nums}
+.score div{display:flex;flex-direction:column;line-height:1.2}
+.score b{font:600 1.4rem var(--f-body)}
+.score span{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:20px;align-items:start}
+nav.topics{display:flex;flex-direction:column;gap:8px;position:sticky;top:16px}
+.tbtn{all:unset;box-sizing:border-box;cursor:pointer;display:block;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;transition:border-color .15s,background .15s}
+.tbtn:hover{border-color:var(--blue)}
+.tbtn:focus-visible,.btn:focus-visible,.opt:focus-visible,summary:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.tbtn[aria-pressed="true"]{border-color:var(--blue);background:var(--soft)}
+.tbtn .n{display:flex;justify-content:space-between;gap:8px;font-weight:600;font-size:.95rem}
+.tbtn .n em{font-style:normal;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums;font-size:.85rem}
+.tbtn .s{font-size:.8rem;color:var(--muted)}
+.bar{height:4px;border-radius:2px;background:var(--rule);margin-top:7px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green);width:0}
+.reset{all:unset;cursor:pointer;font-size:.8rem;color:var(--muted);text-decoration:underline;padding:4px 2px}
+.reset:focus-visible{outline:3px solid var(--blue)}
+main{display:flex;flex-direction:column;gap:14px;min-width:0}
+details.theory{background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:0}
+details.theory summary{cursor:pointer;padding:10px 14px;font:700 1.35rem var(--f-display);color:var(--green);list-style:none}
+details.theory summary::before{content:"＋ ";font-family:var(--f-body);font-size:.9rem}
+details.theory[open] summary::before{content:"− "}
+details.theory .in{padding:0 16px 12px;font-size:.93rem}
+details.theory ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:5px}
+.card{scroll-margin-top:12px;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:20px 20px 22px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.meta{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;color:var(--muted);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase}
+.chip{background:var(--soft);color:var(--blue);padding:3px 10px;border-radius:99px;font-weight:600}
+.prompt{font-size:1.05rem;min-width:0}
+.prompt p{margin:.5em 0}.muted{color:var(--muted);font-size:.88rem}
+.eq{margin:10px 0;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;overflow-x:auto;max-width:100%;padding-block:4px}
+.gap{display:inline-block;width:14px}
+.lbl{color:var(--blue);font-weight:600;white-space:nowrap}
+.sys{display:inline-flex;flex-direction:column;gap:2px;margin:8px 0;padding:4px 0 4px 14px;border-left:3px solid var(--blue);font-size:1.1rem;font-variant-numeric:tabular-nums}
+.op{display:inline-block;background:var(--soft);color:var(--red);padding:1px 8px;border-radius:6px;font-family:var(--f-mono);font-size:.88em;white-space:nowrap}
+.mx{display:inline-block;position:relative;padding:4px 10px;margin:0 3px;vertical-align:middle}
+.mx::before,.mx::after{content:"";position:absolute;top:0;bottom:0;width:7px;border:2px solid currentColor}
+.mx::before{left:0;border-right:0}.mx::after{right:0;border-left:0}
+.mx table{border-collapse:collapse}
+.mx td{padding:3px 9px;text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mx td.aug{border-left:2px solid currentColor}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:.85em;line-height:1.15;margin:0 .15em}
+.fr>span{padding:0 .25em;text-align:center}.fr>span:first-child{border-bottom:1.5px solid currentColor}
+.answer{display:flex;flex-direction:column;gap:10px;align-items:flex-start;padding:14px 16px;background:var(--soft);border-radius:10px;max-width:100%;overflow-x:auto}
+.answer .lbl2{font:700 1.25rem var(--f-display);color:var(--red)}
+.cell{font:500 1rem var(--f-mono);width:4.6em;padding:6px 6px;text-align:center;border:1.5px solid var(--line);border-radius:7px;background:var(--card);color:var(--fg)}
+.cell:focus{outline:3px solid var(--blue);outline-offset:0;border-color:var(--blue)}
+.cell.ok{border-color:var(--green);background:var(--ok-bg)}.cell.bad{border-color:var(--red);background:var(--bad-bg)}
+.cell:read-only{cursor:default}
+.ln{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
+.ln .t{white-space:nowrap}
+.mx.in td{padding:3px 4px}
+.opts{display:flex;flex-direction:column;gap:8px;align-items:stretch;width:100%;max-width:520px}
+.opt{all:unset;box-sizing:border-box;cursor:pointer;border:1.5px solid var(--line);background:var(--card);border-radius:9px;padding:10px 14px;display:block}
+.opt:hover{border-color:var(--blue)}
+.opt[aria-checked="true"]{border-color:var(--blue);background:var(--soft)}
+.opt.ok{border-color:var(--green);background:var(--ok-bg)}.opt.bad{border-color:var(--red);background:var(--bad-bg)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{all:unset;box-sizing:border-box;cursor:pointer;padding:10px 18px;border-radius:9px;font-weight:600;border:1.5px solid var(--line);background:var(--card);color:var(--fg)}
+.btn:hover{border-color:var(--blue)}
+.btn.main{background:var(--blue);border-color:var(--blue);color:#fff}
+:root[data-theme="dark"] .btn.main{color:#0d1424}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.main{color:#0d1424}}
+.btn[disabled]{opacity:.45;cursor:default}
+.fb{padding:10px 14px;border-radius:9px;font-weight:500}
+.fb.ok{background:var(--ok-bg);color:var(--green)}.fb.bad{background:var(--bad-bg);color:var(--red)}.fb.warn{background:var(--soft);color:var(--amber)}
+.sol{border-top:2px dashed var(--line);padding-top:12px}
+.sol h3{font:700 1.4rem var(--f-display);color:var(--green);margin:0 0 4px}
+.sol p{margin:.4em 0}.sol ul{margin:.4em 0;padding-left:1.2em}
+.steps{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.st{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;overflow-x:auto;max-width:100%}
+.st .op{min-width:8.5em}
+kbd{font:500 .8em var(--f-mono);background:var(--soft);padding:1px 6px;border-radius:5px}
+
+.tabs{display:flex;flex-wrap:wrap;gap:6px;border-bottom:2px solid var(--line)}
+.tab{all:unset;box-sizing:border-box;cursor:pointer;padding:9px 16px;font-weight:600;color:var(--muted);border:2px solid transparent;border-bottom:0;border-radius:9px 9px 0 0;margin-bottom:-2px}
+.tab:hover{color:var(--fg)}
+.tab[aria-selected="true"]{color:var(--blue);background:var(--card);border-color:var(--line)}
+.tab:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.split{display:flex;flex-direction:column;gap:14px;min-width:0}
+.tpane{display:none;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:6px 20px 18px;min-width:0}
+.tpane h3{font:700 2rem/1.1 var(--f-display);color:var(--red);margin:12px 0 0}
+.tsec{padding-top:14px}
+.tsec h4{font:700 1.45rem/1.1 var(--f-display);color:var(--green);margin:0 0 4px}
+.tsec p{margin:.4em 0}.tsec ul,.tsec ol{margin:.4em 0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+.tex{border-left:3px solid var(--blue);background:var(--soft);border-radius:0 8px 8px 0;padding:6px 12px;margin:8px 0;overflow-x:auto;max-width:100%}
+.tex p{margin:.3em 0}
+.app[data-view="theory"]{max-width:1320px}
+.app[data-view="theory"] details.theory{display:none}
+.app[data-view="theory"] .tpane{display:block}
+@media (min-width:1100px){
+  .app[data-view="theory"] .split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;gap:18px}
+  .app[data-view="theory"] .card{position:sticky;top:16px;max-height:calc(100vh - 32px);overflow-y:auto}
+}
+
+sub{font-size:.72em;line-height:0}
+.ov{text-decoration:overline;text-decoration-thickness:1.5px;text-underline-offset:0}
+.ttwrap{overflow-x:auto;max-width:100%;margin:8px 0}
+.tt{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:.92rem}
+.tt th,.tt td{border:1px solid var(--line);padding:3px 10px;text-align:center}
+.tt th{background:var(--soft);font-weight:600}
+.tt td.de{color:var(--muted)}
+.tt td.o.one{color:var(--blue);font-weight:600}
+.tt.tl td,.tt.tl th{text-align:left}
+.duo{display:flex;flex-wrap:wrap;gap:6px 24px;align-items:flex-start}
+details.gl{margin:4px 0}details.gl summary{cursor:pointer;color:var(--muted);font-size:.85rem}
+details.gl ul,ul.gl2{margin:4px 0;padding-left:0;list-style:none;display:flex;flex-wrap:wrap;gap:2px 22px}
+.cell.wide{width:11em;text-align:left}
+.cell.expr{width:min(100%,26em);text-align:left;font-size:1.05rem}
+.cell.warn{border-color:var(--amber)}
+.insbar{display:flex;gap:6px;flex-wrap:wrap}
+.ib{all:unset;box-sizing:border-box;cursor:pointer;min-width:2.4rem;text-align:center;padding:5px 10px;border:1.5px solid var(--line);border-radius:7px;background:var(--card);font:500 1rem var(--f-mono)}
+.ib:hover{border-color:var(--blue)}.ib:focus-visible{outline:3px solid var(--blue)}
+.rowsq{display:flex;flex-direction:column;gap:10px}
+.rq{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:8px}
+.rl{flex:1 1 18em;min-width:0}
+.ro{display:flex;gap:6px}
+.opt.sm{padding:6px 12px;font-size:.9rem;white-space:nowrap}
+code.w{font:500 1rem var(--f-mono);background:var(--soft);padding:1px 8px;border-radius:6px;letter-spacing:.1em}
+.mx.in th{font:500 .8rem var(--f-mono);color:var(--muted);padding:2px 6px}
+.cell{width:3.6em}
+.ln .cell.expr{width:min(100%,26em)}
+/* --- MA: výrazy, limity, odmocniny, grafy --- */
+.m{font-family:'STIX Two Text','Cambria Math','Times New Roman',serif;font-size:1.08em;white-space:nowrap}
+.m em.vx,em.vx{font-style:italic}
+.limw{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;margin-right:.25em}
+.lims{font-size:.72em;margin-top:.15em}
+.rt{display:inline-flex;align-items:stretch}
+.rs{padding-right:1px}
+.rb{border-top:1.5px solid currentColor;padding:0 .12em;margin-top:.12em}
+div.rb{border-top:0;margin:.3em 0}
+.plotw{max-width:460px;margin:8px 0}
+svg.plot{display:block;width:100%;height:auto;max-width:460px;background:var(--card);border:1px solid var(--line);border-radius:8px}
+svg.plot .gr{stroke:var(--rule);stroke-width:1}
+svg.plot .ax{stroke:var(--fg);stroke-width:1.4}
+svg.plot .as{stroke:var(--amber);stroke-width:1.3;stroke-dasharray:5 4;fill:none}
+svg.plot .ln2{stroke:var(--green);stroke-width:1.8;fill:none}
+svg.plot .fn{fill:none;stroke-width:2.2}
+svg.plot .fn.c1,svg.plot .fn{stroke:var(--blue)}
+svg.plot .fn.c2{stroke:var(--red)}
+svg.plot .pt{fill:var(--red);stroke:var(--card);stroke-width:1.5}
+svg.plot .pl{fill:var(--fg);font:600 11px var(--f-body)}
+svg.plot .tk{fill:var(--muted);font:10px var(--f-mono)}
+.cell.wide{width:11em;text-align:left}
+.cell.expr{width:min(100%,26em);text-align:left;font-size:1.05rem}
+.cell.warn{border-color:var(--amber)}
+.cell{width:5.2em}
+.insbar{display:flex;gap:6px;flex-wrap:wrap}
+.ib{all:unset;box-sizing:border-box;cursor:pointer;min-width:2.4rem;text-align:center;padding:5px 10px;border:1.5px solid var(--line);border-radius:7px;background:var(--card);font:500 1rem var(--f-mono)}
+.ib:hover{border-color:var(--blue)}.ib:focus-visible{outline:3px solid var(--blue)}
+.rowsq{display:flex;flex-direction:column;gap:10px}
+.rq{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:8px}
+.rl{flex:1 1 18em;min-width:0}
+.ro{display:flex;gap:6px;flex-wrap:wrap}
+.opt.sm{padding:6px 12px;font-size:.9rem;white-space:nowrap}
+.ln .cell.expr{width:min(100%,26em)}
+.opt .m{white-space:normal}
+@media (max-width:820px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  nav.topics{flex-direction:row;overflow-x:auto;position:static;padding-bottom:6px;gap:8px}
+  .tbtn{flex:0 0 auto;min-width:170px}
+  .tbtn .s{display:none}
+  h1{font-size:2.2rem}.card{padding:16px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.backlink{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-weight:600;font-size:.9rem;padding:6px 12px 6px 10px;border:1.5px solid var(--line);border-radius:99px;background:var(--card);transition:border-color .15s,color .15s}.backlink:hover{color:var(--blue);border-color:var(--blue)}.backlink:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+</style>
+<div class="app" id="app" data-view="practice">
+  <a class="backlink" href="../">← Cvičebnice</a>
+  <header class="top">
+    <div>
+      <h1>Cvičebnica MA</h1>
+      <p class="sub">Funkcie, limity, derivácie, Taylorov polynóm a priebeh funkcie. Každý príklad je nový.</p>
+    </div>
+    <div class="score" id="score"></div>
+  </header>
+  <div class="tabs" role="tablist" aria-label="Zobrazenie"><button class="tab" role="tab" id="tab-practice" aria-selected="true" data-v="practice">Cvičenie</button><button class="tab" role="tab" id="tab-theory" aria-selected="false" data-v="theory">Teória + cvičenie</button></div>
+  <div class="layout">
+    <nav class="topics" id="nav" aria-label="Témy"></nav>
+    <main>
+      <details class="theory" id="theory"><summary></summary><div class="in"></div></details>
+      <div class="split"><article class="tpane" id="tpane" aria-label="Teória"></article><section class="card" id="card" aria-live="off"></section></div>
+    </main>
+  </div>
+</div>
+<script>
+'use strict';
+/* ===== Matematické jadro: výrazy (AST), parser, derivovanie, vykresľovanie vzorcov a grafov ===== */
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a};
+const uniq=a=>[...new Set(a)];
+const sgn=v=>v>0?1:v<0?-1:0;
+
+/* ---------- racionálne čísla pre zobrazenie ---------- */
+function rat(v,maxq=5040,eps=1e-9){
+  if(!isFinite(v))return null;const s=v<0?-1:1,x=Math.abs(v);
+  if(Number.isInteger(x))return{p:s*x,q:1};
+  let h1=1,h0=0,k1=0,k0=1,b=x;
+  for(let i=0;i<40;i++){const a=Math.floor(b);[h1,h0]=[a*h1+h0,h1];[k1,k0]=[a*k1+k0,k1];
+    if(k1>maxq)return null;
+    if(Math.abs(x-h1/k1)<eps*Math.max(1,x))return{p:s*h1,q:k1};
+    const f=b-a;if(f<1e-12)return null;b=1/f}
+  return null}
+const num=v=>String(v).replace('-','−').replace('.',',');
+const dec=(v,d=6)=>num(+v.toFixed(d));
+const frac=(p,q)=>`<span class="fr"><span>${p}</span><span>${q}</span></span>`;
+/* číslo ako HTML: celé, zlomok alebo desatinné */
+function fv(v,o={}){
+  if(v===Infinity)return'∞';if(v===-Infinity)return'−∞';
+  const r=rat(v);if(r){if(r.q===1)return num(r.p);return(r.p<0?'−':'')+frac(Math.abs(r.p),r.q)}
+  return dec(v)}
+/* číslo ako text do poľa */
+function ftxt(v){if(v===Infinity)return'∞';if(v===-Infinity)return'-∞';const r=rat(v);if(r)return r.q===1?String(r.p):r.p+'/'+r.q;return String(+v.toFixed(6))}
+/* násobok π ako HTML */
+function fpi(v){const r=rat(v/Math.PI,360);if(!r)return dec(v);if(r.p===0)return'0';
+  const sg=r.p<0?'−':'',p=Math.abs(r.p);
+  if(r.q===1)return sg+(p===1?'':p)+'π';
+  return sg+frac((p===1?'':p)+'π',r.q)}
+function fpiTxt(v){const r=rat(v/Math.PI,360);if(!r)return String(+v.toFixed(6));if(r.p===0)return'0';const p=Math.abs(r.p);return(r.p<0?'-':'')+(p===1?'':p+'*')+'pi'+(r.q===1?'':'/'+r.q)}
+
+/* ---------- AST ---------- */
+const N=v=>({t:'n',v});
+const X={t:'v'};
+const C=n=>({t:'c',n});
+const isN=(a,v)=>a.t==='n'&&(v===undefined||a.v===v);
+const isInt=a=>a.t==='n'&&Number.isInteger(a.v);
+const hasX=a=>a.t==='v'?true:a.t==='n'||a.t==='c'?false:a.t==='neg'?hasX(a.a):a.t==='f'?hasX(a.a):hasX(a.a)||hasX(a.b);
+const isConst=a=>!hasX(a);
+function neg(a){if(a.t==='n')return N(-a.v);if(a.t==='neg')return a.a;return{t:'neg',a}}
+function add(a,b){
+  if(isN(a,0))return b;if(isN(b,0))return a;
+  if(isInt(a)&&isInt(b))return N(a.v+b.v);
+  if(b.t==='neg')return sub(a,b.a);
+  return{t:'op',o:'+',a,b}}
+function sub(a,b){
+  if(isN(b,0))return a;if(isN(a,0))return neg(b);
+  if(isInt(a)&&isInt(b))return N(a.v-b.v);
+  if(b.t==='neg')return add(a,b.a);
+  if(b.t==='n'&&b.v<0)return add(a,N(-b.v));
+  return{t:'op',o:'-',a,b}}
+const sameAst=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+function factors(a,out){if(a.t==='op'&&a.o==='*'){factors(a.a,out);factors(a.b,out)}else out.push(a);return out}
+const fcls=f=>(f.t==='v'||f.t==='c'||(f.t==='op'&&f.o==='^'&&f.a.t==='v'))?0:1;
+function mul(a,b){
+  if(isN(a,0)||isN(b,0))return N(0);
+  if(a.t==='neg')return neg(mul(a.a,b));if(b.t==='neg')return neg(mul(a,b.a));
+  if(a.t==='op'&&a.o==='/'&&isInt(a.a)&&isInt(a.b)&&b.t!=='n')return div(mul(a.a,b),a.b);
+  if(b.t==='op'&&b.o==='/'&&isInt(b.a)&&isInt(b.b)&&a.t!=='n')return div(mul(a,b.a),b.b);
+  const fs=factors(b,factors(a,[]));let c=1;const rest=[];
+  fs.forEach(f=>{if(f.t==='n')c*=f.v;else rest.push(f)});
+  if(c===0)return N(0);
+  if(c<0)return neg(mulList(-c,rest));
+  return mulList(c,rest)}
+function mulList(c,rest){
+  rest=rest.map((f,i)=>({f,i})).sort((x,y)=>fcls(x.f)-fcls(y.f)||x.i-y.i).map(o=>o.f);
+  const arr=c===1?rest:[N(c),...rest];
+  if(!arr.length)return N(1);
+  return arr.reduce((x,y)=>({t:'op',o:'*',a:x,b:y}))}
+function coefOf(a){if(a.t==='n'&&Number.isInteger(a.v))return[a.v,[]];if(a.t==='op'&&a.o==='*'){const fs=factors(a,[]);if(fs[0].t==='n'&&Number.isInteger(fs[0].v))return[fs[0].v,fs.slice(1)]}return null}
+function div(a,b){
+  if(isN(a,0))return N(0);if(isN(b,1))return a;
+  if(b.t==='neg')return neg(div(a,b.a));if(a.t==='neg')return neg(div(a.a,b));
+  if(sameAst(a,b))return N(1);
+  {const ca=coefOf(a),cb=coefOf(b);if(ca&&cb&&!(isInt(a)&&isInt(b))){const g=gcd(ca[0],cb[0]);if(g>1)return div(mulList(ca[0]/g,ca[1]),mulList(cb[0]/g,cb[1]))}}
+  if(isInt(a)&&isInt(b)&&b.v!==0){const g=gcd(a.v,b.v);let p=a.v/g,q=b.v/g;if(q<0){p=-p;q=-q}
+    if(q===1)return N(p);return p<0?neg({t:'op',o:'/',a:N(-p),b:N(q)}):{t:'op',o:'/',a:N(p),b:N(q)}}
+  return{t:'op',o:'/',a,b}}
+function pow(a,b){
+  if(isN(b,0))return N(1);if(isN(b,1))return a;
+  if(isN(a,1))return N(1);
+  if(isInt(a)&&isInt(b)&&b.v>0&&Math.abs(Math.pow(a.v,b.v))<1e9)return N(Math.pow(a.v,b.v));
+  return{t:'op',o:'^',a,b}}
+const fn=(n,a)=>({t:'f',n,a});
+const E=C('e');
+const PI=C('pi');
+const sqrtN=a=>fn('sqrt',a);
+
+/* ---------- číselné vyhodnotenie ---------- */
+const FJS={sin:Math.sin,cos:Math.cos,tg:Math.tan,ctg:u=>1/Math.tan(u),ln:Math.log,sqrt:Math.sqrt,abs:Math.abs,
+  arcsin:Math.asin,arccos:Math.acos,arctg:Math.atan,arccotg:u=>Math.PI/2-Math.atan(u),
+  sinh:Math.sinh,cosh:Math.cosh,th:Math.tanh,cth:u=>1/Math.tanh(u)};
+function powN(u,v){
+  if(u<0&&!Number.isInteger(v)){const r=rat(v,99);if(r&&r.q%2===1)return(r.p%2===0?1:-1)*Math.pow(-u,v);return NaN}
+  return Math.pow(u,v)}
+function ev(a,x){
+  switch(a.t){
+    case'n':return a.v;case'v':return x;case'c':return a.n==='pi'?Math.PI:Math.E;
+    case'neg':return-ev(a.a,x);
+    case'op':{const u=ev(a.a,x),v=ev(a.b,x);
+      switch(a.o){case'+':return u+v;case'-':return u-v;case'*':return u*v;case'/':return u/v;default:return powN(u,v)}}
+    case'f':return FJS[a.n](ev(a.a,x))}}
+const fnOf=a=>x=>ev(a,x);
+
+/* ---------- parser (vstup od používateľa aj zápis šablón) ---------- */
+const NAMES=['arccotg','arcctg','arcsin','arccos','arctan','arctg','arccot','sinh','cosh','tanh','coth','sqrt','cotg','sin','cos','tan','ctg','cot','abs','exp','th','cth','tg','ln','pi','e','x'];
+const FNMAP={sin:'sin',cos:'cos',tg:'tg',tan:'tg',ctg:'ctg',cotg:'ctg',cot:'ctg',ln:'ln',sqrt:'sqrt',abs:'abs',arcsin:'arcsin',arccos:'arccos',arctg:'arctg',arctan:'arctg',arccotg:'arccotg',arcctg:'arccotg',arccot:'arccotg',sinh:'sinh',cosh:'cosh',th:'th',tanh:'th',cth:'cth',coth:'cth',exp:'exp'};
+function tokenize(src){
+  let s=String(src).toLowerCase().replace(/[−–—]/g,'-').replace(/[·×⋅]/g,'*').replace(/÷/g,'/').replace(/,/g,'.').replace(/π/g,'pi').replace(/√/g,'sqrt').replace(/²/g,'^2').replace(/³/g,'^3').replace(/\s+/g,'');
+  const out=[];let i=0;
+  while(i<s.length){
+    const ch=s[i];
+    if(/[0-9.]/.test(ch)){const m=s.slice(i).match(/^(\d+\.?\d*|\.\d+)/);if(!m)throw new Error('zlé číslo');out.push({k:'num',v:parseFloat(m[1])});i+=m[1].length;continue}
+    if('+-*/^()'.includes(ch)){out.push({k:'op',v:ch});i++;continue}
+    if(/[a-z]/.test(ch)){const nm=NAMES.find(n=>s.startsWith(n,i));if(!nm)throw new Error(`neznámy symbol „${s.slice(i).match(/^[a-z]+/)[0]}“`);out.push({k:'id',v:nm});i+=nm.length;continue}
+    throw new Error(`neznámy znak „${ch}“`)}
+  return out}
+function parseExpr(src){
+  const T=tokenize(src);let i=0;
+  if(!T.length)throw new Error('prázdny výraz');
+  const peek=()=>T[i],eat=()=>T[i++];
+  const isOp=(t,v)=>t&&t.k==='op'&&t.v===v;
+  const starts=t=>t&&(t.k==='num'||t.k==='id'||isOp(t,'('));
+  function expr(){let a=term();for(;;){const t=peek();if(isOp(t,'+')){eat();a=add(a,term())}else if(isOp(t,'-')){eat();a=sub(a,term())}else break}return a}
+  function term(){let a=unary();for(;;){const t=peek();if(!t)break;
+    if(isOp(t,'*')){eat();a=mul(a,unary())}else if(isOp(t,'/')){eat();a=div(a,unary())}
+    else if(starts(t)){a=mul(a,unary())}else break}return a}
+  function unary(){const t=peek();if(isOp(t,'-')){eat();return neg(unary())}if(isOp(t,'+')){eat();return unary()}return power()}
+  function expo(){const t=peek();if(isOp(t,'-')){eat();return neg(expo())}if(isOp(t,'+')){eat();return expo()}return power()}
+  function power(){const b=primary();if(isOp(peek(),'^')){eat();return pow(b,expo())}return b}
+  function arg(){if(isOp(peek(),'(')){eat();const a=expr();if(!isOp(peek(),')'))throw new Error('chýba zátvorka )');eat();return a}return power()}
+  function primary(){
+    const t=eat();if(!t)throw new Error('výraz sa náhle končí');
+    if(t.k==='num')return N(t.v);
+    if(isOp(t,'(')){const a=expr();if(!isOp(peek(),')'))throw new Error('chýba zátvorka )');eat();return a}
+    if(t.k==='id'){
+      if(t.v==='x')return X;if(t.v==='pi')return PI;if(t.v==='e')return E;
+      const name=FNMAP[t.v];let ex=null;
+      if(isOp(peek(),'^')&&name!=='exp'){eat();ex=expo()}
+      const a=arg();const f=name==='exp'?pow(E,a):fn(name,a);
+      return ex?pow(f,ex):f}
+    throw new Error(`nečakaný znak „${t.v}“`)}
+  const r=expr();if(i<T.length)throw new Error(`nečakaný znak „${T[i].v}“`);return r}
+const P=s=>parseExpr(s);
+
+/* hodnota konštantného výrazu pre číselné polia: čísla, zlomky, odmocniny, π, e, ln, ±∞ */
+function parseVal(s){
+  s=String(s).trim();if(!s)return null;
+  const t=s.toLowerCase().replace(/[−–—]/g,'-').replace(/\s+/g,'');
+  if(/^(\+?(inf|oo|∞))$/.test(t))return Infinity;if(/^-(inf|oo|∞)$/.test(t))return-Infinity;
+  if(/^(nex|neexistuje|∄|dne)$/.test(t))return'nex';
+  try{const a=parseExpr(s);if(hasX(a))return null;const v=ev(a,0);return Number.isFinite(v)?v:null}catch(e){return null}}
+
+/* ---------- derivovanie ---------- */
+const fprime={
+  sin:(u)=>fn('cos',u),cos:(u)=>neg(fn('sin',u)),
+  tg:(u)=>div(N(1),pow(fn('cos',u),N(2))),ctg:(u)=>neg(div(N(1),pow(fn('sin',u),N(2)))),
+  sinh:(u)=>fn('cosh',u),cosh:(u)=>fn('sinh',u),th:(u)=>div(N(1),pow(fn('cosh',u),N(2))),cth:(u)=>neg(div(N(1),pow(fn('sinh',u),N(2))))};
+function D(a){
+  switch(a.t){
+    case'n':case'c':return N(0);
+    case'v':return N(1);
+    case'neg':return neg(D(a.a));
+    case'op':{const u=a.a,v=a.b;
+      if(a.o==='+')return add(D(u),D(v));
+      if(a.o==='-')return sub(D(u),D(v));
+      if(a.o==='*')return add(mul(D(u),v),mul(u,D(v)));
+      if(a.o==='/'){if(isConst(v))return div(D(u),v);if(isConst(u))return neg(div(mul(u,D(v)),pow(v,N(2))));
+        return div(sub(mul(D(u),v),mul(u,D(v))),pow(v,N(2)))}
+      if(isConst(v))return mul(mul(v,pow(u,sub(v,N(1)))),D(u));
+      if(isConst(u)){const k=(u.t==='c'&&u.n==='e')?N(1):fn('ln',u);return mul(mul(a,k),D(v))}
+      return mul(a,add(mul(D(v),fn('ln',u)),div(mul(v,D(u)),u)))}
+    case'f':{const u=a.a,du=D(u);
+      let g;
+      switch(a.n){
+        case'ln':return div(du,u);
+        case'sqrt':return div(du,mul(N(2),a));
+        case'arcsin':return div(du,sqrtN(sub(N(1),pow(u,N(2)))));
+        case'arccos':return neg(div(du,sqrtN(sub(N(1),pow(u,N(2))))));
+        case'arctg':return div(du,add(N(1),pow(u,N(2))));
+        case'arccotg':return neg(div(du,add(N(1),pow(u,N(2)))));
+        case'abs':return mul(du,div(u,a));
+        default:g=fprime[a.n](u)}
+      return mul(du,g)}}}
+const Dn=(a,n)=>{for(let i=0;i<n;i++)a=D(a);return a};
+function subst(a,r){
+  switch(a.t){case'v':return r;case'n':case'c':return a;case'neg':return neg(subst(a.a,r));
+    case'f':return fn(a.n,subst(a.a,r));
+    case'op':{const x=subst(a.a,r),y=subst(a.b,r);return a.o==='+'?add(x,y):a.o==='-'?sub(x,y):a.o==='*'?mul(x,y):a.o==='/'?div(x,y):pow(x,y)}}}
+/* polynóm z koeficientov (od najvyššieho) */
+function polyAst(co){const n=co.length-1;let r=N(0);
+  co.forEach((c,i)=>{const k=n-i;if(c===0)return;let t=k===0?N(Math.abs(c)):mul(N(Math.abs(c)),k===1?X:pow(X,N(k)));if(c<0&&r.t==='n'&&r.v===0)r=neg(t);else r=c<0?sub(r,t):add(r,t)});return r}
+const polyEv=(co,x)=>co.reduce((s,c)=>s*x+c,0);
+const polyMul=(a,b)=>{const r=Array(a.length+b.length-1).fill(0);a.forEach((x,i)=>b.forEach((y,j)=>r[i+j]+=x*y));return r};
+const polyFromRoots=rs=>rs.reduce((p,r)=>polyMul(p,[1,-r]),[1]);
+
+/* ---------- zobrazenie vzorcov (HTML) ---------- */
+const fmtNum=v=>num(v);
+const FNAME={tg:'tg',ctg:'cotg',arccotg:'arccotg',th:'th',cth:'cth'};
+function leftmost(a){return a.t==='op'&&(a.o==='*'||a.o==='^')?leftmost(a.a):a}
+function H(a,p=0){
+  let s,q;
+  switch(a.t){
+    case'n':if(a.v<0){s='−'+fmtNum(-a.v);q=1.5}else{s=fmtNum(a.v);q=5}break;
+    case'v':s='<em class="vx">x</em>';q=5;break;
+    case'c':s=a.n==='pi'?'π':'e';q=5;break;
+    case'neg':s='−'+H(a.a,2);q=1.5;break;
+    case'f':
+      if(a.n==='sqrt'){s=`<span class="rt"><span class="rs">√</span><span class="rb">${H(a.a,0)}</span></span>`;q=5;break}
+      {const nm=FNAME[a.n]||a.n;const ar=a.a.t==='v'||(a.a.t==='n'&&a.a.v>=0)?H(a.a,5):`(${H(a.a,0)})`;s=`${nm}&#8239;${ar}`;q=4.8}break;
+    case'op':{
+      const x=a.a,y=a.b;
+      if(a.o==='+'){const yn=y.t==='neg'||(y.t==='n'&&y.v<0);s=yn?`${H(x,1)} − ${H(y.t==='neg'?y.a:N(-y.v),2)}`:`${H(x,1)} + ${H(y,1)}`;q=1;break}
+      if(a.o==='-'){s=`${H(x,1)} − ${H(y,2)}`;q=1;break}
+      if(a.o==='*'){const l=leftmost(y);const dig=l.t==='n'||(l.t==='op'&&l.o==='/');
+        const sep=(x.t==='n'&&!dig)?'':dig?' · ':'&#8239;';
+        s=`${H(x,2)}${sep}${H(y,2.1)}`;q=2;break}
+      if(a.o==='/'){s=frac(H(x,0),H(y,0));q=4;break}
+      // mocnina
+      if(x.t==='f'&&x.n!=='sqrt'&&y.t==='n'&&Number.isInteger(y.v)&&y.v>0){const nm=FNAME[x.n]||x.n;const ar=x.a.t==='v'?H(x.a,5):`(${H(x.a,0)})`;s=`${nm}<sup>${y.v}</sup>&#8239;${ar}`;q=4.5;break}
+      s=`${H(x,5)}<sup>${H(y,0)}</sup>`;q=4.5;break}}
+  return q<p?`(${s})`:s}
+function S(a){switch(a.t){case'n':return a.v<0?`(${a.v})`:String(a.v);case'v':return'x';case'c':return a.n;case'neg':return`(-${S(a.a)})`;
+  case'f':return`${a.n}(${S(a.a)})`;case'op':return`(${S(a.a)}${a.o}${S(a.b)})`}}
+const M=a=>typeof a==='string'?H(P(a)):H(a);
+const MQ=a=>`<span class="m">${M(a)}</span>`;
+/* f(x) = ... */
+const FX=(a,nm='f',v='x')=>`<span class="m">${nm}(${v}) = ${M(a)}</span>`;
+const LIM=(sub,body)=>`<span class="m"><span class="limw"><span>lim</span><span class="lims">${sub}</span></span> ${body}</span>`;
+
+/* ---------- vyhodnotenie používateľského výrazu voči referenčnej funkcii ---------- */
+const XS=[0.31,0.62,0.93,1.24,1.55,1.86,2.17,2.48,2.79,0.47,1.11,1.73,0.78,2.05];
+function checkFn(src,ref,xs=XS){
+  let ast;
+  try{ast=parseExpr(src)}catch(e){return{hold:true,msg:'Výrazu nerozumiem: '+e.message+'.'}}
+  let ok=0,bad=0;
+  for(const x of xs){const r=ref(x);if(!Number.isFinite(r)||Math.abs(r)>1e8)continue;
+    const u=ev(ast,x);if(!Number.isFinite(u)){bad++;continue}
+    if(Math.abs(u-r)<=1e-6*Math.max(1,Math.abs(r)))ok++;else bad++}
+  if(ok>=3&&bad===0)return{ok:true};
+  return{ok:false,msg:'Výraz nesedí. Skús ho zjednodušiť, alebo skontroluj pravidlo (súčin, podiel, zložená funkcia).'}}
+
+/* ---------- graf (SVG) ---------- */
+function niceStep(r){const raw=r/5,p=Math.pow(10,Math.floor(Math.log10(raw))),m=raw/p;return(m<1.5?1:m<3.5?2:m<7.5?5:10)*p}
+/* o: {fns:[{f,cls}], xr:[a,b], yr?:[c,d], pts:[{x,y,l,cls}], vl:[x], hl:[y], lines:[{k,q,cls}] } */
+function plot(o){
+  const W=420,Hh=250,pad={l:30,r:12,t:12,b:22};
+  const [x0,x1]=o.xr;let ymin=Infinity,ymax=-Infinity;
+  const samp=(f)=>{const out=[];const n=320;for(let i=0;i<=n;i++){const x=x0+(x1-x0)*i/n;let y;try{y=f(x)}catch(e){y=NaN}out.push([x,y])}return out};
+  const all=o.fns.map(g=>({g,pts:samp(g.f)}));
+  if(o.yr){[ymin,ymax]=o.yr}else{
+    const ys=all[0].pts.map(p=>p[1]).filter(Number.isFinite).sort((a,b)=>a-b);
+    if(!ys.length)return'';const lo=ys[Math.floor(ys.length*0.03)],hi=ys[Math.ceil(ys.length*0.97)-1];
+    ymin=lo;ymax=hi;(o.pts||[]).forEach(p=>{ymin=Math.min(ymin,p.y);ymax=Math.max(ymax,p.y)});
+    const m=(ymax-ymin||1)*0.12;ymin-=m;ymax+=m}
+  if(ymin>0&&ymin<(ymax-ymin)*0.5)ymin=Math.min(ymin,-0.05*(ymax-ymin));
+  if(ymax<0&&-ymax<(ymax-ymin)*0.5)ymax=Math.max(ymax,0.05*(ymax-ymin));
+  const sx=x=>pad.l+(x-x0)/(x1-x0)*(W-pad.l-pad.r),sy=y=>Hh-pad.b-(y-ymin)/(ymax-ymin)*(Hh-pad.t-pad.b);
+  const clipY=y=>Math.max(-1e4,Math.min(1e4,y));
+  let s=`<svg class="plot" viewBox="0 0 ${W} ${Hh}" role="img" aria-label="${o.label||'graf funkcie'}">`;
+  const sxs=niceStep(x1-x0),sys=niceStep(ymax-ymin);
+  for(let x=Math.ceil(x0/sxs)*sxs;x<=x1+1e-9;x+=sxs){const X_=sx(x);s+=`<line class="gr" x1="${X_}" y1="${pad.t}" x2="${X_}" y2="${Hh-pad.b}"/>`;if(Math.abs(x)>1e-9)s+=`<text class="tk" x="${X_}" y="${Hh-pad.b+13}" text-anchor="middle">${+x.toFixed(6)}</text>`}
+  for(let y=Math.ceil(ymin/sys)*sys;y<=ymax+1e-9;y+=sys){const Y_=sy(y);s+=`<line class="gr" x1="${pad.l}" y1="${Y_}" x2="${W-pad.r}" y2="${Y_}"/>`;if(Math.abs(y)>1e-9)s+=`<text class="tk" x="${pad.l-4}" y="${Y_+3}" text-anchor="end">${+y.toFixed(6)}</text>`}
+  if(x0<0&&x1>0)s+=`<line class="ax" x1="${sx(0)}" y1="${pad.t}" x2="${sx(0)}" y2="${Hh-pad.b}"/>`;
+  if(ymin<0&&ymax>0)s+=`<line class="ax" x1="${pad.l}" y1="${sy(0)}" x2="${W-pad.r}" y2="${sy(0)}"/>`;
+  (o.vl||[]).forEach(x=>{s+=`<line class="as" x1="${sx(x)}" y1="${pad.t}" x2="${sx(x)}" y2="${Hh-pad.b}"/>`});
+  (o.hl||[]).forEach(y=>{s+=`<line class="as" x1="${pad.l}" y1="${sy(y)}" x2="${W-pad.r}" y2="${sy(y)}"/>`});
+  (o.lines||[]).forEach(l=>{const a1=l.k*x0+l.q,a2=l.k*x1+l.q;s+=`<path class="${l.cls||'as'}" d="M${sx(x0)} ${sy(a1)}L${sx(x1)} ${sy(a2)}"/>`});
+  all.forEach(({g,pts})=>{let d='',pen=false,prev=null;
+    pts.forEach(([x,y])=>{
+      if(!Number.isFinite(y)||y>ymax+(ymax-ymin)*3||y<ymin-(ymax-ymin)*3){pen=false;prev=null;return}
+      if(prev!==null&&Math.abs(y-prev)>(ymax-ymin)*1.5){pen=false}
+      d+=(pen?'L':'M')+sx(x).toFixed(1)+' '+sy(clipY(y)).toFixed(1);pen=true;prev=y});
+    s+=`<path class="fn ${g.cls||''}" d="${d}"/>`});
+  (o.pts||[]).forEach(p=>{s+=`<circle class="pt ${p.cls||''}" cx="${sx(p.x)}" cy="${sy(p.y)}" r="4"/>`;if(p.l)s+=`<text class="pl" x="${sx(p.x)+6}" y="${sy(p.y)-6}">${p.l}</text>`});
+  return s+'</svg>'}
+'use strict';
+/* ===== Spoločné pomôcky pre generátory, hodnotenie a témy 1 až 3 ===== */
+const TOPICS=[];
+const topic=(id,name,short,gens)=>{const t={id,name,short,gens};TOPICS.push(t);return t};
+const A=(v,s,t,tol)=>({v,s,t,tol});               // odpoveď s vlastným zobrazením
+const av=a=>a&&typeof a==='object'&&!Array.isArray(a)?a.v:a;
+const atol=a=>a&&typeof a==='object'&&!Array.isArray(a)&&a.tol!=null?a.tol:1e-6;
+const ahtml=a=>Array.isArray(a)?(a.length?a.map(v=>fv(v)).join(', '):'∅'):(a&&typeof a==='object'&&a.s)?a.s:fv(av(a));
+const atext=a=>Array.isArray(a)?(a.length?a.map(ftxt).join(', '):'-'):(a&&typeof a==='object'&&a.t)?a.t:ftxt(av(a));
+const nn=v=>String(v).replace('-','−');
+const sg=v=>v<0?'−':'+';
+const par=(v)=>v<0?`(${nn(v)})`:String(v);
+const p_=h=>`<p>${h}</p>`;
+const eqh=h=>`<div class="eq">${h}</div>`;
+const iv=(lo,hi,lc=false,rc=false)=>`${lc?'⟨':'('}${lo}, ${hi}${rc?'⟩':')'}`;
+const xm=a=>a>=0?sub(X,N(a)):add(X,N(-a));          // x − a
+const sub_=(i)=>`<sub>${i}</sub>`;
+
+/* hodnotenie odpovedí: čistá funkcia, používa ju aj UI aj testy */
+const specsOf=inp=>inp.lines.flat().filter(x=>x===null||(x&&typeof x==='object')).map(x=>x===null?'num':x.m);
+function parseSet(s){s=String(s).trim();if(s==='')return null;if(/^(-|∅|–|—)$/.test(s))return[];
+  const parts=s.split(/[;,\s]+/).filter(Boolean);const v=parts.map(parseVal);if(v.some(x=>x===null||x==='nex'||!isFinite(x)))return null;return v.sort((a,b)=>a-b)}
+function sameNum(u,a,tol){if(u==='nex'||a==='nex')return u===a;if(!isFinite(a)||!isFinite(u))return u===a;return Math.abs(u-a)<=tol*Math.max(1,Math.abs(a))}
+function grade(q,raw){
+  const inp=q.input;
+  if(inp.t==='choice'){if(raw==null)return{hold:true,msg:'Vyber jednu možnosť.'};const ok=raw===q.answer[0];return{ok,hit:ok?1:0,total:1,per:[ok]}}
+  if(inp.t==='rows'){if(raw.some(x=>x==null))return{hold:true,msg:'Odpovedz na každý riadok.'};const per=raw.map((v,i)=>v===q.answer[i]);const hit=per.filter(Boolean).length;return{ok:hit===per.length,hit,total:per.length,per}}
+  if(inp.t==='expr')return q.check(raw);
+  const specs=specsOf(inp);
+  const vals=raw.map((s,i)=>specs[i]==='set'?parseSet(s):parseVal(s));
+  const bad=vals.findIndex(v=>v===null);
+  if(bad>=0)return{hold:true,msg:specs[bad]==='set'?'Vyplň všetky polia zoznamom čísel oddelených čiarkou (prázdna množina je -).':'Vyplň všetky polia číslom, zlomkom (2/7) alebo výrazom (sqrt(3)/2, pi/6, e^2). Nekonečno napíš inf.',bad};
+  const per=vals.map((v,i)=>specs[i]==='set'?(v.length===q.answer[i].length&&v.every((x,j)=>Math.abs(x-q.answer[i][j])<1e-9)):sameNum(v,av(q.answer[i]),atol(q.answer[i])));
+  const hit=per.filter(Boolean).length;return{ok:hit===per.length,hit,total:per.length,per}}
+
+/* pomocné stavebné prvky */
+const choiceQ=(kind,prompt,opts,correct,solution)=>{       // správna možnosť je prvá, ostatné sú nesprávne
+  const order=shuffle(opts.map((o,i)=>i));return{kind,prompt,input:{t:'choice',opts:order.map(i=>opts[i])},answer:[order.indexOf(0)],solution}};
+const conc=(kind,pool)=>()=>{const it=pick(pool);return choiceQ(kind,it.q,it.o,0,it.s)};
+const polyHtml=co=>MQ(polyAst(co));
+const tbl=(rows,cls='tt')=>`<div class="ttwrap"><table class="${cls}">${rows.map((r,i)=>`<tr>${r.map(c=>i===0&&0?`<th>${c}</th>`:`<td>${c}</td>`).join('')}</tr>`).join('')}</table></div>`;
+const tblh=(head,rows)=>`<div class="ttwrap"><table class="tt"><tr>${head.map(c=>`<th>${c}</th>`).join('')}</tr>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</table></div>`;
+const rcell=(v)=>fv(v);
+
+/* ======================================================================
+   1. FUNKCIE A ICH VLASTNOSTI
+   ====================================================================== */
+const R_='ℝ';
+function gDomain(){
+  const a=rnd(1,6),b=rnd(1,5),k=rnd(2,5);
+  const r=rnd(2,5),c2=rnd(1,4);
+  const T=[
+    ()=>({f:div(N(rnd(1,4)),xm(a)),ans:`ℝ ∖ {${a}}`,wr:[`ℝ ∖ {${-a}}`,`(${a}, ∞)`,`⟨${a}, ∞)`],why:`Menovateľ nesmie byť nula: x − ${a} ≠ 0, teda x ≠ ${a}.`}),
+    ()=>({f:div(N(1),sub(pow(X,N(2)),N(k*k))),ans:`ℝ ∖ {${-k}, ${k}}`,wr:[`ℝ ∖ {${k}}`,`ℝ ∖ {${k*k}}`,`ℝ ∖ {${-k*k}, ${k*k}}`],why:`x² − ${k*k} ≠ 0, teda x ≠ ±${k}.`}),
+    ()=>({f:sqrtN(xm(a)),ans:`⟨${a}, ∞)`,wr:[`(${a}, ∞)`,`⟨${-a}, ∞)`,`(−∞, ${a}⟩`],why:`Pod odmocninou musí byť nezáporné číslo: x − ${a} ≥ 0, teda x ≥ ${a}.`}),
+    ()=>({f:fn('ln',xm(a)),ans:`(${a}, ∞)`,wr:[`⟨${a}, ∞)`,`(−∞, ${a})`,`(${-a}, ∞)`],why:`Argument logaritmu musí byť kladný: x − ${a} > 0, teda x > ${a}.`}),
+    ()=>({f:fn('ln',sub(N(a),X)),ans:`(−∞, ${a})`,wr:[`(${a}, ∞)`,`(−∞, ${a}⟩`,`⟨${a}, ∞)`],why:`${a} − x > 0, teda x < ${a}.`}),
+    ()=>({f:sqrtN(sub(N(k*k),pow(X,N(2)))),ans:`⟨${-k}, ${k}⟩`,wr:[`(${-k}, ${k})`,`(−∞, ${-k}⟩ ∪ ⟨${k}, ∞)`,`⟨0, ${k}⟩`],why:`${k*k} − x² ≥ 0, teda x² ≤ ${k*k}, čo je ${-k} ≤ x ≤ ${k}.`}),
+    ()=>({f:sqrtN(sub(pow(X,N(2)),N(k*k))),ans:`(−∞, ${-k}⟩ ∪ ⟨${k}, ∞)`,wr:[`⟨${-k}, ${k}⟩`,`(−∞, ${-k}) ∪ (${k}, ∞)`,`⟨${k}, ∞)`],why:`x² − ${k*k} ≥ 0, teda x² ≥ ${k*k}, čo je x ≤ ${-k} alebo x ≥ ${k}.`}),
+    ()=>({f:div(add(X,N(b)),sqrtN(xm(a))),ans:`(${a}, ∞)`,wr:[`⟨${a}, ∞)`,`ℝ ∖ {${a}}`,`(${-b}, ∞)`],why:`Odmocnina vyžaduje x − ${a} ≥ 0 a navyše je v menovateli, takže x − ${a} > 0, teda x > ${a}.`}),
+    ()=>({f:fn('arcsin',div(X,N(k))),ans:`⟨${-k}, ${k}⟩`,wr:[`(${-k}, ${k})`,`⟨−1, 1⟩`,`⟨0, ${k}⟩`],why:`arcsin je definovaný pre argument z ⟨−1, 1⟩: −1 ≤ x/${k} ≤ 1, teda ${-k} ≤ x ≤ ${k}.`}),
+    ()=>({f:sqrtN(sub(mul(N(2),X),N(2*r))),ans:`⟨${r}, ∞)`,wr:[`(${r}, ∞)`,`⟨${-r}, ∞)`,`(−∞, ${r}⟩`],why:`2x − ${2*r} ≥ 0, teda x ≥ ${r}.`}),
+    ()=>{const p=rnd(-4,-1),q=rnd(1,5);const den=polyFromRoots([p,q]);return{f:div(X,polyAst(den)),ans:`ℝ ∖ {${nn(p)}, ${q}}`,wr:[`ℝ ∖ {${-p}, ${-q}}`,`ℝ ∖ {${q}}`,`ℝ ∖ {${nn(p+q)}}`],why:`Menovateľ rozložíme: ${MQ(polyAst(den))} = ${MQ(mul(xm(p),xm(q)))}. Nesmie byť nula, preto x ≠ ${nn(p)} a x ≠ ${q}.`}},
+    ()=>({f:fn('ln',div(xm(a),add(X,N(b)))),ans:`(−∞, ${-b}) ∪ (${a}, ∞)`,wr:[`(${-b}, ${a})`,`ℝ ∖ {${-b}}`,`(${a}, ∞)`],why:`Zlomok (x − ${a})/(x + ${b}) musí byť kladný: čitateľ aj menovateľ majú rovnaké znamienko, teda x < ${-b} alebo x > ${a}.`})
+  ];
+  let t;do{t=pick(T)()}while(!t);
+  const mm=x=>x.replace(/-(?=\d)/g,'−');
+  const opts=[t.ans,...shuffle(uniq(t.wr).filter(w=>w!==t.ans)).slice(0,3)];
+  return choiceQ('Definičný obor',`Aký je definičný obor funkcie ${FX(t.f)}?`,opts.map(o=>`<span class="m">${mm(o)}</span>`),0,p_(mm(t.why))+p_(`D(f) = <span class="m">${mm(t.ans)}</span>`))}
+'use strict';
+/* ===== Témy 1 až 3: funkcie, polynómy, elementárne funkcie (pokračovanie) ===== */
+const fixedChoice=(kind,prompt,opts,ans,solution)=>({kind,prompt,input:{t:'choice',opts},answer:[ans],solution});
+
+function gParity(){
+  const ev_=['x^2','x^4','cos(x)','cosh(x)','x*sin(x)','x^2+1','e^(x^2)','ln(x^2+1)','1/(x^2+1)','x^6-x^2'];
+  const od_=['x','x^3','x^5','sin(x)','tg(x)','arctg(x)','sinh(x)','x*cos(x)','x/(x^2+1)','x^3-x'];
+  const ne_=['e^x','x+1','x^2+x','sqrt(x+4)','ln(x+3)','(x-1)^2','x^3+x^2','sin(x)+2'];
+  const co=()=>rnd(1,3);
+  const wc=(s,c)=>c===1?`(${s})`:`${c}*(${s})`;
+  const kind=pick(['e','e','o','o','n','n']);
+  let s,why;
+  if(kind==='e'){const v=rnd(0,2);
+    if(v===0){const [a,b]=shuffle(ev_).slice(0,2);s=`${wc(a,co())}+${wc(b,co())}`;why='Súčet dvoch párnych funkcií je párna funkcia.'}
+    else if(v===1){const [a,b]=shuffle(ev_.slice(0,5)).slice(0,2);s=`${wc(a,1)}*${wc(b,1)}`;why='Súčin dvoch párnych funkcií je párna funkcia.'}
+    else{const [a,b]=shuffle(od_).slice(0,2);s=`${wc(a,1)}*${wc(b,1)}`;why='Súčin dvoch nepárnych funkcií je párna funkcia (mínus krát mínus je plus).'}}
+  else if(kind==='o'){
+    if(rnd(0,1)===0){const [a,b]=shuffle(od_).slice(0,2);s=`${wc(a,co())}+${wc(b,co())}`;why='Súčet dvoch nepárnych funkcií je nepárna funkcia.'}
+    else{const a=pick(ev_.slice(0,5)),b=pick(od_.slice(0,7));s=`${wc(a,1)}*${wc(b,1)}`;why='Súčin párnej a nepárnej funkcie je nepárna funkcia.'}}
+  else{
+    if(rnd(0,1)===0){s=pick(ne_);why='Po dosadení −x nevznikne ani f(x), ani −f(x).'}
+    else{const a=pick(ev_.slice(0,5)),b=pick(od_.slice(0,7));s=`${a}+${b}`;why='Súčet párnej a nepárnej funkcie (ani jedna nie je nulová) nie je ani párna, ani nepárna.'}}
+  const f=P(s),F=fnOf(f);let isE=true,isO=true,fin=true;
+  [0.4,0.9,1.3,1.7,2.2].forEach(x=>{const u=F(x),w=F(-x);if(!isFinite(u)||!isFinite(w)){fin=false;return}
+    if(Math.abs(u-w)>1e-9*Math.max(1,Math.abs(u)))isE=false;if(Math.abs(u+w)>1e-9*Math.max(1,Math.abs(u)))isO=false});
+  if(!fin||(isE&&isO))return null;
+  const ans=isE?0:isO?1:2;
+  const mf=subst(f,neg(X));
+  const concl=['f(−x) = f(x), funkcia je párna.','f(−x) = −f(x), funkcia je nepárna.','Neplatí ani f(−x) = f(x), ani f(−x) = −f(x), funkcia nie je ani párna, ani nepárna.'][ans];
+  return fixedChoice('Párnosť funkcie',`Rozhodni, či je funkcia ${FX(f)} párna, nepárna, alebo ani jedno.`,['párna','nepárna','ani párna, ani nepárna'],ans,
+    p_(`Dosadíme −x: ${MQ(mf)}.`)+p_(why)+p_(concl))}
+
+function gCompose(){
+  const FS=['x^2+1','sin(x)','sqrt(x)','ln(x)','1/x','e^x','2x-3','x^3','arctg(x)','cos(x)','x^2','3x+1','1/(x+1)','x^2-4'];
+  let f=null,g=null,h=null,swap=rnd(0,1);
+  for(let k=0;k<30&&!h;k++){
+    const a=P(pick(FS)),b=P(pick(FS));if(JSON.stringify(a)===JSON.stringify(b))continue;
+    const t=swap?subst(b,a):subst(a,b);const okN=XS.filter(x=>isFinite(ev(t,x))).length;
+    if(okN>=11){f=a;g=b;h=t}}
+  if(!h)return null;
+  const nm=swap?'(g ∘ f)(x)':'(f ∘ g)(x)';const inner=swap?f:g,outer=swap?g:f;
+  const on=swap?'g':'f',inn=swap?'f':'g';
+  return{kind:'Zložená funkcia',prompt:p_(`Dané sú funkcie ${FX(f,'f')} a ${FX(g,'g')}. Nájdi ${nm}.`)+p_(`<span class="muted">Zápis: napríklad <kbd>sin(x^2+1)</kbd>, <kbd>1/(x+1)</kbd>, <kbd>e^x</kbd>.</span>`),
+    input:{t:'expr'},check:s=>checkFn(s,x=>ev(h,x)),ref:MQ(h),refAst:h,
+    solution:p_(`${nm} = ${on}(${inn}(x)). Do predpisu funkcie ${on} dosadíme namiesto <i>x</i> celý výraz ${MQ(inner)}.`)+eqh(`<span class="m">${on}(${inn}(x)) = ${on}(${H(inner)}) = ${H(h)}</span>`)+p_('<span class="muted">Pozor: nie je to isté ako opačné poradie, f ∘ g ≠ g ∘ f.</span>')}}
+
+function gInverse(){
+  const T=[
+    ()=>{const a=pick([2,3,4,-2,-3]),b=rnd(-5,5)||1;const f=add(mul(N(a),X),N(b));const g=div(sub(X,N(b)),N(a));
+      return{f,g,st:[`y = ${H(f)}`,`${nn(a)}x = y ${b>0?'−':'+'} ${Math.abs(b)}`,`x = (y ${b>0?'−':'+'} ${Math.abs(b)}) / ${par(a)}`]}},
+    ()=>{let a,b,c,d;do{a=rnd(-3,4);b=rnd(-3,4);c=pick([1,2,3,-1,-2]);d=rnd(-3,3)}while(!a||a*d-b*c===0||!b);
+      const f=div(add(mul(N(a),X),N(b)),add(mul(N(c),X),N(d)));const g=div(sub(mul(N(d),X),N(b)),sub(N(a),mul(N(c),X)));
+      return{f,g,st:['y(cx + d) = ax + b','y·cx + y·d = ax + b','x(cy − a) = b − dy','x = (dy − b)/(a − cy)']}},
+    ()=>{const a=pick([1,2,3]),b=rnd(-3,-1);const f=add(mul(N(a),pow(E,X)),N(b));const g=fn('ln',div(sub(X,N(b)),N(a)));
+      return{f,g,st:['y = a·eˣ + b','eˣ = (y − b)/a','x = ln((y − b)/a)']}},
+    ()=>{const a=rnd(1,4),b=rnd(-3,3);const f=add(fn('ln',add(X,N(a))),N(b));const g=sub(pow(E,sub(X,N(b))),N(a));
+      return{f,g,st:['y = ln(x + a) + b','y − b = ln(x + a)','x + a = e<sup>y − b</sup>','x = e<sup>y − b</sup> − a']}},
+    ()=>{const a=rnd(1,5);const f=sqrtN(sub(X,N(a)));const g=add(pow(X,N(2)),N(a));
+      return{f,g,st:['y = √(x − a), y ≥ 0','y² = x − a','x = y² + a'],note:'Funkcia je definovaná pre x ≥ '+a+' a má hodnoty y ≥ 0, preto f⁻¹ uvažujeme na x ≥ 0.'}},
+    ()=>{const b=rnd(-4,4)||2;const f=add(pow(X,N(3)),N(b));const g=pow(sub(X,N(b)),div(N(1),N(3)));
+      return{f,g,st:['y = x³ + b','x³ = y − b','x = ∛(y − b)']}},
+    ()=>{const b=rnd(1,4);const f=sub(pow(X,N(2)),N(b));const g=sqrtN(add(X,N(b)));
+      return{f,g,st:['y = x² − b, x ≥ 0','x² = y + b','x = √(y + b)'],note:'Funkcia je daná pre x ≥ 0 (inak by nebola prostá), preto berieme kladnú odmocninu.'}},
+    ()=>{const a=rnd(1,4),b=rnd(-3,3);const f=add(div(N(1),add(X,N(a))),N(b));const g=sub(div(N(1),sub(X,N(b))),N(a));
+      return{f,g,st:['y = 1/(x + a) + b','y − b = 1/(x + a)','x + a = 1/(y − b)','x = 1/(y − b) − a']}}
+  ];
+  let t,tries=0;
+  do{t=pick(T)();tries++;
+    const ok=XS.filter(x=>{const y=ev(t.g,x);return isFinite(y)&&Math.abs(ev(t.f,y)-x)<1e-7*Math.max(1,x)}).length;
+    if(ok>=10)break;t=null}while(tries<30);
+  if(!t)return null;
+  return{kind:'Inverzná funkcia',prompt:p_(`Nájdi inverznú funkciu f⁻¹(<i>x</i>) k funkcii ${FX(t.f)}.`)+(t.note?p_(`<span class="muted">${t.note}</span>`):'')+p_(`<span class="muted">Zápis napríklad <kbd>ln(x-1)</kbd>, <kbd>(x-3)/2</kbd>, <kbd>sqrt(x+2)</kbd>.</span>`),
+    input:{t:'expr'},check:s=>checkFn(s,x=>ev(t.g,x)),ref:MQ(t.g),refAst:t.g,
+    solution:p_('Rovnicu y = f(x) vyriešime vzhľadom na x a potom premenné <i>x</i> a <i>y</i> vymeníme.')+t.st.map(x=>`<div class="eq"><span class="m">${x}</span></div>`).join('')+p_(`Po výmene premenných: f⁻¹(<i>x</i>) = ${MQ(t.g)}.`)+p_('<span class="muted">Kontrola: f⁻¹(f(x)) = x. Grafy f a f⁻¹ sú súmerné podľa priamky y = x.</span>')}}
+
+function gEqualFn(){
+  const a=rnd(2,5),b=rnd(1,4);
+  const T=[
+    {f:div(sub(pow(X,N(2)),N(a*a)),sub(X,N(a))),g:add(X,N(a)),eq:false,why:`D(f) = ℝ ∖ {${a}}, ale D(g) = ℝ. Definičné obory sa líšia, funkcie sa nerovnajú (graf f má v bode ${a} „dieru“).`},
+    {f:add(pow(fn('sin',X),N(2)),pow(fn('cos',X),N(2))),g:N(1),eq:true,why:'Obe majú D = ℝ a sin²x + cos²x = 1 pre každé x.'},
+    {f:sqrtN(pow(X,N(2))),g:X,eq:false,why:'D(f) = D(g) = ℝ, ale √(x²) = |x|. Pre x < 0 je f(x) ≠ g(x), napríklad f(−1) = 1, g(−1) = −1.'},
+    {f:sqrtN(pow(X,N(2))),g:fn('abs',X),eq:true,why:'Obe majú D = ℝ a √(x²) = |x| pre každé x.'},
+    {f:fn('ln',pow(X,N(2))),g:mul(N(2),fn('ln',X)),eq:false,why:'D(f) = ℝ ∖ {0}, ale D(g) = (0, ∞). Definičné obory sa líšia.'},
+    {f:fn('ln',pow(X,N(2))),g:mul(N(2),fn('ln',fn('abs',X))),eq:true,why:'Obe majú D = ℝ ∖ {0} a ln(x²) = 2 ln|x| pre každé x ≠ 0.'},
+    {f:pow(E,fn('ln',X)),g:X,eq:false,why:'D(f) = (0, ∞), ale D(g) = ℝ. Definičné obory sa líšia.'},
+    {f:fn('ln',pow(E,X)),g:X,eq:true,why:'Obe majú D = ℝ a ln(eˣ) = x.'},
+    {f:div(X,X),g:N(1),eq:false,why:'D(f) = ℝ ∖ {0}, ale D(g) = ℝ. Definičné obory sa líšia.'},
+    {f:div(sub(pow(X,N(2)),N(1)),add(X,N(1))),g:sub(X,N(1)),eq:false,why:'D(f) = ℝ ∖ {−1}, ale D(g) = ℝ. Definičné obory sa líšia.'},
+    {f:pow(sqrtN(X),N(2)),g:X,eq:false,why:'D(f) = ⟨0, ∞), ale D(g) = ℝ. Definičné obory sa líšia.'},
+    {f:fn('tg',X),g:div(fn('sin',X),fn('cos',X)),eq:true,why:'Obe sú definované práve pre cos x ≠ 0 a tg x = sin x / cos x.'},
+    {f:pow(add(X,N(b)),N(2)),g:polyAst([1,2*b,b*b]),eq:true,why:`Obe majú D = ℝ a (x + ${b})² = x² + ${2*b}x + ${b*b}.`}
+  ];
+  const t=pick(T);
+  return fixedChoice('Rovnosť funkcií',`Rovnajú sa funkcie ${FX(t.f,'f')} a ${FX(t.g,'g')}?`,['Áno, funkcie sa rovnajú','Nie, funkcie sa nerovnajú'],t.eq?0:1,
+    p_('Funkcie sa rovnajú, ak majú rovnaký definičný obor a pre každé x z neho rovnakú hodnotu.')+p_(t.why))}
+
+const concFun=conc('Teória: funkcie',[
+  {q:'Funkcia f je prostá, ak pre všetky x₁, x₂ ∈ D(f) platí:',o:['f(x₁) = f(x₂) ⇒ x₁ = x₂','x₁ = x₂ ⇒ f(x₁) = f(x₂)','x₁ < x₂ ⇒ f(x₁) < f(x₂)','f(−x₁) = f(x₁)'],s:p_('Prostá funkcia nadobúda každú hodnotu najviac raz: z rovnosti obrazov vyplýva rovnosť vzorov. Implikácia „x₁ = x₂ ⇒ f(x₁) = f(x₂)“ platí pre každú funkciu.')},
+  {q:'Ktorá z týchto funkcií nie je prostá?',o:['f(x) = x²','f(x) = 2x + 1','f(x) = eˣ','f(x) = x³'],s:p_('Vodorovná priamka y = 4 pretne graf x² v dvoch bodoch (x = ±2), preto x² na ℝ nie je prostá.')},
+  {q:'Grafy navzájom inverzných funkcií sú súmerné podľa:',o:['priamky y = x','osi y','začiatku súradníc','osi x'],s:p_('Inverzná funkcia vymení úlohu x a y, preto sú grafy súmerné podľa osi prvého a tretieho kvadrantu, y = x.')},
+  {q:'Pre inverznú funkciu f⁻¹ platí:',o:['D(f⁻¹) = H(f)','D(f⁻¹) = D(f)','H(f⁻¹) = H(f)','D(f⁻¹) = ℝ'],s:p_('Definičný obor inverznej funkcie je obor hodnôt pôvodnej funkcie a naopak: D(f⁻¹) = H(f), H(f⁻¹) = D(f).')},
+  {q:'Graf nepárnej funkcie je súmerný podľa:',o:['začiatku súradníc','osi y','osi x','priamky y = x'],s:p_('Nepárna funkcia spĺňa f(−x) = −f(x), preto bod [x, y] leží na grafe spolu s bodom [−x, −y]. Graf párnej funkcie je súmerný podľa osi y.')},
+  {q:'Je funkcia f(x) = 1/x klesajúca na celom definičnom obore ℝ ∖ {0}?',o:['Nie, klesá len na (−∞, 0) a na (0, ∞) zvlášť','Áno, na celom D(f)','Nie, je rastúca','Áno, lebo je nepárna'],s:p_('Pre −1 < 1 máme f(−1) = −1 < 1 = f(1), takže na zjednotení intervalov klesajúca nie je. Klesá na každom z intervalov zvlášť.')},
+  {q:'Funkcia f je periodická s periódou T > 0, ak pre všetky x ∈ D(f) platí:',o:['f(x + T) = f(x)','f(x + T) = f(x) + T','f(T·x) = f(x)','f(x + T) = −f(x)'],s:p_('Periodická funkcia sa po posunutí o T opakuje. Najmenšie také T je základná perióda.')},
+  {q:'Funkcia je konvexná na intervale I, ak spojnica ľubovoľných dvoch bodov grafu leží:',o:['nad grafom','pod grafom','na grafe','pod osou x'],s:p_('Konvexná funkcia (napr. x²) leží pod svojimi sečnicami. Konkávna (napr. ln x) nad nimi.')},
+  {q:'Existuje funkcia, ktorá je párna aj nepárna súčasne?',o:['Áno, napríklad f(x) = 0','Nie, žiadna','Áno, napríklad f(x) = 1','Áno, každá konštantná funkcia'],s:p_('Z f(−x) = f(x) a f(−x) = −f(x) vyplýva f(x) = −f(x), teda f(x) = 0 pre každé x ∈ D(f). Funkcia f(x) = 0 je jediná taká.')},
+  {q:'Každá vodorovná priamka pretne graf prostej funkcie:',o:['najviac v jednom bode','aspoň v jednom bode','práve v dvoch bodoch','v nekonečne veľa bodoch'],s:p_('To je geometrický test prostosti: ak by niektorá vodorovná priamka pretla graf dvakrát, funkcia by nadobúdala jednu hodnotu pre dve rôzne x.')},
+  {q:'Čo znamená zápis (f ∘ g)(x) v prednáškach?',o:['f(g(x))','g(f(x))','f(x) · g(x)','f(x) + g(x)'],s:p_('Vonkajšia zložka je f, vnútorná g. Niektorí autori používajú opačné poradie, preto treba vždy skontrolovať definíciu.')},
+  {q:'Inflexný bod funkcie f je bod, v ktorom:',o:['sa mení konvexnosť na konkávnosť alebo naopak','má funkcia lokálne maximum','je funkcia nespojitá','sa mení rastúcosť na klesanie'],s:p_('Inflexia je zmena zakrivenia grafu. Zmena rastu na klesanie je lokálny extrém.')},
+  {q:'Funkcia f je rastúca na I, ak pre x₁, x₂ ∈ I platí:',o:['x₁ < x₂ ⇒ f(x₁) < f(x₂)','x₁ < x₂ ⇒ f(x₁) > f(x₂)','f(x₁) = f(x₂)','f(x₁) < f(x₂) ⇒ x₁ > x₂'],s:p_('Väčšiemu argumentu zodpovedá väčšia hodnota. Pri „≤“ hovoríme o neklesajúcej funkcii.')}
+]);
+
+/* ======================================================================
+   2. POLYNÓMY A RACIONÁLNE FUNKCIE
+   ====================================================================== */
+function powTxt(k){return k===0?'':k===1?'x':`x<sup>${k}</sup>`}
+function gHorner(){
+  const n=rnd(3,4);let co;
+  do{co=Array.from({length:n+1},()=>rnd(-6,6))}while(co[0]===0||co.slice(1).every(c=>c===0));
+  if(co[0]<0&&Math.random()<.6)co=co.map(c=>-c);
+  const r=pick([-3,-2,-1,1,2,3]);
+  const b=[co[0]];for(let i=1;i<=n;i++)b.push(co[i]+r*b[i-1]);
+  const lines=[['Koeficienty podielu (od najvyššieho stupňa): ',...Array(n).fill(null)],[`Zvyšok, teda P(${nn(r)}) = `,null]];
+  const head=[''].concat(co.map(c=>nn(c)));
+  const row2=[nn(r)].concat(b.map((v,i)=>i===n?`<b>${nn(v)}</b>`:nn(v)));
+  const steps=b.map((v,i)=>i===0?`${nn(co[0])}`:`${nn(co[i])} + ${par(r)}·${par(b[i-1])} = ${nn(v)}`).join(';&nbsp; ');
+  return{kind:'Hornerova schéma',prompt:p_(`Pomocou Hornerovej schémy vydeľ polynóm ${FX(polyAst(co),'P')} výrazom ${MQ(xm(r))}. Zisti aj hodnotu P(${nn(r)}).`),
+    input:{t:'lines',lines},answer:b,
+    solution:p_('Pod koeficienty napíšeme prvý koeficient. Každé ďalšie číslo je koeficient plus násobok r predchádzajúceho čísla v spodnom riadku.')+tblh(head,[row2])+p_(`<span class="muted">${steps}</span>`)+
+      p_(`Podiel: ${MQ(polyAst(b.slice(0,n)))}, zvyšok ${nn(b[n])}, teda P(${nn(r)}) = ${nn(b[n])}.`)+(b[n]===0?p_(`Keďže zvyšok je 0, číslo ${nn(r)} je koreňom polynómu a P(x) = (x ${sg(-r)} ${Math.abs(r)})·(${H(polyAst(b.slice(0,n)))}).`):'')}}
+
+const divisors=n=>{n=Math.abs(n);const d=[];for(let i=1;i<=n;i++)if(n%i===0)d.push(i);return d};
+function gIntRoots(){
+  const k=pick([3,3,4]);let roots;
+  do{roots=uniq(Array.from({length:k},()=>pick([-5,-4,-3,-2,-1,1,2,3,4,5,6])))}while(roots.length<k);
+  roots.sort((a,b)=>a-b);
+  const lead=pick([1,1,-1]);const co=polyFromRoots(roots).map(c=>c*lead);
+  const a0=co[co.length-1],ds=divisors(a0);
+  const cand=ds.flatMap(d=>[d,-d]).sort((a,b)=>a-b);
+  const good=cand.filter(c=>polyEv(co,c)===0);
+  return{kind:'Celočíselné korene',prompt:p_(`Nájdi všetky reálne korene polynómu ${FX(polyAst(co),'P')}. (Všetky sú celé čísla.)`),
+    input:{t:'lines',lines:[['Korene (oddeľ čiarkou): ',{m:'set'}]]},answer:[roots],
+    solution:p_(`Celočíselný koreň musí deliť absolútny člen ${Math.abs(a0)}. Kandidáti: ${cand.map(nn).join(', ')}.`)+
+      p_(`Hornerovou schémou (alebo dosadením) overíme: P = 0 pre ${good.map(nn).join(', ')}.`)+
+      p_(`Teda P(x) = ${lead<0?'−':''}${roots.map(r=>`(x ${sg(-r)} ${Math.abs(r)})`).join('')}`)+p_(`Korene: ${roots.map(nn).join(', ')}.`)}}
+
+function polyDivmod(n,d){n=n.slice();const out=[],steps=[];const dn=d.length;
+  while(n.length>=dn){const c=n[0]/d[0];out.push(c);const sub_=d.map(x=>x*c);steps.push({c,cur:n.slice(),sub:sub_});for(let i=0;i<dn;i++)n[i]-=c*d[i];n.shift()}
+  return{q:out,r:n,steps}}
+function gPolyDiv(){
+  const p=rnd(-3,3),q=pick([-4,-3,-2,-1,1,2,3,4]);let co;
+  do{co=Array.from({length:5},()=>rnd(-5,5))}while(co[0]===0);
+  if(co[0]<0)co=co.map(c=>-c);
+  const d=[1,p,q];const res=polyDivmod(co,d);
+  const lines=[['Podiel: koeficienty (od x² po absolútny člen): ',null,null,null],['Zvyšok: koeficient pri x a absolútny člen: ',null,null]];
+  const stepsHtml=res.steps.map((s,i)=>{const deg=co.length-1-i;return `<div class="eq"><span class="m">${powTxt(deg)}${deg>2?' : x² = '+(s.c===1?'':nn(s.c))+powTxt(deg-2):' : x² = '+nn(s.c)}</span><span class="muted">odpočítame ${nn(s.c)}·(x² ${sg(p)} ${Math.abs(p)}x ${sg(q)} ${Math.abs(q)})</span></div>`}).join('');
+  return{kind:'Delenie polynómov',prompt:p_(`Vydeľ polynómy: (${MQ(polyAst(co))}) : (${MQ(polyAst(d))}). Zapíš podiel a zvyšok.`),
+    input:{t:'lines',lines},answer:[...res.q,...res.r],
+    solution:p_('Písomné delenie: vždy vydelíme vedúci člen aktuálneho polynómu vedúcim členom deliteľa, výsledok vynásobíme deliteľom a odpočítame.')+stepsHtml+
+      p_(`Podiel: ${MQ(polyAst(res.q))}, zvyšok: ${MQ(polyAst(res.r))}.`)+p_(`<span class="muted">Skúška: deliteľ · podiel + zvyšok = pôvodný polynóm.</span>`)}}
+
+function gFactor(){
+  const v=pick(['A','A','B','C']);let co,roots,cnt,fac;
+  if(v==='A'){let a,b;do{a=rnd(-4,4);b=rnd(-4,4)}while(a===b||!a||!b);const pp=rnd(-2,2),qq=rnd(Math.floor(pp*pp/4)+1,5);
+    co=polyMul(polyFromRoots([a,b]),[1,pp,qq]);roots=[a,b].sort((x,y)=>x-y);cnt=2;
+    fac=`${H(xm(a))}${H(xm(b))}(${H(polyAst([1,pp,qq]))})`;
+    var why=`Kvadratický činiteľ ${H(polyAst([1,pp,qq]))} má diskriminant ${pp*pp-4*qq} < 0, preto nemá reálne korene (je ireducibilný).`}
+  else if(v==='B'){let a,b,c;do{a=rnd(-3,3);b=rnd(-3,4);c=rnd(-3,4)}while(!a||new Set([a,b,c]).size<3);
+    co=polyMul(polyMul(polyFromRoots([a,a]),[1,-b]),[1,-c]);roots=[a,b,c].sort((x,y)=>x-y);cnt=4;
+    fac=`${H(pow(xm(a),N(2)))}${H(xm(b))}${H(xm(c))}`;var why=`Koreň ${nn(a)} je dvojnásobný (násobnosť 2): graf sa v ňom dotýka osi x.`}
+  else{let a,b;do{a=rnd(-3,3);b=rnd(-3,4)}while(!a||a===b);
+    co=polyMul(polyFromRoots([a,a]),[1,-b]);roots=[a,b].sort((x,y)=>x-y);cnt=3;
+    fac=`${H(pow(xm(a),N(2)))}${H(xm(b))}`;var why=`Koreň ${nn(a)} je dvojnásobný, koreň ${nn(b)} je jednoduchý.`}
+  return{kind:'Rozklad na súčin',prompt:p_(`Rozlož polynóm ${FX(polyAst(co),'P')} na súčin lineárnych činiteľov a ireducibilných kvadratických činiteľov.`)+p_('Zapíš všetky <b>rôzne</b> reálne korene a počet všetkých reálnych koreňov, ak každý počítame toľkokrát, aká je jeho násobnosť.'),
+    input:{t:'lines',lines:[['Rôzne reálne korene: ',{m:'set'}],['Počet koreňov s násobnosťou: ',null]]},answer:[roots,cnt],
+    solution:p_(`Nájdeme celočíselné korene ako deliteľov absolútneho člena a polynóm postupne vydelíme.`)+eqh(`<span class="m">P(x) = ${fac}</span>`)+p_(why)+p_(`Rôzne reálne korene: ${roots.map(nn).join(', ')}; počet s násobnosťou: ${cnt}.`)}}
+
+function gPartial(){
+  const v=pick(['a','a','b','c']);
+  if(v==='a'){let a,b;do{a=rnd(-4,4);b=rnd(-4,4)}while(a===b);let A,B;do{A=rnd(-5,5);B=rnd(-5,5)}while(!A||!B);
+    const num=[A+B,-(A*b+B*a)],den=polyFromRoots([a,b]);
+    return{kind:'Parciálne zlomky',prompt:p_(`Rozlož na parciálne zlomky: ${MQ(div(polyAst(num),polyAst(den)))}`)+p_(`Hľadaj tvar <span class="m">${frac('<i>A</i>',H(xm(a)))} + ${frac('<i>B</i>',H(xm(b)))}</span>`),
+      input:{t:'lines',lines:[['A = ',null,'  B = ',null]]},answer:[A,B],
+      solution:p_(`Menovateľ rozložíme: ${MQ(polyAst(den))} = ${MQ(mul(xm(a),xm(b)))}.`)+p_(`Vynásobíme (x ${sg(-a)} ${Math.abs(a)})(x ${sg(-b)} ${Math.abs(b)}): ${H(polyAst(num))} = A(x ${sg(-b)} ${Math.abs(b)}) + B(x ${sg(-a)} ${Math.abs(a)}).`)+
+        p_(`Dosadíme x = ${a}: ${nn(polyEv(num,a))} = A·${nn(a-b)}, teda A = ${nn(A)}.`)+p_(`Dosadíme x = ${b}: ${nn(polyEv(num,b))} = B·${nn(b-a)}, teda B = ${nn(B)}.`)+eqh(`<span class="m">${H(div(polyAst(num),polyAst(den)))} = ${frac(nn(A),H(xm(a)))} + ${frac(nn(B),H(xm(b)))}</span>`)}}
+  if(v==='b'){const a=rnd(-3,3)||2;let pp;do{pp=rnd(-4,4)}while(!pp);const qq=rnd(-5,5);
+    const A=pp,B=pp*a+qq;const den=polyFromRoots([a,a]);
+    return{kind:'Parciálne zlomky',prompt:p_(`Rozlož na parciálne zlomky: ${MQ(div(polyAst([pp,qq]),polyAst(den)))}`)+p_(`Hľadaj tvar <span class="m">${frac('<i>A</i>',H(xm(a)))} + ${frac('<i>B</i>',H(pow(xm(a),N(2))))}</span>`),
+      input:{t:'lines',lines:[['A = ',null,'  B = ',null]]},answer:[A,B],
+      solution:p_(`Menovateľ je ${MQ(pow(xm(a),N(2)))}. Po vynásobení: ${H(polyAst([pp,qq]))} = A(x ${sg(-a)} ${Math.abs(a)}) + B.`)+p_(`Porovnáme koeficienty pri x: A = ${nn(A)}. Absolútny člen: ${nn(qq)} = ${nn(-a*A)} + B, teda B = ${nn(B)}.`)}}
+  // c: lineárny a ireducibilný kvadratický činiteľ
+  const a=rnd(-3,3)||1;let A,B,Cc;do{A=rnd(-4,4);B=rnd(-4,4);Cc=rnd(-4,4)}while(!A||(!B&&!Cc));
+  const num=[A+B,Cc-a*B,A-a*Cc];const den=polyMul([1,-a],[1,0,1]);
+  return{kind:'Parciálne zlomky',prompt:p_(`Rozlož na parciálne zlomky: ${MQ(div(polyAst(num),polyAst(den)))}`)+p_(`Hľadaj tvar <span class="m">${frac('<i>A</i>',H(xm(a)))} + ${frac('<i>B</i><i class="vx">x</i> + <i>C</i>',H(add(pow(X,N(2)),N(1))))}</span>`),
+    input:{t:'lines',lines:[['A = ',null,'  B = ',null,'  C = ',null]]},answer:[A,B,Cc],
+    solution:p_(`Menovateľ: ${MQ(polyAst(den))} = ${MQ(mul(xm(a),add(pow(X,N(2)),N(1))))}, kvadratický činiteľ je ireducibilný, preto má v čitateli tvar Bx + C.`)+
+      p_(`Po vynásobení: ${H(polyAst(num))} = A(x² + 1) + (Bx + C)(x ${sg(-a)} ${Math.abs(a)}).`)+p_(`Dosadením x = ${a}: ${nn(polyEv(num,a))} = A·${a*a+1}, teda A = ${nn(A)}.`)+
+      p_(`Porovnaním koeficientov pri x²: ${nn(A+B)} = A + B, teda B = ${nn(B)}. Absolútny člen: ${nn(A-a*Cc)} = A − ${par(a)}·C, teda C = ${nn(Cc)}.`)}}
+
+function gLinFrac(){
+  let a,b,c,d;do{a=rnd(-4,4);b=rnd(-4,4);c=pick([1,2,3,-1,-2,-3]);d=rnd(-5,5)}while(!a||a*d-b*c===0);
+  const f=div(add(mul(N(a),X),N(b)),add(mul(N(c),X),N(d)));
+  return{kind:'Lineárna lomená funkcia',prompt:p_(`Dané je ${FX(f)}. Zisti, ktorý bod nepatrí do definičného oboru, a nájdi rovnicu vodorovnej asymptoty grafu (hyperboly).`),
+    input:{t:'lines',lines:[['D(f) = ℝ ∖ { ',null,' }'],['vodorovná asymptota y = ',null]]},answer:[-d/c,a/c],
+    solution:p_(`Menovateľ ${nn(c)}x ${sg(d)} ${Math.abs(d)} = 0 pre x = ${fv(-d/c)}, tento bod nepatrí do D(f) (je to aj zvislá asymptota).`)+
+      p_(`Vodorovná asymptota: y = a/c = ${fv(a/c)}, lebo pre x → ±∞ je f(x) → ${nn(a)}/${nn(c)}.`)}}
+
+/* ======================================================================
+   3. ELEMENTÁRNE FUNKCIE
+   ====================================================================== */
+const lg=(b,arg)=>`log${sub_(b)}&#8239;${arg}`;
+function gLog(){
+  const v=rnd(0,2);
+  if(v===0){const b=pick([2,3,5,10]);const T=rnd(2,3);let tot=0;const parts=[];
+    for(let i=0;i<T;i++){const k=rnd(1,4),m=pick([1,1,2,3]);const s=i===0?1:pick([1,-1]);tot+=s*m*k;parts.push({s,m,k,arg:Math.pow(b,k)})}
+    const expr=parts.map((t,i)=>(i===0?'':t.s<0?' − ':' + ')+(t.m>1?t.m+' · ':'')+lg(b,t.arg)).join('');
+    return{kind:'Logaritmy',prompt:p_(`Vypočítaj bez kalkulačky: <span class="m">${expr}</span>`),input:{t:'lines',lines:[['Hodnota: ',null]]},answer:[tot],
+      solution:p_('Použijeme log<sub>b</sub> b<sup>k</sup> = k:')+parts.map(t=>`<div class="eq"><span class="m">${lg(b,t.arg)} = ${lg(b,b+'<sup>'+t.k+'</sup>')} = ${t.k}</span></div>`).join('')+p_(`Spolu: <b>${nn(tot)}</b>.`)}}
+  if(v===1){const b=pick([2,3,5]);const i=rnd(1,3),j=rnd(1,3);const t=rnd(0,3);
+    if(t===0)return{kind:'Logaritmy',prompt:p_(`Vypočítaj: <span class="m">${lg(b,`(${Math.pow(b,i)} · ${Math.pow(b,j)})`)}</span>`),input:{t:'lines',lines:[['Hodnota: ',null]]},answer:[i+j],solution:p_(`log<sub>b</sub>(xy) = log<sub>b</sub> x + log<sub>b</sub> y = ${i} + ${j} = <b>${i+j}</b>.`)}
+    if(t===1)return{kind:'Logaritmy',prompt:p_(`Vypočítaj: <span class="m">${lg(b,`(${Math.pow(b,i+j)} : ${Math.pow(b,j)})`)}</span>`),input:{t:'lines',lines:[['Hodnota: ',null]]},answer:[i],solution:p_(`Podiel: log<sub>b</sub>(x/y) = log<sub>b</sub> x − log<sub>b</sub> y = ${i+j} − ${j} = <b>${i}</b>.`)}
+    if(t===2)return{kind:'Logaritmy',prompt:p_(`Vypočítaj: <span class="m">${lg(b,`${Math.pow(b,i)}<sup>${j+1}</sup>`)}</span>`),input:{t:'lines',lines:[['Hodnota: ',null]]},answer:[i*(j+1)],solution:p_(`log<sub>b</sub> x<sup>r</sup> = r · log<sub>b</sub> x, teda ${j+1} · ${i} = <b>${i*(j+1)}</b>.`)}
+    return{kind:'Logaritmy',prompt:p_(`Vypočítaj: <span class="m">${lg(b,`<span class="rt"><span class="rs">√</span><span class="rb">${Math.pow(b,2*i)}</span></span>`)}</span>`),input:{t:'lines',lines:[['Hodnota: ',null]]},answer:[i],solution:p_(`√${Math.pow(b,2*i)} = ${b}<sup>${i}</sup>, teda log<sub>${b}</sub> = <b>${i}</b>.`)}}
+  const bb=pick([2,3,5]),m=pick([2,3]);let n;do{n=rnd(1,4)}while(n===m);
+  return{kind:'Logaritmy',prompt:p_(`Vypočítaj: <span class="m">${lg(Math.pow(bb,m),Math.pow(bb,n))}</span>`),input:{t:'lines',lines:[['Hodnota (zlomok): ',null]]},answer:[n/m],
+    solution:p_(`Prepíšeme na spoločný základ ${bb}: ${Math.pow(bb,m)} = ${bb}<sup>${m}</sup>, ${Math.pow(bb,n)} = ${bb}<sup>${n}</sup>. Zmena základu: log<sub>${bb}<sup>${m}</sup></sub> ${bb}<sup>${n}</sup> = ${n}/${m} = <b>${fv(n/m)}</b>.`)}}
+
+function gExpEq(){
+  const v=rnd(0,3);
+  if(v===0){const b=pick([2,3,5]),p=pick([2,3,-1,-2]),q=rnd(-3,3),x0=rnd(-2,3),k=p*x0+q;if(k<-3||k>5)return null;
+    const rhs=k>=0?N(Math.pow(b,k)):div(N(1),N(Math.pow(b,-k)));
+    return{kind:'Exponenciálna rovnica',prompt:p_(`Vyrieš rovnicu: <span class="m">${H(pow(N(b),polyAst([p,q])))} = ${H(rhs)}</span>`),input:{t:'lines',lines:[['x = ',null]]},answer:[x0],
+      solution:p_(`Pravú stranu napíšeme ako mocninu základu ${b}: ${H(rhs)} = ${b}<sup>${k}</sup>.`)+p_(`Exponenciálna funkcia je prostá, preto porovnáme exponenty: ${H(polyAst([p,q]))} = ${k}, teda x = <b>${nn(x0)}</b>.`)}}
+  if(v===1){const B=pick([2,3]),m=pick([2,3]);let n;do{n=rnd(m+1,5)}while(n%m===0&&false);const q=rnd(-2,2);
+    const x0=n/m-q;return{kind:'Exponenciálna rovnica',prompt:p_(`Vyrieš rovnicu: <span class="m">${H(pow(N(Math.pow(B,m)),polyAst([1,q])))} = ${Math.pow(B,n)}</span>`),input:{t:'lines',lines:[['x = ',null]]},answer:[x0],
+      solution:p_(`Oba výrazy zapíšeme so základom ${B}: ${Math.pow(B,m)} = ${B}<sup>${m}</sup>, ${Math.pow(B,n)} = ${B}<sup>${n}</sup>.`)+p_(`Potom ${B}<sup>${m}(x ${sg(q)} ${Math.abs(q)})</sup> = ${B}<sup>${n}</sup>, teda ${m}(x ${sg(q)} ${Math.abs(q)}) = ${n} a x = <b>${fv(x0)}</b>.`)}}
+  if(v===2){const b=pick([2,3,5,10]),k=rnd(1,3),c=rnd(-4,5);const x0=Math.pow(b,k)-c;
+    return{kind:'Logaritmická rovnica',prompt:p_(`Vyrieš rovnicu: <span class="m">${lg(b,'(x '+(c>=0?'+ ':'− ')+Math.abs(c)+')')} = ${k}</span>`),input:{t:'lines',lines:[['x = ',null]]},answer:[x0],
+      solution:p_(`Z definície logaritmu: x ${sg(c)} ${Math.abs(c)} = ${b}<sup>${k}</sup> = ${Math.pow(b,k)}, teda x = <b>${nn(x0)}</b>.`)+p_(`Skúška: argument ${nn(x0+c)} > 0, rovnica má zmysel.`)}}
+  const b=pick([2,3,5]),k=rnd(2,4),prod=Math.pow(b,k);const pairs=[];for(let n=1;n*n<prod;n++)if(prod%n===0&&prod/n>n)pairs.push([prod/n,n]);
+  if(!pairs.length)return null;const [mm,nn_]=pick(pairs);const c=mm-nn_;
+  return{kind:'Logaritmická rovnica',prompt:p_(`Vyrieš rovnicu: <span class="m">${lg(b,'x')} + ${lg(b,'(x − '+c+')')} = ${k}</span>`),input:{t:'lines',lines:[['x = ',null]]},answer:[mm],
+    solution:p_(`Súčet logaritmov zlúčime: log<sub>${b}</sub> [x(x − ${c})] = ${k}, teda x(x − ${c}) = ${prod}.`)+p_(`x² − ${c}x − ${prod} = 0 má korene ${mm} a ${-nn_}.`)+p_(`Podmienky: x > 0 a x − ${c} > 0, preto koreň ${-nn_} nevyhovuje. Riešenie: <b>x = ${mm}</b>.`)}}
+
+const SQ2=Math.SQRT2/2,SQ3=Math.sqrt(3)/2;
+const EXV=[[0,'0','0'],[0.5,'½','1/2'],[SQ2,'√2/2','sqrt(2)/2'],[SQ3,'√3/2','sqrt(3)/2'],[1,'1','1'],[Math.sqrt(3)/3,'√3/3','sqrt(3)/3'],[Math.sqrt(3),'√3','sqrt(3)']];
+function exact(v){const a=Math.abs(v);const m=EXV.find(e=>Math.abs(e[0]-a)<1e-9);if(!m)return null;
+  const html=m[2]==='1/2'?frac(1,2):m[2]==='sqrt(2)/2'?frac('√2',2):m[2]==='sqrt(3)/2'?frac('√3',2):m[2]==='sqrt(3)/3'?frac('√3',3):m[2];
+  return{html:(v<0&&a>0?'−':'')+html,txt:(v<0&&a>0?'-':'')+m[2],v}}
+function gTrig(){
+  let k,den,ang,f,nm,val,ex;
+  for(let i=0;i<50;i++){den=pick([4,6,6,4,3]);k=rnd(-8,16);if(den===3&&Math.abs(k)%3===0&&false)continue;ang=k*Math.PI/den;
+    nm=pick(['sin','cos','tg','ctg']);f=FJS[nm];val=f(ang);
+    if(!isFinite(val)||Math.abs(val)>1e6)continue;ex=exact(val);if(ex)break;ex=null}
+  if(!ex)return null;
+  const red=((ang%(2*Math.PI))+2*Math.PI)%(2*Math.PI);
+  return{kind:'Goniometrické hodnoty',prompt:p_(`Vypočítaj presnú hodnotu: <span class="m">${nm==='ctg'?'cotg':nm}&#8239;(${fpi(ang)})</span>`)+p_('<span class="muted">Zápis: napríklad <kbd>1/2</kbd>, <kbd>sqrt(3)/2</kbd>, <kbd>-sqrt(2)/2</kbd>.</span>'),
+    input:{t:'lines',lines:[['Hodnota: ',null]]},answer:[A(val,ex.html,ex.txt)],
+    solution:p_(`Uhol zredukujeme periodou (sin, cos majú periódu 2π, tg a cotg periódu π): ${fpi(ang)} zodpovedá uhlu ${fpi(red)}.`)+p_(`Z jednotkovej kružnice alebo tabuľky hodnôt dostaneme <b>${ex.html}</b>.`)+
+      tblh(['x','0','π/6','π/4','π/3','π/2'],[['sin x','0','½','√2/2','√3/2','1'],['cos x','1','√3/2','√2/2','½','0'],['tg x','0','√3/3','1','√3','−']])}}
+
+function gCyclo(){
+  const T=[
+    ['arcsin',0.5,'1/2'],['arcsin',-SQ2,'-sqrt(2)/2'],['arcsin',SQ3,'sqrt(3)/2'],['arccos',-0.5,'-1/2'],['arccos',SQ2,'sqrt(2)/2'],['arccos',-SQ3,'-sqrt(3)/2'],
+    ['arctg',1,'1'],['arctg',-Math.sqrt(3),'-sqrt(3)'],['arctg',Math.sqrt(3)/3,'sqrt(3)/3'],['arccotg',1,'1'],['arccotg',-1,'-1'],['arccotg',Math.sqrt(3)/3,'sqrt(3)/3'],
+    ['arcsin(sin)',5*Math.PI/6],['arcsin(sin)',-2*Math.PI/3],['arccos(cos)',-Math.PI/3],['arccos(cos)',4*Math.PI/3],['arctg(tg)',3*Math.PI/4],['arcsin(sin)',7*Math.PI/6]];
+  const t=pick(T);let val,disp;
+  if(t[0].includes('(')){const w=t[0].replace('(sin)','').replace('(cos)','').replace('(tg)','');const inner=t[0].includes('sin')?'sin':t[0].includes('cos')?'cos':'tg';
+    val=FJS[w](FJS[inner](t[1]));disp=`${w==='arctg'?'arctg':w}&#8239;(${inner==='tg'?'tg':inner}&#8239;(${fpi(t[1])}))`}
+  else{val=FJS[t[0]](t[1]);const ex=exact(t[1]);disp=`${t[0]}&#8239;(${t[1]<0?'−':''}${ex.html.replace(/^−/,'')})`}
+  const rng={arcsin:'⟨−π/2, π/2⟩',arccos:'⟨0, π⟩',arctg:'(−π/2, π/2)',arccotg:'(0, π)'}[t[0].replace(/\(.*\)/,'')];
+  return{kind:'Cyklometrické funkcie',prompt:p_(`Vypočítaj: <span class="m">${disp}</span>`)+p_('<span class="muted">Výsledok zapíš napríklad ako <kbd>pi/6</kbd> alebo <kbd>-pi/4</kbd>.</span>'),input:{t:'lines',lines:[['Hodnota: ',null]]},answer:[A(val,fpi(val),fpiTxt(val))],
+    solution:p_(`Hľadáme uhol z oboru hodnôt funkcie ${t[0].replace(/\(.*\)/,'')}, čo je interval ${rng}.`)+(t[0].includes('(')?p_(`Pozor: ${t[0].replace(/\(.*\)/,'')}(${t[0].includes('sin')?'sin':t[0].includes('cos')?'cos':'tg'} α) = α iba vtedy, keď α leží v tomto intervale. Inak najprv nájdeme uhol z intervalu s rovnakou hodnotou.`):'')+p_(`Výsledok: <b>${fpi(val)}</b>.`)}}
+
+function gPyth(){
+  const T=[[3,4,5],[5,12,13],[8,15,17],[7,24,25],[20,21,29]];const [s,c,h]=pick(T);
+  const quad=pick([1,2,3,4]);
+  const sinS=quad<=2?1:-1,cosS=(quad===1||quad===4)?1:-1;
+  const sn=sinS*s/h,cs=cosS*c/h;const interval={1:'(0, π/2)',2:'(π/2, π)',3:'(π, 3π/2)',4:'(3π/2, 2π)'}[quad];
+  return{kind:'Goniometrické vzťahy',prompt:p_(`Je dané sin α = ${fv(sn)} a α ∈ ${interval}. Vypočítaj cos α, tg α a sin 2α.`),
+    input:{t:'lines',lines:[['cos α = ',null],['tg α = ',null],['sin 2α = ',null]]},answer:[cs,sn/cs,2*sn*cs],
+    solution:p_(`Z identity sin²α + cos²α = 1: cos²α = 1 − ${fv(sn*sn)} = ${fv(cs*cs)}, teda |cos α| = ${fv(Math.abs(cs))}.`)+p_(`Interval ${interval} znamená, že kosínus je ${cosS>0?'kladný':'záporný'}, preto cos α = <b>${fv(cs)}</b>.`)+p_(`tg α = sin α / cos α = <b>${fv(sn/cs)}</b>.`)+p_(`sin 2α = 2 sin α cos α = <b>${fv(2*sn*cs)}</b>.`)}}
+
+function gHyper(){
+  const T=[[3,4,5],[5,12,13],[8,15,17],[7,24,25]];const [a,b,c]=pick(T);const flip=rnd(0,1);
+  const [sh,ch]=flip?[b/a,c/a]:[a/b,c/b];
+  return{kind:'Hyperbolické funkcie',prompt:p_(`Je dané sinh x = ${fv(sh)}. Použi identitu cosh²x − sinh²x = 1 a vypočítaj cosh x, th x a e<sup>x</sup>.`),
+    input:{t:'lines',lines:[['cosh x = ',null],['th x = ',null],['eˣ = ',null]]},answer:[ch,sh/ch,sh+ch],
+    solution:p_(`cosh²x = 1 + sinh²x = 1 + ${fv(sh*sh)} = ${fv(ch*ch)}, a cosh x je vždy kladný, teda cosh x = <b>${fv(ch)}</b>.`)+p_(`th x = sinh x / cosh x = <b>${fv(sh/ch)}</b>.`)+p_(`Z definícií sinh x = (eˣ − e⁻ˣ)/2 a cosh x = (eˣ + e⁻ˣ)/2 plynie eˣ = cosh x + sinh x = <b>${fv(sh+ch)}</b>.`)}}
+
+const concEle=conc('Teória: elementárne funkcie',[
+  {q:'Obor hodnôt funkcie arctg x je:',o:['(−π/2, π/2)','⟨−π/2, π/2⟩','(0, π)','ℝ'],s:p_('arctg je inverzná funkcia k tg na (−π/2, π/2), preto H(arctg) = (−π/2, π/2). Priamky y = ±π/2 sú jej vodorovné asymptoty.')},
+  {q:'Obor hodnôt funkcie arccos x je:',o:['⟨0, π⟩','⟨−π/2, π/2⟩','(0, π)','⟨−1, 1⟩'],s:p_('D(arccos) = ⟨−1, 1⟩, H(arccos) = ⟨0, π⟩.')},
+  {q:'Obor hodnôt funkcie arccotg x je:',o:['(0, π)','⟨0, π⟩','(−π/2, π/2)','ℝ'],s:p_('H(arccotg) = (0, π), hodnoty 0 a π funkcia nenadobúda.')},
+  {q:'Aká je základná perióda funkcie tg x?',o:['π','2π','π/2','tg x nie je periodická'],s:p_('tg(x + π) = tg x, preto je základná perióda π. Funkcie sin a cos majú periódu 2π.')},
+  {q:'Definičný obor funkcie tg x je:',o:['ℝ ∖ {π/2 + kπ, k ∈ ℤ}','ℝ ∖ {kπ, k ∈ ℤ}','⟨−1, 1⟩','ℝ'],s:p_('tg x = sin x / cos x, preto vylúčime body, kde cos x = 0, teda x = π/2 + kπ.')},
+  {q:'Exponenciálna funkcia aˣ (a > 0, a ≠ 1) má vodorovnú asymptotu:',o:['y = 0','x = 0','y = 1','nemá žiadnu'],s:p_('Obor hodnôt aˣ je (0, ∞), graf sa približuje k osi x. Graf vždy prechádza bodom (0, 1).')},
+  {q:'Logaritmická funkcia log<sub>a</sub> x má zvislú asymptotu:',o:['x = 0','y = 0','x = 1','nemá žiadnu'],s:p_('D(log<sub>a</sub>) = (0, ∞); pre x → 0⁺ ide funkcia do −∞ (pre a > 1). Graf prechádza bodom (1, 0).')},
+  {q:'Pre a > 1 je funkcia aˣ:',o:['rastúca','klesajúca','konštantná','párna'],s:p_('Pre a > 1 je aˣ rastúca, pre 0 < a < 1 klesajúca.')},
+  {q:'Ktorá identita platí pre hyperbolické funkcie?',o:['cosh²x − sinh²x = 1','cosh²x + sinh²x = 1','sinh x = cosh x','cosh²x − sinh²x = 0'],s:p_('Pre hyperbolické funkcie platí cosh²x − sinh²x = 1, kým pre goniometrické sin²x + cos²x = 1.')},
+  {q:'Aká je parita funkcie cosh x?',o:['párna','nepárna','ani párna, ani nepárna','je periodická'],s:p_('cosh(−x) = (e⁻ˣ + eˣ)/2 = cosh x, a cosh x ≥ 1. Funkcia sinh x je nepárna.')},
+  {q:'Pre logaritmy platí log<sub>a</sub>(x · y) =',o:['log<sub>a</sub> x + log<sub>a</sub> y','log<sub>a</sub> x · log<sub>a</sub> y','log<sub>a</sub> x − log<sub>a</sub> y','log<sub>a</sub> x / log<sub>a</sub> y'],s:p_('Logaritmus súčinu je súčet logaritmov. Zmena základu: log<sub>a</sub> x = ln x / ln a.')},
+  {q:'Čo je správny vzorec pre sin 2α?',o:['2 sin α cos α','sin²α − cos²α','2 sin α + 2 cos α','cos²α − sin²α'],s:p_('sin 2α = 2 sin α cos α a cos 2α = cos²α − sin²α.')},
+  {q:'Hodnota arcsin(sin(π)) je:',o:['0','π','π/2','−π/2'],s:p_('arcsin vracia uhol z ⟨−π/2, π/2⟩. Keďže sin π = 0, výsledok je arcsin 0 = 0, nie π.')}
+]);
+'use strict';
+/* ===== Témy 4 až 6: limity, derivácie, dotyčnice a diferenciál ===== */
+const limNum=(f,a,side=0)=>{ // numerická kontrola limity zľava (-1), sprava (+1), alebo z oboch strán
+  const hs=[1e-3,1e-4,1e-5];const out=hs.map(h=>f(a+(side||1)*h));return out};
+const near=(u,v,tol)=>Math.abs(u-v)<=tol*Math.max(1,Math.abs(v));
+const L2=(sub,body)=>LIM(sub,body);
+function lineHtml(k,q){let h='';
+  if(k!==0){h+=(Math.abs(k)===1?(k<0?'−':''):fv(k))+'x'}
+  if(q!==0||k===0){h+=k===0?fv(q):(q<0?' − ':' + ')+fv(Math.abs(q))}
+  return h}
+const infTxt=v=>v===Infinity?'∞':v===-Infinity?'−∞':fv(v);
+
+/* ======================================================================
+   4. LIMITY A SPOJITOSŤ
+   ====================================================================== */
+function gLimFactor(){
+  if(Math.random()<0.25){const a=pick([-3,-2,-1,1,2,3]);const f=div(polyAst([1,0,0,-a*a*a]),xm(a));
+    return{kind:'Limita: rozklad a krátenie',prompt:p_(`Vypočítaj: ${L2(`x→${nn(a)}`,MQ(f))}`),input:{t:'lines',lines:[['Hodnota: ',null]]},answer:[3*a*a],verify:()=>near(ev(f,a+1e-5),3*a*a,1e-3),
+      solution:p_('Dosadením dostaneme 0/0. Použijeme vzorec x³ − a³ = (x − a)(x² + ax + a²).')+eqh(`<span class="m">${H(f)} = ${H(div(mul(xm(a),P(`x^2+(${a})*x+${a*a}`)),xm(a)))} = ${H(P(`x^2+(${a})*x+${a*a}`))}</span>`)+p_(`Po dosadení x = ${nn(a)}: ${nn(a*a)} + ${par(a*a)} + ${a*a} = <b>${3*a*a}</b>.`)}}
+  let a,c,d;do{a=rnd(-4,4);c=rnd(-4,4);d=rnd(-4,4)}while(c===a||d===a||c===d);
+  const nu=polyFromRoots([a,c]),de=polyFromRoots([a,d]);const f=div(polyAst(nu),polyAst(de));const ans=(a-c)/(a-d);
+  return{kind:'Limita: rozklad a krátenie',prompt:p_(`Vypočítaj: ${L2(`x→${nn(a)}`,MQ(f))}`),input:{t:'lines',lines:[['Hodnota: ',null]]},answer:[ans],verify:()=>near(ev(f,a+1e-6),ans,1e-3),
+    solution:p_(`Priame dosadenie x = ${nn(a)} dá neurčitý výraz 0/0. Čitateľ aj menovateľ rozložíme na činitele a skrátime (x − ${nn(a)}):`)+eqh(`<span class="m">${H(f)} = ${H(div(mul(xm(a),xm(c)),mul(xm(a),xm(d))))} = ${H(div(xm(c),xm(d)))}</span>`)+p_(`Dosadením: ${frac(nn(a-c),nn(a-d))} = <b>${fv(ans)}</b>.`)}}
+
+function gLimConj(){
+  const v=pick(['a','b','c','d','e']);let f,ans,pt,txt;
+  if(v==='a'){const m=rnd(2,6);f=div(sub(sqrtN(add(X,N(m*m))),N(m)),X);pt=0;ans=1/(2*m);txt=`√(x + ${m*m}) − ${m}`;
+    var how=`Rozšírime združeným výrazom √(x + ${m*m}) + ${m}: čitateľ sa zmení na (x + ${m*m}) − ${m*m} = x, a x sa skráti s menovateľom. Zostane 1/(√(x + ${m*m}) + ${m}) → 1/(${m}+${m}) = ${fv(ans)}.`}
+  else if(v==='b'){const k=rnd(2,5);f=div(sub(sqrtN(X),N(k)),sub(X,N(k*k)));pt=k*k;ans=1/(2*k);
+    how=`Rozložíme x − ${k*k} = (√x − ${k})(√x + ${k}). Po skrátení zostane 1/(√x + ${k}) → 1/(${k}+${k}) = ${fv(ans)}.`}
+  else if(v==='c'){const k=rnd(2,5);f=div(sub(X,N(k*k)),sub(sqrtN(X),N(k)));pt=k*k;ans=2*k;
+    how=`x − ${k*k} = (√x − ${k})(√x + ${k}). Po skrátení zostane √x + ${k} → ${2*k}.`}
+  else if(v==='d'){const s=rnd(2,4),a0=rnd(1,6);const m=s*s-a0;if(m<1)return null;f=div(sub(sqrtN(add(X,N(m))),N(s)),sub(X,N(a0)));pt=a0;ans=1/(2*s);
+    how=`Rozšírime združeným výrazom √(x + ${m}) + ${s}. V čitateli vznikne (x + ${m}) − ${s*s} = x − ${a0}, ktoré sa skráti. Zostane 1/(√(x + ${m}) + ${s}) → 1/(${s}+${s}) = ${fv(ans)}.`}
+  else{let a,b;do{a=rnd(-4,5);b=rnd(-4,5)}while(a===b);f=div(sub(sqrtN(add(N(1),mul(N(a),X))),sqrtN(add(N(1),mul(N(b),X)))),X);pt=0;ans=(a-b)/2;
+    how=`Rozšírime združeným výrazom (súčtom odmocnín). V čitateli vznikne (1 + ${a}x) − (1 + ${b}x) = ${nn(a-b)}x. Po skrátení x zostane ${nn(a-b)}/(√1 + √1) = <b>${fv(ans)}</b>.`}
+  return{kind:'Limita: rozšírenie združeným výrazom',prompt:p_(`Vypočítaj: ${L2(`x→${pt}`,MQ(f))}`),input:{t:'lines',lines:[['Hodnota: ',null]]},answer:[ans],verify:()=>near(ev(f,pt+(pt===0?1e-5:1e-5)),ans,2e-3),
+    solution:p_('Dosadením dostaneme neurčitý výraz 0/0 a v zlomku sú odmocniny, preto použijeme rozšírenie združeným výrazom.')+p_(how)+p_(`Výsledok: <b>${fv(ans)}</b>.`)}}
+
+function gLimInf(){
+  const v=pick(['rat','rat','irr']);
+  if(v==='rat'){const m=rnd(1,3),n=rnd(1,3);let p,q;do{p=rnd(-5,5);q=rnd(-4,4)}while(!p||!q);
+    const co1=[p,...Array.from({length:m},()=>rnd(-4,4))],co2=[q,...Array.from({length:n},()=>rnd(-4,4))];
+    const dir=pick([1,-1]);let ans;if(m<n)ans=0;else if(m===n)ans=p/q;else ans=Math.sign(p/q)*Math.pow(dir,m-n)*Infinity;
+    const f=div(polyAst(co1),polyAst(co2));
+    return{kind:'Limita v nekonečne',prompt:p_(`Vypočítaj: ${L2(`x→${dir>0?'∞':'−∞'}`,MQ(f))}`)+p_('<span class="muted">Nekonečno napíš ako <kbd>inf</kbd> alebo <kbd>-inf</kbd>.</span>'),input:{t:'lines',lines:[['Hodnota: ',null]]},answer:[ans],
+      solution:p_(`Stupeň čitateľa je ${m}, stupeň menovateľa ${n}. Čitateľ aj menovateľ vydelíme najvyššou mocninou x<sup>${Math.max(m,n)}</sup>. Rozhodujú vedúce členy: ${nn(p)}x<sup>${m}</sup> a ${nn(q)}x<sup>${n}</sup>.`)+
+        p_(m<n?'Stupeň čitateľa je menší, limita je <b>0</b>.':m===n?`Stupne sú rovnaké, limita je podiel vedúcich koeficientov ${nn(p)}/${nn(q)} = <b>${fv(p/q)}</b>.`:`Stupeň čitateľa je väčší. Podiel vedúcich členov ${H(div(mul(N(p),pow(X,N(m))),mul(N(q),pow(X,N(n)))))} = ${fv(p/q)}·x<sup>${m-n}</sup> ide do <b>${infTxt(ans)}</b>.`)}}
+  const a=pick([2,4,6,-2,-4,-6]),c=rnd(0,1)?pick([0,2,-2,4]):null;
+  if(c!==null&&c!==a){const f=sub(sqrtN(add(pow(X,N(2)),mul(N(a),X))),sqrtN(add(pow(X,N(2)),mul(N(c),X))));const ans=(a-c)/2;
+    return{kind:'Limita v nekonečne',prompt:p_(`Vypočítaj: ${L2('x→∞',MQ(f))}`),input:{t:'lines',lines:[['Hodnota: ',null]]},answer:[ans],verify:()=>near(ev(f,1e5),ans,1e-3),
+      solution:p_('Typ ∞ − ∞. Rozšírime súčtom odmocnín:')+eqh(`<span class="m">${frac(`(x² ${sg(a)} ${Math.abs(a)}x) − (x² ${sg(c)} ${Math.abs(c)}x)`,`√(x² ${sg(a)} ${Math.abs(a)}x) + √(x² ${sg(c)} ${Math.abs(c)}x)`)}</span>`)+
+        p_(`Čitateľ je ${nn(a-c)}x. Vydelíme x: ${frac(nn(a-c),`√(1 ${sg(a)} ${Math.abs(a)}/x) + √(1 ${sg(c)} ${Math.abs(c)}/x)`)} → ${nn(a-c)}/2 = <b>${fv(ans)}</b>.`)}}
+  const f=sub(sqrtN(add(pow(X,N(2)),mul(N(a),X))),X);const ans=a/2;
+  return{kind:'Limita v nekonečne',prompt:p_(`Vypočítaj: ${L2('x→∞',MQ(f))}`),input:{t:'lines',lines:[['Hodnota: ',null]]},answer:[ans],verify:()=>near(ev(f,1e5),ans,1e-3),
+    solution:p_('Typ ∞ − ∞. Rozšírime súčtom (združeným výrazom):')+eqh(`<span class="m">${frac(`(x² ${sg(a)} ${Math.abs(a)}x) − x²`,`√(x² ${sg(a)} ${Math.abs(a)}x) + x`)} = ${frac(`${nn(a)}x`,`√(x² ${sg(a)} ${Math.abs(a)}x) + x`)}</span>`)+
+      p_(`Vydelíme x: ${frac(nn(a),`√(1 ${sg(a)} ${Math.abs(a)}/x) + 1`)} → ${nn(a)}/2 = <b>${fv(ans)}</b>.`)}}
+
+function gLimSig(){
+  const a=rnd(2,6),b=rnd(2,6);const k=rnd(1,4),m=rnd(1,3);
+  const T=[
+    ()=>{const f=div(fn('sin',mul(N(a),X)),mul(N(b),X));return{f,pt:'x→0',ans:a/b,how:`Použijeme sin(u)/u → 1: ${frac(`sin ${a}x`,`${b}x`)} = ${frac(a,b)}·${frac(`sin ${a}x`,`${a}x`)} → ${frac(a,b)}·1.`,ev:x=>ev(f,x),at:1e-4}},
+    ()=>{const f=div(fn('tg',mul(N(a),X)),mul(N(b),X));return{f,pt:'x→0',ans:a/b,how:`tg u = sin u / cos u, cos(${a}x) → 1 a sin(${a}x)/(${a}x) → 1, preto limita je ${a}/${b}.`,ev:x=>ev(f,x),at:1e-4}},
+    ()=>{let c=a;while(c===b)c=rnd(2,6);const f=div(fn('sin',mul(N(c),X)),fn('sin',mul(N(b),X)));return{f,pt:'x→0',ans:c/b,how:`Rozšírime: ${frac(`sin ${c}x`,`sin ${b}x`)} = ${frac(`sin ${c}x`,`${c}x`)}·${frac(`${b}x`,`sin ${b}x`)}·${frac(c,b)} → 1·1·${frac(c,b)}.`,ev:x=>ev(f,x),at:1e-4}},
+    ()=>{const f=div(sub(N(1),fn('cos',mul(N(a),X))),pow(X,N(2)));return{f,pt:'x→0',ans:a*a/2,how:`Rozšírime (1 + cos ${a}x): čitateľ sa zmení na sin²(${a}x), takže limita je (${a}²)·(sin ${a}x/${a}x)²/(1 + cos ${a}x) → ${a*a}·1/2 = ${fv(a*a/2)}.`,ev:x=>ev(f,x),at:1e-3}},
+    ()=>{const f=div(fn('ln',add(N(1),mul(N(a),X))),mul(N(b),X));return{f,pt:'x→0',ans:a/b,how:`Použijeme ln(1 + u)/u → 1 s u = ${a}x: dostaneme ${a}/${b}.`,ev:x=>ev(f,x),at:1e-5}},
+    ()=>{const f=div(sub(pow(E,mul(N(a),X)),N(1)),mul(N(b),X));return{f,pt:'x→0',ans:a/b,how:`Použijeme (e<sup>u</sup> − 1)/u → 1 s u = ${a}x: dostaneme ${a}/${b}.`,ev:x=>ev(f,x),at:1e-5}},
+    ()=>{const f=pow(add(N(1),div(N(k),X)),mul(N(m),X));return{f,pt:'x→∞',ans:A(Math.exp(k*m),`e<sup>${k*m}</sup>`,`e^${k*m}`),av:Math.exp(k*m),how:`Typ 1<sup>∞</sup>. Použijeme (1 + k/x)<sup>x</sup> → e<sup>k</sup>. Tu je k = ${k} a exponent ${m}x, preto výsledok je e<sup>${k}·${m}</sup> = e<sup>${k*m}</sup>.`,ev:x=>ev(f,x),at:1e6,big:true}},
+    ()=>{const f=pow(add(N(1),mul(N(a),X)),div(N(1),X));return{f,pt:'x→0',ans:A(Math.exp(a),`e<sup>${a}</sup>`,`e^${a}`),av:Math.exp(a),how:`Typ 1<sup>∞</sup>. Substitúcia t = 1/x vedie na (1 + ${a}/t)<sup>t</sup> pre t → ∞, čo je e<sup>${a}</sup>.`,ev:x=>ev(f,x),at:1e-5}},
+    ()=>{const f=mul(X,fn('sin',div(N(1),X)));return{f,pt:'x→∞',ans:1,how:'Substitúcia t = 1/x: x·sin(1/x) = sin t / t → 1 pre t → 0⁺.',ev:x=>ev(f,x),at:1e6,big:true}}
+  ];
+  const t=pick(T)();const av_=t.av!==undefined?t.av:av(t.ans);
+  return{kind:'Významné limity',prompt:p_(`Vypočítaj: ${L2(t.pt,MQ(t.f))}`)+p_('<span class="muted">Ak je výsledok mocnina čísla e, napíš ho napríklad ako <kbd>e^3</kbd>.</span>'),input:{t:'lines',lines:[['Hodnota: ',null]]},answer:[t.ans],
+    verify:()=>{const y=t.ev(t.at);return near(y,av_,t.big?2e-3:2e-3)},
+    solution:p_(t.how)+p_(`Výsledok: <b>${ahtml(t.ans)}</b>.`)}}
+
+function gLimOne(){
+  const a=rnd(-3,3),b=rnd(-4,4);
+  const T=[
+    ()=>({f:div(N(1),xm(a)),l:-Infinity,r:Infinity,w:'Menovateľ x − a je zľava záporný a malý, sprava kladný a malý.'}),
+    ()=>({f:div(N(1),pow(xm(a),N(2))),l:Infinity,r:Infinity,w:'Druhá mocnina je z oboch strán kladná a malá, preto 1/0⁺ = +∞ z oboch strán.'}),
+    ()=>({f:div(fn('abs',xm(a)),xm(a)),l:-1,r:1,w:'Zľava je |x − a| = −(x − a), takže podiel je −1. Sprava je |x − a| = x − a, podiel je 1.'}),
+    ()=>({f:fn('arctg',div(N(1),xm(a))),l:A(-Math.PI/2,'−π/2','-pi/2'),r:A(Math.PI/2,'π/2','pi/2'),w:'Argument 1/(x − a) ide zľava do −∞ a sprava do +∞, a arctg(±∞) = ±π/2.'}),
+    ()=>({f:pow(E,div(N(1),xm(a))),l:0,r:Infinity,w:'Zľava ide exponent do −∞, a e<sup>−∞</sup> = 0. Sprava ide exponent do +∞, a e<sup>+∞</sup> = +∞.'}),
+    ()=>{if(a+b===0)return null;const s=Math.sign(a+b);return{f:div(add(X,N(b)),xm(a)),l:-s*Infinity,r:s*Infinity,w:`Čitateľ má v bode ${a} hodnotu ${a+b}, čo je ${s>0?'kladné':'záporné'} číslo, a menovateľ mení znamienko z − na +.`}},
+    ()=>({f:div(N(1),pow(xm(a),N(3))),l:-Infinity,r:Infinity,w:'Tretia mocnina zachová znamienko, preto zľava −∞ a sprava +∞.'})];
+  let t;do{t=pick(T)()}while(!t);
+  const ft=v=>v===Infinity?'+∞':v===-Infinity?'−∞':ahtml(v);
+  return{kind:'Jednostranné limity',prompt:p_(`Vypočítaj jednostranné limity funkcie ${FX(t.f)} v bode x = ${nn(a)}.`)+p_('<span class="muted">Nekonečno napíš ako <kbd>inf</kbd> alebo <kbd>-inf</kbd>, π ako <kbd>pi</kbd>.</span>'),
+    input:{t:'lines',lines:[[`zľava: lim x→${nn(a)}⁻ f(x) = `,null],[`sprava: lim x→${nn(a)}⁺ f(x) = `,null]]},answer:[t.l,t.r],
+    verify:()=>{const fl=ev(t.f,a-1e-6),fr=ev(t.f,a+1e-6);const chk=(y,v)=>v===Infinity?y>1e4:v===-Infinity?y<-1e4:near(y,av(v),1e-3);return chk(fl,t.l)&&chk(fr,t.r)},
+    solution:p_(t.w)+p_(`Zľava: <b>${ft(t.l)}</b>, sprava: <b>${ft(t.r)}</b>.`)+p_(t.l===t.r?'Jednostranné limity sa rovnajú, preto existuje aj obojstranná limita.':'Jednostranné limity sú rôzne, preto obojstranná limita v tomto bode neexistuje.')}}
+
+function gAsym(){
+  const v=pick(['a','b','c','d']);
+  if(v==='a'){let a,b,c,d;do{a=pick([1,2,3,-1,-2]);b=rnd(-4,4);c=rnd(-5,5);d=rnd(-3,3)}while(!d||polyEv([a,b,c],-d)===0);
+    const f=div(polyAst([a,b,c]),add(X,N(d)));const k=a,q=b-a*d;
+    return{kind:'Asymptoty',prompt:p_(`Nájdi asymptoty grafu funkcie ${FX(f)}.`),input:{t:'lines',lines:[['zvislá asymptota x = ',null],['šikmá asymptota y = k·x + q:  k = ',null,'  q = ',null]]},answer:[-d,k,q],verify:()=>near(ev(f,1e5)-(k*1e5+q),0,1e-3),
+      solution:p_(`Zvislá: menovateľ x ${sg(d)} ${Math.abs(d)} = 0 pre x = ${nn(-d)}. Čitateľ je tam nenulový (${nn(polyEv([a,b,c],-d))}), preto ide naozaj o asymptotu.`)+
+        p_(`Stupeň čitateľa je o 1 väčší, preto existuje šikmá asymptota. Vydelíme polynómy: ${H(f)} = ${H(add(mul(N(k),X),N(q)))} + zvyšok/(x ${sg(d)} ${Math.abs(d)}).`)+
+        p_(`Zvyšný zlomok ide do 0, preto y = <b>${H(polyAst([k,q]))}</b> (k = ${nn(k)}, q = ${nn(q)}).`)}}
+  if(v==='b'){let a,b,c,d;do{a=rnd(-4,4);b=rnd(-4,4);c=pick([1,2,3,-1,-2]);d=rnd(-5,5)}while(!a||a*d-b*c===0);
+    const f=div(add(mul(N(a),X),N(b)),add(mul(N(c),X),N(d)));
+    return{kind:'Asymptoty',prompt:p_(`Nájdi asymptoty grafu funkcie ${FX(f)}.`),input:{t:'lines',lines:[['zvislá asymptota x = ',null],['vodorovná asymptota y = ',null]]},answer:[-d/c,a/c],
+      solution:p_(`Zvislá: ${nn(c)}x ${sg(d)} ${Math.abs(d)} = 0 pre x = ${fv(-d/c)}.`)+p_(`Vodorovná: ${L2('x→±∞',MQ(f))} = ${frac(nn(a),nn(c))} = <b>${fv(a/c)}</b>.`)}}
+  if(v==='c'){const k=rnd(1,4);const f=add(X,div(N(k),X));
+    return{kind:'Asymptoty',prompt:p_(`Nájdi asymptoty grafu funkcie ${FX(f)}.`),input:{t:'lines',lines:[['zvislá asymptota x = ',null],['šikmá asymptota y = k·x + q:  k = ',null,'  q = ',null]]},answer:[0,1,0],
+      solution:p_(`Zvislá: v bode x = 0 ide funkcia do ±∞ (${nn(k)}/x → ±∞), preto x = 0 je asymptota.`)+p_(`Šikmá: k = lim f(x)/x = lim (1 + ${k}/x²) = 1, q = lim (f(x) − x) = lim ${k}/x = 0. Teda y = x.`)}}
+  const a=rnd(1,3),d=pick([1,2,3,-1,-2]);const f=div(sqrtN(add(mul(N(a*a),pow(X,N(2))),N(1))),xm(d));
+  return{kind:'Asymptoty',prompt:p_(`Nájdi asymptoty grafu funkcie ${FX(f)}.`),input:{t:'lines',lines:[['zvislá asymptota x = ',null],['vodorovná asymptota pre x → ∞:  y = ',null],['vodorovná asymptota pre x → −∞:  y = ',null]]},answer:[d,a,-a],
+    solution:p_(`Zvislá: x − ${nn(d)} = 0, čitateľ je v tomto bode kladný, preto x = ${nn(d)}.`)+p_(`Pre x → +∞: √(${a*a}x² + 1) = x·√(${a*a} + 1/x²) → ${a}x, preto f → ${a}.`)+p_(`Pre x → −∞ je √(…) = |x|·√(…) = −x·√(…), preto f → <b>${nn(-a)}</b>. Dve rôzne vodorovné asymptoty: y = ${a} a y = ${nn(-a)}.`)}}
+
+function gContParam(){
+  const a=rnd(2,6),b=rnd(2,5),k=rnd(1,5);
+  const T=[
+    ()=>({f:div(fn('sin',mul(N(a),X)),mul(N(b),X)),x0:0,p:a/b,w:`Hodnota v bode 0 sa musí rovnať limite: ${L2('x→0',MQ(div(fn('sin',mul(N(a),X)),mul(N(b),X))))} = ${frac(a,b)}.`}),
+    ()=>({f:div(sub(pow(X,N(2)),N(k*k)),sub(X,N(k))),x0:k,p:2*k,w:`Skrátením (x − ${k}) dostaneme x + ${k}, a limita pre x → ${k} je ${2*k}.`}),
+    ()=>({f:div(sub(N(1),fn('cos',mul(N(a),X))),pow(X,N(2))),x0:0,p:a*a/2,w:`Pre x → 0 platí (1 − cos ax)/x² → a²/2 = ${a*a}/2.`}),
+    ()=>({f:div(sub(pow(E,mul(N(a),X)),N(1)),X),x0:0,p:a,w:`(e<sup>${a}x</sup> − 1)/x → ${a}.`})];
+  const t=pick(T)();
+  return{kind:'Spojitosť s parametrom',prompt:p_(`Nájdi hodnotu parametra p tak, aby bola funkcia spojitá v bode ${t.x0}: <span class="m">f(x) = ${H(t.f)}</span> pre x ≠ ${t.x0}, <span class="m">f(${t.x0}) = p</span>.`),
+    input:{t:'lines',lines:[['p = ',null]]},answer:[t.p],verify:()=>near(ev(t.f,t.x0+1e-4),t.p,1e-2),
+    solution:p_('Funkcia je spojitá v bode, ak sa hodnota v ňom rovná limite: f(x₀) = lim f(x).')+p_(t.w)+p_(`Preto <b>p = ${fv(t.p)}</b>.`)}}
+
+function gEpsDelta(){
+  const a=pick([2,3,4,5,-2,-4]),b=rnd(-4,4),x0=rnd(-2,3),eps=pick([0.1,0.2,0.4,0.5,1,2]);
+  const L=a*x0+b;const delta=eps/Math.abs(a);
+  return{kind:'Definícia limity (ε–δ)',prompt:p_(`Platí ${L2(`x→${nn(x0)}`,MQ(polyAst([a,b])))} = ${nn(L)}. Pre ε = ${num(eps)} nájdi najväčšie δ > 0 také, že z 0 < |x − ${nn(x0)}| < δ vyplýva |f(x) − ${nn(L)}| < ε.`),
+    input:{t:'lines',lines:[['δ = ',null]]},answer:[delta],
+    solution:p_(`|f(x) − ${nn(L)}| = |${nn(a)}x ${sg(b)} ${Math.abs(b)} − ${par(L)}| = ${Math.abs(a)}·|x − ${nn(x0)}|.`)+p_(`Chceme ${Math.abs(a)}·|x − ${nn(x0)}| < ${num(eps)}, teda |x − ${nn(x0)}| < ${num(eps)}/${Math.abs(a)} = <b>${dec(delta)}</b>.`)+p_('Každé menšie δ vyhovuje tiež, najväčšie je práve ε/|a|.')}}
+
+const concLim=conc('Teória: limity a spojitosť',[
+  {q:'Funkcia f je spojitá v bode a ∈ D(f), ak:',o:['lim f(x) pre x → a existuje a rovná sa f(a)','existuje f(a)','existuje lim f(x) pre x → a','graf sa dá nakresliť jedným ťahom'],s:p_('Spojitosť skrýva tri podmienky: f(a) existuje, limita existuje a obe hodnoty sa rovnajú. „Nakresliť jedným ťahom“ je len intuícia, nie definícia.')},
+  {q:'Čo platí o limite lim<sub>x→0</sub> sin(1/x)?',o:['neexistuje','je 0','je 1','je ∞'],s:p_('Funkcia kmitá medzi −1 a 1 stále rýchlejšie, preto sa nepribližuje k jedinému číslu.')},
+  {q:'Hodnota limity v bode a závisí od:',o:['hodnôt f(x) pre x blízke a, ale x ≠ a','hodnoty f(a)','definičného oboru mimo okolia a','dĺžky intervalu'],s:p_('Pri limite pozeráme na prstencové okolie bodu a, hodnota f(a) nemusí ani existovať.')},
+  {q:'Ktorý z výrazov nie je neurčitý?',o:['5/0⁺','0/0','∞/∞','∞ − ∞'],s:p_('k/0⁺ = +∞ pre k > 0 je určitý tvar. Neurčité sú 0/0, ∞/∞, 0·∞, ∞ − ∞, 1<sup>∞</sup>, 0⁰, ∞⁰.')},
+  {q:'Čomu sa rovná lim<sub>x→∞</sub> (1 + 1/x)<sup>x</sup>?',o:['e','1','∞','0'],s:p_('Ide o definíciu Eulerovho čísla, typ 1<sup>∞</sup>. Všeobecne (1 + k/x)<sup>x</sup> → e<sup>k</sup>.')},
+  {q:'Ak f(x) → 0 pre x → a a funkcia g je v okolí a ohraničená, potom:',o:['f(x)·g(x) → 0','f(x)·g(x) → ∞','f(x)/g(x) → 0 vždy','limita nemusí existovať vždy'],s:p_('Napríklad x²·sin(1/x) → 0, hoci sin(1/x) limitu nemá. Dôkaz: |f g| ≤ M·|f| → 0.')},
+  {q:'Veta o prekročení rieky (Bolzano) zaručuje:',o:['existenciu koreňa spojitej funkcie na [a, b], ak f(a)f(b) < 0','jednoznačnosť koreňa','ohraničenosť každej funkcie','existenciu derivácie'],s:p_('Ak je f spojitá na [a, b] a f(a)f(b) < 0, existuje c ∈ (a, b) s f(c) = 0. Jednoznačnosť veta nezaručuje.')},
+  {q:'Čo vyplýva z toho, že f je spojitá na [a, b]?',o:['f je ohraničená a nadobúda minimum aj maximum','f je rastúca','f má deriváciu','f je prostá'],s:p_('Je to Weierstrassova veta. Na otvorenom intervale neplatí: 1/x je spojitá na (0, 1), ale nie je tam ohraničená.')},
+  {q:'Rovnica asymptoty so smernicou y = kx + q: ako sa počíta k?',o:['k = lim f(x)/x pre x → ±∞','k = lim f(x) pre x → ±∞','k = f′(0)','k = lim (f(x) − x)'],s:p_('k = lim f(x)/x a potom q = lim (f(x) − kx).')},
+  {q:'Jednostranné limity sú lim f(x) = −1 pre x → 0⁻ a lim f(x) = 1 pre x → 0⁺. Potom lim f(x) pre x → 0:',o:['neexistuje','je 0','je 1','je −1'],s:p_('Obojstranná limita existuje práve vtedy, ak sa jednostranné limity rovnajú. Tu ide o funkciu sgn x.')}
+]);
+
+/* ======================================================================
+   5. DERIVÁCIE
+   ====================================================================== */
+const coef=(a,first=false)=>first?(a<0?`-${-a}`:`${a}`):(a<0?`-${-a}`:`+${a}`);
+const sc=()=>pick([1,-1]);
+function famPoly(){const n=rnd(3,6),m=rnd(2,n-1);const a=rnd(1,6),b=rnd(1,6),c=rnd(1,8),d=rnd(1,9);
+  return `${a}*x^${n}${coef(sc()*b)}*x^${m}${coef(sc()*c)}*x${coef(sc()*d)}`}
+function famPoly2(){const a=rnd(1,5),b=rnd(1,6),c=rnd(1,5);return pick([`${a}*x^4${coef(-b)}/x${coef(c)}*sqrt(x)`,`${a}/x^2${coef(b)}*sqrt(x)${coef(-c)}*x^3`,`${a}*sqrt(x)${coef(sc()*b)}/x${coef(sc()*c)}*x^2`])}
+function famSum(){const T=['sin(x)','cos(x)','e^x','ln(x)','sqrt(x)','1/x','x^3','arctg(x)','tg(x)','x^2'];const t=shuffle(T).slice(0,3);return t.map((s,i)=>`${i===0?'':coef(sc()*rnd(1,5))}${i===0?rnd(1,5)+'*':'*'}${s}`).join('')}
+function famProd(){const u=pick(['x^2','x^3','x','sqrt(x)','ln(x)','e^x']);let v;do{v=pick(['sin(x)','cos(x)','e^x','ln(x)','arctg(x)','x^2','tg(x)'])}while(v===u);return`${u}*${v}`}
+function famQuot(){const a=rnd(1,5),b=rnd(-4,5),c=rnd(1,4),d=rnd(-4,4);
+  return pick([`(${a}*x+${b})/(${c}*x+${d+5})`,`x^2/(x+${rnd(3,6)})`,`sin(x)/x`,`(x^2+1)/(x+${rnd(3,6)})`,`e^x/x^2`,`ln(x)/x`,`x/(1+x^2)`,`(x^2-1)/(x^2+1)`,`cos(x)/(1+sin(x))`,`(x^2+${a})/(x^2+${c})`,`x^${rnd(2,3)}/e^x`,`(1+x)/sqrt(x)`])}
+function famChain(){const a=rnd(2,5),b=rnd(1,6),n=rnd(3,9);
+  return pick([`(${a}*x+${b})^${n}`,`sin(${a}*x+${b})`,`cos(x^2)`,`e^(${a}*x^2)`,`ln(x^2+${b})`,`sqrt(x^2+${b})`,`arctg(${a}*x)`,`sin(x)^2`,`e^(-x^2)`,`ln(sin(x))`,`tg(${a}*x)`,`cos(x^3)`,`(x^2+1)^3`,`sqrt(1+e^x)`,`ln(1+x^2)`,`1/(x^2+${b})`,`e^(sin(x))`,`sin(e^x)`,`arcsin(x/4)`,`cos(${a}*x)^2`,`ln(x+sqrt(x^2+1))`,`(sin(x))^3`])}
+function famMix(){const a=rnd(2,5);
+  return pick([`x^2*e^(${a}*x)`,`x*sin(${a}*x)`,`e^x*cos(x)`,`sin(x)*cos(${a}*x)`,`x*sqrt(x^2+${a})`,`x^2*arctg(x)`,`ln(x)*sin(x)`,`(x^2+1)*ln(x)`,`sqrt(x)*e^x`,`e^(-x)*sin(x)`,`x*ln(x^2+1)`,`x^3*cos(${a}*x)`,`x*e^(x^2)`])}
+function famLog(){return pick(['x^x','x^sin(x)','sin(x)^x','x^ln(x)','(1+x)^x','x^(1/x)','(1+x^2)^x','x^(x^2)'])}
+function gDiff(){
+  const fam=pick([famPoly,famPoly2,famSum,famSum,famProd,famProd,famProd,famQuot,famQuot,famQuot,famChain,famChain,famChain,famChain,famChain,famMix,famMix,famMix,famLog]);
+  const s=fam();const f=P(s);const d=D(f);
+  const ok=XS.filter(x=>isFinite(ev(d,x))&&Math.abs(ev(d,x))<1e8).length;if(ok<10)return null;
+  return{kind:'Derivácia funkcie',prompt:p_(`Vypočítaj deriváciu funkcie ${FX(f)}.`)+p_(`<span class="muted">Zápis: <kbd>x^2</kbd>, <kbd>sin(x)</kbd>, <kbd>e^x</kbd>, <kbd>ln(x)</kbd>, <kbd>sqrt(x)</kbd>, <kbd>arctg(x)</kbd>, násobenie môžeš vynechať (<kbd>2x</kbd>). Zlomky a argumenty funkcií daj do zátvoriek.</span>`),
+    input:{t:'expr'},check:x=>checkFn(x,t=>ev(d,t)),ref:MQ(d),refAst:d,fAst:f,
+    solution:explain(f)}}
+
+/* ---- vysvetlenie postupu derivovania podľa tvaru výrazu ---- */
+const dL=a=>`(${H(a)})′`;
+const lineM=s=>`<div class="eq"><span class="m">${s}</span></div>`;
+const fpName={sin:'cos x',cos:'−sin x',tg:'1/cos²x',ctg:'−1/sin²x',ln:'1/x',arcsin:'1/√(1 − x²)',arccos:'−1/√(1 − x²)',arctg:'1/(1 + x²)',arccotg:'−1/(1 + x²)',sqrt:'1/(2√x)',sinh:'cosh x',cosh:'sinh x',th:'1/cosh²x'};
+function sumTerms(a,s=1,out=[]){if(a.t==='op'&&a.o==='+'){sumTerms(a.a,s,out);sumTerms(a.b,s,out)}else if(a.t==='op'&&a.o==='-'){sumTerms(a.a,s,out);sumTerms(a.b,-s,out)}else out.push({s,a});return out}
+function subLine(a,dep){ // krátky popis derivovania podčasti
+  const d=D(a);let h=`<div class="eq"><span class="m">${dL(a)} = ${H(d)}</span></div>`;
+  return h}
+function rule(a,dep=0){
+  const d=D(a);
+  if(a.t==='n'||a.t==='c')return`<p>Konštanta: ${MQ(a)}′ = 0.</p>`;
+  if(a.t==='v')return`<p>(x)′ = 1.</p>`;
+  if(a.t==='neg')return`<p>Mínus vyberieme pred deriváciu: (−u)′ = −u′.</p>`+rule(a.a,dep+1);
+  if(a.t==='op'&&a.o==='*'){
+    if(isConst(a.a))return`<p>Konštantný násobok vyberieme pred deriváciu: (c·u)′ = c·u′.</p>`+lineM(`${dL(a.a.t==='n'?a.b:a.a)} = ${H(D(a.a.t==='n'?a.b:a.a))}`)+(dep<2?rule(a.a.t==='n'?a.b:a.a,dep+1):'')+lineM(`${dL(a)} = ${H(d)}`);
+    const u=a.a,v=a.b;
+    return`<p><b>Súčinové pravidlo</b>: (u·v)′ = u′·v + u·v′, kde u = ${MQ(u)}, v = ${MQ(v)}.</p>`+lineM(`u′ = ${H(D(u))}, &nbsp; v′ = ${H(D(v))}`)+lineM(`${dL(a)} = ${H(mul(D(u),v))} + ${H(mul(u,D(v)))} = ${H(d)}`)}
+  if(a.t==='op'&&a.o==='/'){
+    if(isConst(a.b))return`<p>Delenie konštantou: (u/c)′ = u′/c.</p>`+lineM(`${dL(a)} = ${H(d)}`);
+    const u=a.a,v=a.b;
+    return`<p><b>Podielové pravidlo</b>: (u/v)′ = (u′v − uv′)/v², kde u = ${MQ(u)}, v = ${MQ(v)}.</p>`+lineM(`u′ = ${H(D(u))}, &nbsp; v′ = ${H(D(v))}`)+lineM(`${dL(a)} = ${frac(`${H(mul(D(u),v))} − ${H(mul(u,D(v)))}`,H(pow(v,N(2))))} = ${H(d)}`)}
+  if(a.t==='op'&&a.o==='^'){
+    if(isConst(a.b)){
+      if(a.a.t==='v')return`<p>Mocninové pravidlo: (x<sup>n</sup>)′ = n·x<sup>n−1</sup>.</p>`+lineM(`${dL(a)} = ${H(d)}`);
+      return`<p><b>Reťazové pravidlo</b>: (u<sup>n</sup>)′ = n·u<sup>n−1</sup>·u′, kde u = ${MQ(a.a)} (vnútorná funkcia), u′ = ${MQ(D(a.a))}.</p>`+lineM(`${dL(a)} = ${H(d)}`)+(dep<2&&!isSimple(a.a)?rule(a.a,dep+1):'')}
+    if(isConst(a.a)){const isE=a.a.t==='c';return`<p>Exponenciálna funkcia: (${isE?'e':'a'}<sup>u</sup>)′ = ${isE?'e':'a'}<sup>u</sup>${isE?'':'·ln a'}·u′, kde u = ${MQ(a.b)}.</p>`+lineM(`${dL(a)} = ${H(d)}`)}
+    return`<p><b>Logaritmické derivovanie</b>: premenná je v základe aj v exponente. Použijeme f<sup>g</sup> = e<sup>g·ln f</sup>, teda (f<sup>g</sup>)′ = f<sup>g</sup>·(g·ln f)′, kde f = ${MQ(a.a)}, g = ${MQ(a.b)}.</p>`+lineM(`(${H(mul(a.b,fn('ln',a.a)))})′ = ${H(D(mul(a.b,fn('ln',a.a))))}`)+lineM(`${dL(a)} = ${H(d)}`)}
+  if(a.t==='f'){
+    if(a.a.t==='v')return`<p>Základný vzorec: (${H(a)})′ = ${fpName[a.n]||'…'}.</p>`+lineM(`${dL(a)} = ${H(d)}`);
+    return`<p><b>Reťazové pravidlo</b>: vonkajšia funkcia ${FNAME[a.n]||a.n}, vnútorná funkcia u = ${MQ(a.a)}. Derivujeme vonkajšiu (argument zatiaľ nemeníme) a vynásobíme deriváciou vnútornej: u′ = ${MQ(D(a.a))}.</p>`+lineM(`${dL(a)} = ${H(d)}`)+(dep<2&&!isSimple(a.a)?rule(a.a,dep+1):'')}
+  return lineM(`${dL(a)} = ${H(d)}`)}
+const isSimple=a=>a.t==='v'||a.t==='n'||a.t==='c'||(a.t==='op'&&(a.o==='+'||a.o==='-')&&sumTerms(a).every(t=>isSimple2(t.a)));
+const isSimple2=a=>a.t==='v'||a.t==='n'||(a.t==='op'&&a.o==='*'&&a.a.t==='n'&&a.b.t==='v')||(a.t==='op'&&a.o==='^'&&a.a.t==='v'&&a.b.t==='n')||(a.t==='op'&&a.o==='*'&&a.a.t==='n'&&a.b.t==='op'&&a.b.o==='^'&&a.b.a.t==='v');
+function explain(f){
+  const ts=sumTerms(f);let h='';
+  if(ts.length>1){h+=p_('Funkcia je súčet (rozdiel) viacerých členov, derivujeme člen po člene: (u ± v)′ = u′ ± v′.');
+    ts.forEach(t=>{h+=`<div class="rb">${rule(t.s<0?neg(t.a):t.a,1)}</div>`})}
+  else h+=rule(f,0);
+  return h+p_(`Výsledok: f′(x) = ${MQ(D(f))}`)}
+
+function gDiffPoint(){
+  const L=[['x^3-2*x^2+5',[-2,-1,1,2,3]],['(x^2+1)/(x+1)',[0,1,2,3]],['sqrt(x)*(x+1)',[1,4,9]],['x*e^x',[0]],['ln(x)*x^2',[1]],['e^(2*x)*(x+1)',[0]],['sin(x)+x^2',[0]],['x^2/(x+2)',[0,1,2,-1]],['x^4-3*x^2+x',[-1,1,2]],['(x-1)/(x+1)',[0,1,2,3]],['1/x+x^2',[1,2,-1,-2]],['sqrt(x^2+9)',[0,4,-4]],['e^x*cos(x)',[0]],['x*ln(x)',[1]],['(2*x+1)^3',[0,1,-1]],['x*sqrt(x+1)',[0,3,8]]];
+  const [s,xs]=pick(L);const f=P(s),x0=pick(xs),d=D(f);const v=ev(d,x0);if(!rat(v))return null;
+  return{kind:'Derivácia v bode',prompt:p_(`Vypočítaj hodnotu derivácie funkcie ${FX(f)} v bode x₀ = ${nn(x0)}.`),input:{t:'lines',lines:[[`f′(${nn(x0)}) = `,null]]},answer:[v],
+    solution:explain(f)+p_(`Dosadíme x = ${nn(x0)}: f′(${nn(x0)}) = <b>${fv(v)}</b>.`)}}
+
+function gDefDeriv(){
+  if(Math.random()<0.45){let al,be,ga,a;do{al=rnd(-3,3);be=rnd(-4,4);ga=rnd(-3,3);a=rnd(-3,3)}while(!al);
+    const f=polyAst([al,be,ga]);const A_=2*al*a+be;
+    return{kind:'Derivácia z definície',prompt:p_(`Z definície vypočítaj f′(${nn(a)}) pre ${FX(f)}. Najprv uprav diferenčný podiel <span class="m">${frac(`f(${nn(a)} + h) − f(${nn(a)})`,'h')}</span> do tvaru <i>A</i> + <i>B</i>·h.`),
+      input:{t:'lines',lines:[['A = ',null,'  B = ',null],['f′('+nn(a)+') = ',null]]},answer:[A_,al,A_],
+      solution:p_(`f(${nn(a)} + h) = ${nn(al)}(${nn(a)} + h)² ${sg(be)} ${Math.abs(be)}(${nn(a)} + h) ${sg(ga)} ${Math.abs(ga)} = ${nn(al*a*a+be*a+ga)} + ${nn(A_)}h + ${nn(al)}h².`)+
+        p_(`f(${nn(a)}) = ${nn(al*a*a+be*a+ga)}. Po odčítaní a delení h: diferenčný podiel = ${nn(A_)} + ${nn(al)}h.`)+p_(`Limita pre h → 0 je <b>${nn(A_)}</b>.`)}}
+  const b=pick([-3,-2,-1,1,2,3]);
+  return{kind:'Jednostranné derivácie',prompt:p_(`Pre ktorú hodnotu a existuje derivácia funkcie f v bode 0?`)+`<div class="sys"><div><span class="m">f(x) = x² ${b>0?'+':'−'} ${Math.abs(b)}x, &nbsp; x ≥ 0</span></div><div><span class="m">f(x) = ax, &nbsp; x < 0</span></div></div>`,
+    input:{t:'lines',lines:[['a = ',null]]},answer:[b],
+    solution:p_(`Derivácia sprava: f′₊(0) = lim (h² ${sg(b)} ${Math.abs(b)}h)/h = ${nn(b)}.`)+p_('Derivácia zľava: f′₋(0) = lim (a·h)/h = a.')+p_(`Derivácia v bode existuje práve vtedy, keď sa jednostranné derivácie rovnajú: <b>a = ${nn(b)}</b>.`)}}
+
+const concDer=conc('Teória: derivácie',[
+  {q:'Pre deriváciu súčinu platí:',o:['(fg)′ = f′g + fg′','(fg)′ = f′g′','(fg)′ = f′g − fg′','(fg)′ = (f′g′)/2'],s:p_('Súčinové pravidlo: (fg)′ = f′g + fg′. Platí (fg)′ ≠ f′g′, napríklad (x·x)′ = 2x, no x′·x′ = 1.')},
+  {q:'Pre deriváciu podielu platí:',o:['(f/g)′ = (f′g − fg′)/g²','(f/g)′ = f′/g′','(f/g)′ = (f′g + fg′)/g²','(f/g)′ = (fg′ − f′g)/g²'],s:p_('V čitateli je „derivácia hore krát dole mínus hore krát derivácia dole“, v menovateli g².')},
+  {q:'Pre zloženú funkciu platí (f ∘ g)′(x) =',o:['f′(g(x))·g′(x)','f′(x)·g′(x)','f′(g′(x))','f(g′(x))'],s:p_('Reťazové pravidlo: deriváciu vonkajšej funkcie vyhodnotíme v g(x) a vynásobíme deriváciou vnútornej.')},
+  {q:'Ktoré pravidlo použiješ pri derivovaní funkcie y = sin(x²)?',o:['reťazové pravidlo','súčinové pravidlo','podielové pravidlo','iba vzorec pre (sin x)′'],s:p_('sin je vonkajšia a x² vnútorná funkcia, preto (sin x²)′ = cos(x²)·2x.')},
+  {q:'Ktorá funkcia je diferencovateľná (má deriváciu) v bode 0?',o:['f(x) = x|x|','f(x) = |x|','f(x) = √x','f(x) = ∛x'],s:p_('x|x| má f′(0) = 0. |x| má v nule roh (f′₋ = −1, f′₊ = 1), √x a ∛x majú vertikálnu dotyčnicu, derivácia je nevlastná.')},
+  {q:'Ak je funkcia diferencovateľná v bode a, potom v ňom:',o:['je spojitá','je rastúca','má lokálny extrém','je konvexná'],s:p_('Diferencovateľnosť implikuje spojitosť. Opak neplatí: |x| je spojitá v 0, ale nemá deriváciu.')},
+  {q:'Derivácia funkcie f(x) = x<sup>x</sup> (x > 0) je:',o:['x<sup>x</sup>(ln x + 1)','x·x<sup>x−1</sup>','x<sup>x</sup>·ln x','x<sup>x</sup>'],s:p_('Použijeme f<sup>g</sup> = e<sup>g ln f</sup>: (x<sup>x</sup>)′ = x<sup>x</sup>·(x ln x)′ = x<sup>x</sup>(ln x + 1).')},
+  {q:'Geometrický význam f′(x₀) je:',o:['smernica dotyčnice ku grafu v bode x₀','hodnota funkcie v bode x₀','obsah pod grafom','vzdialenosť bodu od osi x'],s:p_('f′(x₀) je limita smerníc sečníc, teda smernica dotyčnice: y = f(x₀) + f′(x₀)(x − x₀).')},
+  {q:'Čomu sa rovná (ln x)′ a (eˣ)′?',o:['1/x a eˣ','x a eˣ','1/x a x·eˣ⁻¹','ln x a eˣ'],s:p_('(ln x)′ = 1/x, (eˣ)′ = eˣ, (aˣ)′ = aˣ ln a.')}
+]);
+
+/* ======================================================================
+   6. DOTYČNICA, NORMÁLA, DIFERENCIÁL, VYŠŠIE DERIVÁCIE
+   ====================================================================== */
+const TANF=[['x^2-3*x+1',[-1,0,1,2,3]],['x^3-2*x',[-1,0,1,2]],['1/x',[1,2,-1,-2]],['sqrt(x)',[1,4,9]],['e^x',[0]],['e^(2*x)',[0]],['ln(x)',[1]],['x*e^x',[0]],['sin(x)',[0]],['arctg(x)',[0]],['x*ln(x)',[1]],['x/(x+1)',[0,1,2]],['x^2+2*x',[-3,-1,2]],['(x^2+1)/x',[1,2,-1]],['x^3',[1,-1,2]],['cos(2*x)+x',[0]],['x^4-x^2',[1,2,-1]],['2/(x+1)',[0,1,2]]];
+function gTangent(){
+  const [s,xs]=pick(TANF);const f=P(s),x0=pick(xs),d=D(f);
+  const k=ev(d,x0),y0=ev(f,x0);if(!rat(k)||!rat(y0))return null;
+  const wantN=Math.random()<0.4&&Math.abs(k)>1e-9;
+  const kk=wantN?-1/k:k,qq=y0-kk*x0;if(!rat(kk)||!rat(qq))return null;
+  const pl=plot({fns:[{f:x=>ev(f,x),cls:'c1'}],lines:[{k:kk,q:qq,cls:'ln2'}],xr:[x0-2.2,x0+2.2],pts:[{x:x0,y:y0,l:`[${nn(x0)}; ${rat(y0)?ftxt(y0):dec(y0,3)}]`}],label:'graf funkcie a '+(wantN?'normály':'dotyčnice')});
+  return{kind:wantN?'Normála ku grafu':'Dotyčnica ku grafu',prompt:p_(`Nájdi rovnicu ${wantN?'normály':'dotyčnice'} ku grafu funkcie ${FX(f)} v bode s x₀ = ${nn(x0)}. Zapíš ju v tvare y = k·x + q.`),
+    input:{t:'lines',lines:[['k = ',null,'  q = ',null]]},answer:[kk,qq],
+    solution:p_(`f(${nn(x0)}) = ${fv(y0)}, bod dotyku je T = [${nn(x0)}; ${fv(y0)}].`)+p_(`f′(x) = ${MQ(d)}, smernica dotyčnice k<sub>t</sub> = f′(${nn(x0)}) = ${fv(k)}.`)+
+      (wantN?p_(`Normála je kolmá na dotyčnicu, preto k<sub>n</sub> = −1/k<sub>t</sub> = ${fv(kk)}.`):'')+
+      p_(`${wantN?'Normála':'Dotyčnica'}: y − ${fv(y0)} = ${fv(kk)}·(x − ${par(x0)}), teda <b>y = ${lineHtml(kk,qq)}</b>.`)+`<div class="plotw">${pl}</div>`}}
+
+function gTangentPar(){
+  const a=pick([1,2,-1]),b=rnd(-4,4),c=rnd(-3,3);const perp=Math.random()<0.5;
+  const m=perp?pick([1,2,-1,-2,0.5,-0.5]):rnd(-3,4);const need=perp?-1/m:m;
+  if(perp&&m===0)return null;const x0=(need-b)/(2*a);if(!rat(x0))return null;
+  const f=polyAst([a,b,c]);const y0=polyEv([a,b,c],x0);const n0=rnd(-3,3);const q=y0-need*x0;if(!rat(y0)||!rat(q))return null;
+  const line=polyAst([m,n0]);
+  return{kind:perp?'Kolmá dotyčnica':'Rovnobežná dotyčnica',prompt:p_(`Nájdi dotyčnicu ku grafu funkcie ${FX(f)}, ktorá je ${perp?'kolmá na':'rovnobežná s'} priamkou <span class="m">p: y = ${H(line)}</span>. Zadaj bod dotyku [x₀; y₀] a absolútny člen q dotyčnice y = k·x + q.`),
+    input:{t:'lines',lines:[['x₀ = ',null,'  y₀ = ',null],['q = ',null]]},answer:[x0,y0,q],
+    solution:p_(`Smernica priamky p je ${fv(m)}. ${perp?`Kolmá dotyčnica má smernicu −1/${fv(m)} = ${fv(need)}.`:`Rovnobežná dotyčnica má rovnakú smernicu ${fv(m)}.`}`)+
+      p_(`f′(x) = ${MQ(polyAst([2*a,b]))}. Riešime f′(x₀) = ${fv(need)}: x₀ = <b>${fv(x0)}</b>.`)+p_(`y₀ = f(${fv(x0)}) = <b>${fv(y0)}</b>.`)+p_(`Dotyčnica: y − ${fv(y0)} = ${fv(need)}(x − ${par(x0)}), teda q = y₀ − k·x₀ = <b>${fv(q)}</b>.`)}}
+
+function gDifferential(){
+  const L=[['x^3',2],['sqrt(x)',25],['sqrt(x)',100],['x^4',1],['ln(x)',1],['e^x',0],['arctg(x)',1],['1/x',2],['x^2+3*x',1],['sin(x)',0],['x^(1/3)',8],['sqrt(x)',9],['arctg(x^2)',2],['x*e^x',0],['sqrt(x^2+1)',1]];
+  const [s,x0]=pick(L);const f=P(s),d=D(f),dx=pick([0.1,0.01,0.02,-0.01,0.05,-0.1,0.2,-0.02]);const k=ev(d,x0);if(!rat(k))return null;
+  const df=k*dx;
+  return{kind:'Diferenciál funkcie',prompt:p_(`Vypočítaj diferenciál funkcie ${FX(f)} v bode x₀ = ${nn(x0)} pre prírastok Δx = ${num(dx)}.`)+p_('<span class="muted">Zadaj desatinné číslo (napr. <kbd>0.36</kbd>) alebo zlomok.</span>'),
+    input:{t:'lines',lines:[[`df(${nn(x0)}; ${num(dx)}) = `,null]]},answer:[df],
+    solution:p_(`Diferenciál: df(x₀, Δx) = f′(x₀)·Δx.`)+p_(`f′(x) = ${MQ(d)}, f′(${nn(x0)}) = ${fv(k)}.`)+p_(`df = ${fv(k)}·${par(dx).replace('.',',')} = <b>${dec(df)}</b>.`)}}
+
+function gLinApprox(){
+  const L=[['sqrt(x)',100,98,'√98'],['x^3',2,2.03,'(2,03)³'],['ln(x)',1,1.03,'ln 1,03'],['e^x',0,0.1,'e<sup>0,1</sup>'],['x^(1/3)',8,8.2,'∛8,2'],['sqrt(x)',81,80,'√80'],['sqrt(x)',25,26,'√26'],['1/x',2,2.05,'1/2,05'],['sin(x)',0,0.2,'sin 0,2'],['arctg(x)',1,1.1,'arctg 1,1'],['sqrt(x)',49,50,'√50'],['x^4',1,0.98,'(0,98)⁴'],['sqrt(x)',16,15,'√15'],['ln(x)',1,0.95,'ln 0,95'],['cos(x)',0,0.1,'cos 0,1']];
+  const [s,x0,x,lab]=pick(L);const f=P(s),d=D(f);const y0=ev(f,x0),k=ev(d,x0);const dx=x-x0;const approx=y0+k*dx;const exact=ev(f,x);
+  return{kind:'Približný výpočet pomocou diferenciálu',prompt:p_(`Pomocou diferenciálu (lineárnej aproximácie v bode ${num(x0)}) približne vypočítaj: <span class="m">${lab}</span>`)+p_('<span class="muted">Zadaj desatinné číslo (napr. <kbd>8.36</kbd>); pri hodnotách s π môžeš použiť <kbd>pi</kbd>.</span>'),
+    input:{t:'lines',lines:[['≈ ',null]]},answer:[A(approx,dec(approx),String(+approx.toFixed(6)),1e-5)],
+    solution:p_(`Zvolíme f(x) = ${H(f)}, x₀ = ${num(x0)}, Δx = ${num(dx)}.`)+p_(`f(x₀) = ${fv(y0)}, f′(x) = ${MQ(d)}, f′(x₀) = ${fv(k)}.`)+eqh(`<span class="m">f(x) ≈ f(x₀) + f′(x₀)·Δx = ${dec(y0)} + ${fv(k)}·${par(dx).replace('.',',')} = <b>${dec(approx)}</b></span>`)+p_(`<span class="muted">Presná hodnota je približne ${dec(exact,6)}, chyba ${dec(Math.abs(exact-approx),6)}.</span>`)}}
+
+function gHigher(){
+  const v=pick(['poly','special','point']);
+  if(v==='poly'){const f=P(pick(['x^6+5*x^4+2*x^3-x^2','3*x^5-4*x^3+x^2-7*x','x^4*ln(x)','x^2*e^(2*x)','x*sin(x)','e^x*cos(x)','x^3-2*x^2+x','ln(x^2+1)','x*e^(-x)','tg(x)','sqrt(x)*x^2','1/(x+1)']));
+    const n=pick([2,2,3]);const d=Dn(f,n);if(XS.filter(x=>isFinite(ev(d,x))).length<10)return null;
+    let st='';let cur=f;for(let i=1;i<=n;i++){cur=D(cur);st+=lineM(`f${'′'.repeat(i)}(x) = ${H(cur)}`)}
+    return{kind:'Derivácie vyšších rádov',prompt:p_(`Vypočítaj ${n===2?'druhú':'tretiu'} deriváciu funkcie ${FX(f)}.`),input:{t:'expr'},check:s=>checkFn(s,x=>ev(d,x)),ref:MQ(d),refAst:d,solution:p_('Deriváciu počítame postupne: každý krok derivuje výsledok predchádzajúceho kroku.')+st}}
+  if(v==='special'){const a=rnd(2,4);const T=[[`sin(${a}*x)`],[`cos(${a}*x)`],[`e^(${a}*x)`],[`e^(-${a}*x)`],['ln(x)'],['1/x'],[`ln(${a}*x)`]];
+    const f=P(pick(T)[0]);const n=pick([3,4,5]);const d=Dn(f,n);if(XS.filter(x=>isFinite(ev(d,x))).length<10)return null;
+    let st='';let cur=f;for(let i=1;i<=n;i++){cur=D(cur);st+=lineM(`f<sup>(${i})</sup>(x) = ${H(cur)}`)}
+    return{kind:'Derivácie vyšších rádov',prompt:p_(`Vypočítaj ${n}-tú deriváciu f<sup>(${n})</sup>(x) funkcie ${FX(f)}.`),input:{t:'expr'},check:s=>checkFn(s,x=>ev(d,x)),ref:MQ(d),refAst:d,solution:p_('Derivujeme opakovane a všímame si pravidelnosť v koeficientoch.')+st}}
+  const f=P(pick(['x^5-3*x^3+x','x^4+2*x^2','x^3*e^x','x^2*ln(x)','sin(x)+x^3','e^(2*x)+x^2','x^4-4*x^3','x*e^x','(x+1)^4','ln(x)+x^2']));
+  const x0=pick([1,2,-1,0.5,1]);const n=2;const val=ev(Dn(f,n),x0);if(!isFinite(val))return null;if(!rat(val))return null;
+  return{kind:'Druhá derivácia v bode',prompt:p_(`Vypočítaj f″(${num(x0)}) pre ${FX(f)}.`),input:{t:'lines',lines:[[`f″(${num(x0)}) = `,null]]},answer:[val],
+    solution:lineM(`f′(x) = ${H(D(f))}`)+lineM(`f″(x) = ${H(Dn(f,2))}`)+p_(`f″(${num(x0)}) = <b>${fv(val)}</b>.`)}}
+
+const concApp=conc('Teória: dotyčnica a diferenciál',[
+  {q:'Rovnica dotyčnice ku grafu funkcie f v bode x₀ je:',o:['y − f(x₀) = f′(x₀)(x − x₀)','y = f′(x₀)x','y − x₀ = f′(f(x₀))','y = f(x₀) + f(x₀)(x − x₀)'],s:p_('Dotyčnica je priamka cez bod [x₀, f(x₀)] so smernicou f′(x₀).')},
+  {q:'Smernica normály je (ak f′(x₀) ≠ 0):',o:['−1/f′(x₀)','f′(x₀)','1/f′(x₀)','−f′(x₀)'],s:p_('Normála je kolmá na dotyčnicu, súčin smerníc je −1. Ak f′(x₀) = 0, normála je zvislá priamka x = x₀.')},
+  {q:'Dotyčnica rovnobežná s priamkou so smernicou k<sub>p</sub> spĺňa:',o:['f′(x₀) = k<sub>p</sub>','f′(x₀)·k<sub>p</sub> = −1','f(x₀) = k<sub>p</sub>','f″(x₀) = k<sub>p</sub>'],s:p_('Rovnobežnosť znamená rovnakú smernicu, kolmosť súčin smerníc −1.')},
+  {q:'Pre malé Δx platí f(x₀ + Δx) ≈',o:['f(x₀) + f′(x₀)·Δx','f(x₀) + f(x₀)·Δx','f′(x₀) + Δx','f(x₀)·f′(x₀)'],s:p_('Lineárna aproximácia: skutočnú zmenu Δf nahradíme zmenou po dotyčnici, df = f′(x₀)Δx.')},
+  {q:'Diferenciál funkcie f v bode x₀ s prírastkom Δx je:',o:['df = f′(x₀)·Δx','df = f(x₀ + Δx) − f(x₀)','df = f′(x₀ + Δx)','df = f(x₀)·Δx'],s:p_('Prírastok funkcie Δf je skutočná zmena, diferenciál df je zmena na dotyčnici. Pre malé Δx sú blízke.')},
+  {q:'Čo je správny rozvoj eˣ ≈ pre x blízke 0?',o:['1 + x','x','1 − x','1 + x²'],s:p_('Pre f = eˣ je f(0) = 1, f′(0) = 1, preto eˣ ≈ 1 + x. Podobne sin x ≈ x a ln(1 + x) ≈ x.')},
+  {q:'Čo je druhá derivácia f″?',o:['derivácia derivácie f′','druhá mocnina f′','f′ vydelená dvoma','derivácia funkcie f²'],s:p_('f″ = (f′)′, f‴ = (f″)′, f<sup>(n)</sup> = (f<sup>(n−1)</sup>)′.')}
+]);
+'use strict';
+/* ===== Témy 7 a 8: Taylorov polynóm, l'Hospitalovo pravidlo, priebeh funkcie ===== */
+const SUP=['⁰','¹','²','³','⁴','⁵','⁶','⁷'];
+const fact=n=>n<=1?1:n*fact(n-1);
+const strip_=h=>h.replace(/<[^>]+>/g,'');
+function polyLines(label,n,x0){ // M_n(x) = [ ] + [ ]·x + ...
+  const arr=[label];
+  for(let k=0;k<=n;k++){
+    if(k>0)arr.push(' + ');
+    arr.push(null);
+    if(k>0)arr.push(x0===0?`·x${k>1?SUP[k]:''}`:`·(x ${x0<0?'+':'−'} ${Math.abs(x0)})${k>1?SUP[k]:''}`);
+  }
+  return[arr]}
+function derivTable(f,x0,n,withExpr=true){
+  const rows=[];
+  for(let k=0;k<=n;k++){const dk=Dn(f,k);const v=ev(dk,x0);const ck=v/fact(k);
+    const ex=strip_(H(dk)).length<60&&withExpr?H(dk):'…';
+    rows.push([k,ex,fv(v),`${fv(v)}/${fact(k)} = <b>${fv(ck)}</b>`])}
+  return tblh(['k','f<sup>(k)</sup>(x)',`f<sup>(k)</sup>(${nn(x0)})`,'koeficient f<sup>(k)</sup>/k!'],rows)}
+function taylorCoefs(f,x0,n){const c=[];for(let k=0;k<=n;k++)c.push(ev(Dn(f,k),x0)/fact(k));return c}
+const polyShow=(c,x0)=>{let h='';c.forEach((v,k)=>{if(Math.abs(v)<1e-12)return;const t=k===0?fv(Math.abs(v)):(Math.abs(v)===1?'':fv(Math.abs(v)))+(x0===0?(k===1?'x':`x<sup>${k}</sup>`):(k===1?`(x ${x0<0?'+':'−'} ${Math.abs(x0)})`:`(x ${x0<0?'+':'−'} ${Math.abs(x0)})<sup>${k}</sup>`));
+  h+=h===''?(v<0?'−':'')+t:(v<0?' − ':' + ')+t});return h||'0'};
+
+function gMaclaurin(){
+  const a=rnd(2,3);
+  const L=[[`e^(${a}*x)`,3],['e^(-x)',4],['sin(x)',3],['sin(x)',5],[`sin(${a}*x)`,3],['cos(x)',4],[`cos(${a}*x)`,4],['ln(1+x)',4],['1/(1-x)',4],['1/(1+x)',3],['sqrt(1+x)',3],['arctg(x)',3],['sinh(x)',3],['cosh(x)',4],['tg(x)',3],['x*e^x',3],['e^x*cos(x)',3],['ln(1-x)',3],['1/(1+x^2)',4],['(1+x)^3',3]];
+  const [s,n]=pick(L);const f=P(s);const c=taylorCoefs(f,0,n);
+  if(c.some(v=>!rat(v,5040)))return null;
+  return{kind:'MacLaurinov polynóm',prompt:p_(`Rozvíj funkciu ${FX(f)} do MacLaurinovho polynómu ${n}. stupňa M<sub>${n}</sub>(x). Zapíš koeficienty polynómu.`),
+    input:{t:'lines',lines:polyLines(`M${String.fromCharCode(8320+n)}(x) = `,n,0)},answer:c,
+    solution:p_(`MacLaurinov polynóm je Taylorov polynóm so stredom 0: M<sub>n</sub>(x) = Σ f<sup>(k)</sup>(0)/k! · x<sup>k</sup>. Postupne derivujeme a dosadíme x = 0:`)+derivTable(f,0,n)+p_(`M<sub>${n}</sub>(x) = <b>${polyShow(c,0)}</b>`)}}
+
+function gTaylor(){
+  const L=[['ln(x)',1,3],['1/x',1,3],['1/x',2,2],['sqrt(x)',4,2],['sqrt(x)',1,3],['x*ln(x)',1,4],['x^3-2*x',1,3],['x^4-x',2,3],['1/(x+1)',1,2],['sqrt(x+1)',3,2],['1/x^2',1,3],['x^3',-1,3],['x*ln(x)',1,3],['ln(x)',1,4],['sqrt(x)',9,2],['1/(2-x)',1,3]];
+  const [s,x0,n]=pick(L);const f=P(s);const c=taylorCoefs(f,x0,n);if(c.some(v=>!rat(v,5040)))return null;
+  const pl=plot({fns:[{f:x=>ev(f,x),cls:'c1'},{f:x=>c.reduce((sm,v,k)=>sm+v*Math.pow(x-x0,k),0),cls:'c2'}],xr:[x0-1.6,x0+1.6],pts:[{x:x0,y:ev(f,x0)}],label:'funkcia a jej Taylorov polynóm'});
+  return{kind:'Taylorov polynóm v bode',prompt:p_(`Nájdi Taylorov polynóm ${n}. stupňa T<sub>${n}</sub>(x) funkcie ${FX(f)} so stredom x₀ = ${nn(x0)}. Zapíš koeficienty pri mocninách (x ${x0<0?'+':'−'} ${Math.abs(x0)}).`),
+    input:{t:'lines',lines:polyLines(`T${String.fromCharCode(8320+n)}(x) = `,n,x0)},answer:c,
+    solution:p_(`T<sub>n</sub>(x) = Σ f<sup>(k)</sup>(x₀)/k! · (x − x₀)<sup>k</sup>, x₀ = ${nn(x0)}.`)+derivTable(f,x0,n)+p_(`T<sub>${n}</sub>(x) = <b>${polyShow(c,x0)}</b>`)+`<div class="plotw">${pl}</div><p class="muted">Modrou je funkcia, oranžovou jej Taylorov polynóm. Blízko stredu sa takmer zhodujú.</p>`}}
+
+function gTaylorApprox(){
+  const L=[['ln(x)',1,2,1.3,'ln 1,3'],['ln(x)',1,2,0.9,'ln 0,9'],['sqrt(x)',1,2,1.1,'√1,1'],['sqrt(x)',4,2,4.2,'√4,2'],['e^x',0,3,0.2,'e<sup>0,2</sup>'],['sin(x)',0,3,0.5,'sin 0,5'],['cos(x)',0,4,0.4,'cos 0,4'],['1/x',1,3,1.1,'1/1,1'],['ln(x)',1,3,1.1,'ln 1,1'],['arctg(x)',0,3,0.2,'arctg 0,2'],['e^(-x)',0,3,0.1,'e<sup>−0,1</sup>'],['sqrt(x)',9,2,9.3,'√9,3'],['ln(x)',1,2,0.8,'ln 0,8']];
+  const [s,x0,n,x,lab]=pick(L);const f=P(s);const c=taylorCoefs(f,x0,n);
+  const val=c.reduce((sm,v,k)=>sm+v*Math.pow(x-x0,k),0);const exact=ev(f,x);
+  return{kind:'Približný výpočet Taylorovým polynómom',prompt:p_(`Pomocou Taylorovho polynómu ${n}. stupňa so stredom ${num(x0)} približne vypočítaj: <span class="m">${lab}</span>`)+p_('<span class="muted">Zadaj desatinné číslo, napríklad <kbd>0.255</kbd>.</span>'),
+    input:{t:'lines',lines:[['≈ ',null]]},answer:[A(val,dec(val),String(+val.toFixed(7)),2e-5)],
+    solution:p_(`Zvolíme f(x) = ${H(f)}, x₀ = ${num(x0)}, ${n===1?'':'koeficienty vypočítame z derivácií:'}`)+derivTable(f,x0,n)+p_(`T<sub>${n}</sub>(x) = ${polyShow(c,x0)}.`)+
+      p_(`Po dosadení x = ${num(x)}: <b>${dec(val)}</b>. <span class="muted">Presná hodnota je približne ${dec(exact,6)}.</span>`)}}
+
+/* ---- l'Hospitalovo pravidlo ---- */
+function gLHop(){
+  const a=rnd(2,4),b=rnd(2,4);
+  const A_=[
+    [`e^(${a}*x)-1`,`${b}*x`],[`x-sin(x)`,'x^3'],[`1-cos(${a}*x)`,'x^2'],['tg(x)-x','x^3'],['e^x-1-x','x^2'],['sin(x)-x*cos(x)','x^3'],['ln(1+x)-x','x^2'],['arctg(x)-x','x^3'],
+    ['e^x-e^(-x)-2*x','x^3'],['cos(x)-1+x^2/2','x^4'],['e^x-1-x-x^2/2','x^3'],[`${a}*x-sin(${a}*x)`,'x^3'],[`sin(${a}*x)`,`ln(1+${b}*x)`],['1-cos(x)','x*sin(x)'],['x-ln(1+x)','x^2'],[`e^(${a}*x)-1-${a}*x`,'x^2'],['sin(x)-x','x^3']];
+  if(Math.random()<0.6){
+    const [ns,ds]=pick(A_);const Nn=P(ns),Dd=P(ds);let k=1,ans=null;
+    for(;k<=5;k++){const nk=ev(Dn(Nn,k),0),dk=ev(Dn(Dd,k),0);
+      const nl=ev(Dn(Nn,k-1),0),dl=ev(Dn(Dd,k-1),0);if(Math.abs(nl)>1e-9||Math.abs(dl)>1e-9){return null}
+      if(Math.abs(dk)>1e-9){ans=nk/dk;break}}
+    if(ans===null||!rat(ans))return null;
+    let st='';for(let j=1;j<=k;j++){const nj=Dn(Nn,j),dj=Dn(Dd,j);const vn=ev(nj,0),vd=ev(dj,0);
+      st+=eqh(`<span class="m">${j===1?'':'= '}${L2('x→0',frac(H(nj),H(dj)))}</span> <span class="muted">${Math.abs(vd)>1e-9?`dosadením: ${fv(vn)}/${fv(vd)}`:'opäť 0/0'}</span>`)}
+    return{kind:"L'Hospitalovo pravidlo",prompt:p_(`Vypočítaj: ${L2('x→0',MQ(div(Nn,Dd)))}`),input:{t:'lines',lines:[['Hodnota: ',null]]},answer:[ans],verify:()=>near(ev(div(Nn,Dd),0.04),ans,0.1),
+      solution:p_('Dosadením x = 0 dostaneme 0/0, preto môžeme použiť l′Hospitalovo pravidlo: derivujeme čitateľa a menovateľa <b>osobitne</b> (nie ako podiel).')+st+p_(`Výsledok: <b>${fv(ans)}</b>.`)}}
+  const n=rnd(2,4),k=rnd(1,2);
+  const M=[
+    ()=>({p:L2('x→∞',MQ(div(pow(X,N(n)),pow(E,X)))),ans:0,w:`Typ ∞/∞. Pravidlo použijeme ${n}-krát: x<sup>${n}</sup>/eˣ → ${n}x<sup>${n-1}</sup>/eˣ → … → ${fact(n)}/eˣ → 0.`}),
+    ()=>({p:L2('x→∞',MQ(div(fn('ln',X),pow(X,N(k))))),ans:0,w:`Typ ∞/∞. Derivovaním: (1/x)/(${k===1?'1':k+'x<sup>'+(k-1)+'</sup>'}) = 1/(${k===1?'':k}x<sup>${k}</sup>) → 0.`}),
+    ()=>({p:L2('x→0⁺',MQ(mul(X,fn('ln',X)))),ans:0,w:'Typ 0·(−∞). Prepíšeme na podiel: x ln x = ln x/(1/x), čo je typ −∞/∞. Potom (1/x)/(−1/x²) = −x → 0.'}),
+    ()=>({p:L2('x→0⁺',MQ(mul(pow(X,N(2)),fn('ln',X)))),ans:0,w:'Typ 0·(−∞). Prepíšeme x² ln x = ln x/(1/x²). Potom (1/x)/(−2/x³) = −x²/2 → 0.'}),
+    ()=>({p:L2('x→∞',MQ(pow(X,div(N(1),X)))),ans:1,w:'Typ ∞⁰. Logaritmovaním: ln y = (ln x)/x, a podľa l′Hospitala (1/x)/1 → 0. Preto y → e⁰ = 1.'}),
+    ()=>({p:L2('x→0⁺',MQ(pow(X,X))),ans:1,w:'Typ 0⁰. ln y = x ln x → 0 (viď x ln x), preto y → e⁰ = 1.'}),
+    ()=>({p:L2('x→0',MQ(pow(add(N(1),mul(N(a),X)),div(N(1),X)))),ans:A(Math.exp(a),`e<sup>${a}</sup>`,`e^${a}`),av:Math.exp(a),w:`Typ 1<sup>∞</sup>. ln y = ln(1 + ${a}x)/x je typ 0/0, a (${a}/(1 + ${a}x))/1 → ${a}. Preto y → e<sup>${a}</sup>.`}),
+    ()=>({p:L2('x→0',MQ(pow(fn('cos',X),div(N(1),pow(X,N(2)))))),ans:A(Math.exp(-0.5),'e<sup>−1/2</sup>','e^(-1/2)'),av:Math.exp(-0.5),w:'Typ 1<sup>∞</sup>. ln y = ln(cos x)/x², typ 0/0. Derivovaním: (−tg x)/(2x) → −1/2, preto y → e<sup>−1/2</sup>.'}),
+    ()=>({p:L2('x→∞',MQ(mul(X,pow(E,neg(X))))),ans:0,w:'Typ ∞·0. Prepíšeme x·e<sup>−x</sup> = x/eˣ (typ ∞/∞) a použijeme pravidlo: 1/eˣ → 0.'})];
+  const t=pick(M)();
+  return{kind:"L'Hospitalovo pravidlo",prompt:p_(`Vypočítaj: ${t.p}`)+p_('<span class="muted">Výsledok napíš číslom, alebo ako mocninu e (napr. <kbd>e^2</kbd>).</span>'),input:{t:'lines',lines:[['Hodnota: ',null]]},answer:[t.ans],
+    solution:p_(t.w)+p_(`Výsledok: <b>${ahtml(t.ans)}</b>.`)}}
+
+const concTay=conc('Teória: Taylor a l′Hospital',[
+  {q:'Koeficient pri (x − x₀)<sup>k</sup> v Taylorovom polynóme je:',o:['f<sup>(k)</sup>(x₀)/k!','f<sup>(k)</sup>(x₀)','f<sup>(k)</sup>(x₀)·k!','f(x₀)/k!'],s:p_('Podmienky T<sub>n</sub><sup>(k)</sup>(x₀) = f<sup>(k)</sup>(x₀) dávajú a<sub>k</sub> = f<sup>(k)</sup>(x₀)/k!.')},
+  {q:'MacLaurinov polynóm je Taylorov polynóm so stredom:',o:['x₀ = 0','x₀ = 1','x₀ = e','x₀ = π'],s:p_('Pre x₀ = 0 dostávame M<sub>n</sub>(x) = Σ f<sup>(k)</sup>(0)/k! · x<sup>k</sup>.')},
+  {q:'Aký je MacLaurinov rozvoj funkcie cos x?',o:['1 − x²/2! + x⁴/4! − …','x − x³/3! + x⁵/5! − …','1 + x + x²/2! + …','1 − x + x² − …'],s:p_('cos x je párna funkcia, preto má len párne mocniny. sin x je nepárna, preto má len nepárne.')},
+  {q:'L′Hospitalovo pravidlo možno priamo použiť pri tvare:',o:['0/0 alebo ∞/∞','0·∞','∞ − ∞','1<sup>∞</sup>'],s:p_('Ostatné neurčité tvary (0·∞, ∞ − ∞, 1<sup>∞</sup>, 0⁰, ∞⁰) treba najprv upraviť na podiel.')},
+  {q:'Pri l′Hospitalovom pravidle derivujeme:',o:['čitateľa a menovateľa osobitne','celý podiel podľa podielového pravidla','iba čitateľa','iba menovateľa'],s:p_('Platí lim f/g = lim f′/g′. Nie je to podielové pravidlo (f/g)′.')},
+  {q:'Pre x blízke 0 platí sin x ≈',o:['x','1','x²','1 − x'],s:p_('M<sub>1</sub>(x) pre sin x je x, presnejšie M<sub>3</sub>(x) = x − x³/6.')},
+  {q:'Lagrangeov tvar zvyšku R<sub>n</sub>(x) obsahuje:',o:['(n+1)-vú deriváciu v nejakom bode ξ medzi x₀ a x','n-tú deriváciu v bode x₀','druhú deriváciu v bode x','iba hodnotu f(x₀)'],s:p_('R<sub>n</sub>(x) = f<sup>(n+1)</sup>(ξ)/(n+1)! · (x − x₀)<sup>n+1</sup>. Určuje chybu aproximácie.')}
+]);
+
+/* ======================================================================
+   8. PRIEBEH FUNKCIE
+   ====================================================================== */
+const LAST={};
+function cubic(){
+  let s1,s2;do{s1=rnd(-4,3);s2=rnd(-3,4)}while(s2<=s1||s2-s1>5);
+  const k=pick([6,-6]);const c=rnd(-5,5);
+  const co=[k/3,-(k/2)*(s1+s2),k*s1*s2,c];
+  const o={co,s1,s2,k,c,f:polyAst(co),F:x=>polyEv(co,x)};LAST.cu=o;return o}
+const ARR={u:'↗',d:'↘'};
+function signTable(cu){ // tabuľka znamienka f′ pre kubickú funkciu
+  const {s1,s2,k}=cu;const a=k>0?['+','−','+']:['−','+','−'];const ar=k>0?['↗','↘','↗']:['↘','↗','↘'];
+  return tblh(['x',`(−∞, ${nn(s1)})`,nn(s1),`(${nn(s1)}, ${nn(s2)})`,nn(s2),`(${nn(s2)}, ∞)`],[['f′(x)',a[0],'0',a[1],'0',a[2]],['f(x)',ar[0],'',ar[1],'',ar[2]]])}
+function cubPlot(cu,pts){const lo=cu.s1-2,hi=cu.s2+2;return`<div class="plotw">${plot({fns:[{f:cu.F,cls:'c1'}],xr:[lo,hi],pts,label:'graf funkcie'})}</div>`}
+
+function gMonoRows(){
+  const cu=cubic();const {s1,s2,k}=cu;
+  const d=[k>0?0:1,k>0?1:0,k>0?0:1];const labs=[`(−∞, ${nn(s1)})`,`(${nn(s1)}, ${nn(s2)})`,`(${nn(s2)}, ∞)`];
+  const f=cu.f;
+  return{kind:'Monotónnosť funkcie',prompt:p_(`Vyšetri monotónnosť funkcie ${FX(f)}. Pre každý interval vyber, či funkcia rastie alebo klesá.`),
+    input:{t:'rows',rows:labs.map(l=>({label:`na intervale <span class="m">${l}</span>`,opts:['rastie','klesá']}))},answer:d,
+    solution:p_(`f′(x) = ${MQ(polyAst([k,-k*(s1+s2),k*s1*s2]))} = ${MQ(mul(N(k),mul(xm(s1),xm(s2))))}. Stacionárne body: x = ${nn(s1)} a x = ${nn(s2)}.`)+signTable(cu)+p_(`Funkcia ${d.map((v,i)=>`${v===0?'rastie':'klesá'} na ${labs[i]}`).join(', ')}.`)+cubPlot(cu,[{x:s1,y:cu.F(s1)},{x:s2,y:cu.F(s2)}])}}
+
+function gLocalExt(){
+  const cu=cubic();const {s1,s2,k}=cu;const mx=k>0?s1:s2,mn=k>0?s2:s1;
+  return{kind:'Lokálne extrémy',prompt:p_(`Nájdi lokálne extrémy funkcie ${FX(cu.f)}. Zapíš súradnice bodu lokálneho maxima a lokálneho minima.`),
+    input:{t:'lines',lines:[['lokálne maximum: x = ',null,'  f(x) = ',null],['lokálne minimum: x = ',null,'  f(x) = ',null]]},answer:[mx,cu.F(mx),mn,cu.F(mn)],
+    solution:p_(`f′(x) = ${MQ(mul(N(k),mul(xm(s1),xm(s2))))}, stacionárne body ${nn(s1)} a ${nn(s2)}.`)+signTable(cu)+p_(`V bode ${nn(mx)} sa znamienko f′ mení z + na −, takže tam je lokálne maximum, f(${nn(mx)}) = <b>${nn(cu.F(mx))}</b>.`)+p_(`V bode ${nn(mn)} sa mení z − na +, čo je lokálne minimum, f(${nn(mn)}) = <b>${nn(cu.F(mn))}</b>.`)+
+      p_(`<span class="muted">Kontrola druhou deriváciou: f″(x) = ${MQ(polyAst([6*k/3*1,0].length?[2*k,-k*(s1+s2)]:[]))}; f″(${nn(mx)}) = ${nn(k*(2*mx-s1-s2))}, f″(${nn(mn)}) = ${nn(k*(2*mn-s1-s2))}.</span>`)+cubPlot(cu,[{x:mx,y:cu.F(mx),l:'max'},{x:mn,y:cu.F(mn),l:'min'}])}}
+
+function gInflection(){
+  const cu=cubic();const {s1,s2,k}=cu;const xi=(s1+s2)/2;const yi=cu.F(xi);
+  const d=[k>0?1:0,k>0?0:1];const labs=[`(−∞, ${fv(xi)})`,`(${fv(xi)}, ∞)`];
+  if(Math.random()<0.5)return{kind:'Inflexný bod',prompt:p_(`Nájdi inflexný bod grafu funkcie ${FX(cu.f)}.`),input:{t:'lines',lines:[['x = ',null,'  f(x) = ',null]]},answer:[xi,yi],
+    solution:p_(`f′(x) = ${MQ(polyAst([k,-k*(s1+s2),k*s1*s2]))}, f″(x) = ${MQ(polyAst([2*k,-k*(s1+s2)]))}.`)+p_(`f″(x) = 0 pre x = ${fv(xi)}. Druhá derivácia tu mení znamienko, preto ide o inflexný bod.`)+p_(`f(${fv(xi)}) = ${fv(yi)}. Inflexný bod: <b>I = [${fv(xi)}; ${fv(yi)}]</b>.`)+cubPlot(cu,[{x:xi,y:yi,l:'I'}])};
+  return{kind:'Konvexnosť a konkávnosť',prompt:p_(`Vyšetri konvexnosť funkcie ${FX(cu.f)}. Pre každý interval vyber, či je funkcia konvexná alebo konkávna.`),
+    input:{t:'rows',rows:labs.map(l=>({label:`na intervale <span class="m">${l}</span>`,opts:['konvexná','konkávna']}))},answer:d,
+    solution:p_(`f″(x) = ${MQ(polyAst([2*k,-k*(s1+s2)]))}, nulový bod x = ${fv(xi)}.`)+tblh(['x',`(−∞, ${fv(xi)})`,fv(xi),`(${fv(xi)}, ∞)`],[['f″(x)',k>0?'−':'+','0',k>0?'+':'−'],['f(x)',k>0?'konkávna':'konvexná','inflexia',k>0?'konvexná':'konkávna']])+
+      p_(`Ak f″ > 0, funkcia je konvexná, ak f″ < 0, je konkávna. Funkcia je ${d.map((v,i)=>`${v===0?'konvexná':'konkávna'} na ${labs[i]}`).join(', ')}.`)}}
+
+function gGlobal(){
+  const cu=cubic();const {s1,s2}=cu;
+  let A_,B_;do{A_=s1-rnd(-1,3);B_=s2+rnd(-1,3)}while(B_-A_<2||B_-A_>8);
+  const cand=[A_,B_,...[s1,s2].filter(s=>s>A_&&s<B_)];const vals=cand.map(x=>cu.F(x));const mx=Math.max(...vals),mn=Math.min(...vals);
+  const tab=tblh(['x',...cand.map(nn)],[['f(x)',...vals.map(nn)]]);
+  return{kind:'Globálne extrémy na intervale',prompt:p_(`Nájdi najväčšiu a najmenšiu hodnotu funkcie ${FX(cu.f)} na intervale <span class="m">⟨${nn(A_)}, ${nn(B_)}⟩</span>.`),
+    input:{t:'lines',lines:[['maximum: ',null,'  minimum: ',null]]},answer:[mx,mn],
+    solution:p_(`Spojitá funkcia na uzavretom intervale nadobúda maximum aj minimum. Porovnáme hodnoty v krajných bodoch a v stacionárnych bodoch ležiacich vnútri intervalu.`)+p_(`f′(x) = ${MQ(mul(N(cu.k),mul(xm(s1),xm(s2))))}, stacionárne body ${nn(s1)} a ${nn(s2)}${[s1,s2].some(s=>s<=A_||s>=B_)?' (do intervalu patria len '+ (cand.length>2?[s1,s2].filter(s=>s>A_&&s<B_).map(nn).join(', '):'žiadne')+')':''}.`)+tab+p_(`Maximum: <b>${nn(mx)}</b>, minimum: <b>${nn(mn)}</b>.`)+cubPlot({...cu,s1:A_,s2:B_},cand.map(x=>({x,y:cu.F(x)})))}}
+
+function gSpecExt(){
+  const v=pick([1,2,3,4,5]);
+  if(v===1){const a=pick([1,2,3]);const f=mul(X,pow(E,mul(N(-a),X)));const x0=1/a,y0=1/(a*Math.E);
+    LAST.f=f;return{kind:'Lokálne extrémy',prompt:p_(`Nájdi lokálny extrém funkcie ${FX(f)} a rozhodni, či ide o maximum alebo minimum. Zadaj súradnice bodu extrému.`),input:{t:'lines',lines:[['x = ',null,'  f(x) = ',null]]},answer:[x0,A(y0,`${fv(1/a)}·e<sup>−1</sup>`,`1/(${a}*e)`)],
+      solution:p_(`f′(x) = (1 − ${a}x)·e<sup>−${a}x</sup>. Keďže e<sup>−${a}x</sup> > 0, znamienko určuje 1 − ${a}x.`)+tblh(['x',`(−∞, ${fv(x0)})`,fv(x0),`(${fv(x0)}, ∞)`],[['f′(x)','+','0','−'],['f(x)','↗','max','↘']])+p_(`Lokálne maximum: x = ${fv(x0)}, f(${fv(x0)}) = <b>1/(${a}e)</b> ≈ ${dec(y0,4)}.`)}}
+  if(v===2){const m=pick([4,9,16]);const r=Math.sqrt(m);const f=add(X,div(N(m),X));
+    LAST.f=f;return{kind:'Lokálne extrémy',prompt:p_(`Nájdi lokálne extrémy funkcie ${FX(f)} (D(f) = ℝ ∖ {0}).`),input:{t:'lines',lines:[['lokálne maximum: x = ',null,'  f(x) = ',null],['lokálne minimum: x = ',null,'  f(x) = ',null]]},answer:[-r,-2*r,r,2*r],
+      solution:p_(`f′(x) = 1 − ${m}/x² = (x² − ${m})/x², stacionárne body x = ±${r}.`)+tblh(['x',`(−∞, ${-r})`,nn(-r),`(${-r}, 0)`,'0',`(0, ${r})`,nn(r),`(${r}, ∞)`],[['f′(x)','+','0','−','nedef.','−','0','+'],['f(x)','↗','max','↘','','↘','min','↗']])+p_(`Maximum: [${-r}; ${-2*r}], minimum: [${r}; ${2*r}]. Bod 0 nepatrí do D(f), ale rozdeľuje intervaly.`)}}
+  if(v===3){const m=pick([1,2,3,4]);const f=add(fn('ln',X),div(N(m),X));
+    LAST.f=f;return{kind:'Lokálne extrémy',prompt:p_(`Nájdi lokálny extrém funkcie ${FX(f)} na D(f) = (0, ∞).`),input:{t:'lines',lines:[['x = ',null,'  f(x) = ',null]]},answer:[m,A(Math.log(m)+1,m===1?'1':`ln ${m} + 1`,m===1?'1':`ln(${m})+1`)],
+      solution:p_(`f′(x) = 1/x − ${m}/x² = (x − ${m})/x². Menovateľ je kladný, čitateľ mení znamienko z − na + v x = ${m}.`)+p_(`Funkcia klesá na (0, ${m}) a rastie na (${m}, ∞), preto má v bode ${m} lokálne minimum f(${m}) = <b>${m===1?'1':`ln ${m} + 1`}</b> ≈ ${dec(Math.log(m)+1,4)}.`)}}
+  if(v===4){const f=mul(pow(X,N(2)),pow(E,neg(X)));
+    LAST.f=f;return{kind:'Lokálne extrémy',prompt:p_(`Nájdi lokálne extrémy funkcie ${FX(f)}.`),input:{t:'lines',lines:[['lokálne minimum: x = ',null,'  f(x) = ',null],['lokálne maximum: x = ',null,'  f(x) = ',null]]},answer:[0,0,2,A(4/Math.E/Math.E,'4/e²','4/e^2')],
+      solution:p_('f′(x) = (2x − x²)e<sup>−x</sup> = x(2 − x)e<sup>−x</sup>. Znamienko určuje x(2 − x), lebo e<sup>−x</sup> > 0.')+tblh(['x','(−∞, 0)','0','(0, 2)','2','(2, ∞)'],[['f′(x)','−','0','+','0','−'],['f(x)','↘','min','↗','max','↘']])+p_('Minimum: [0; 0], maximum: [2; 4/e²] ≈ [2; 0,541].')}}
+  const a=pick([2,8,18]);const x0=1/Math.sqrt(2*a);const val=a*x0*x0-Math.log(x0);const f=sub(mul(N(a),pow(X,N(2))),fn('ln',X));
+  const inv=Math.round(1/x0);
+  LAST.f=f;return{kind:'Lokálne extrémy',prompt:p_(`Nájdi lokálny extrém funkcie ${FX(f)} na D(f) = (0, ∞).`),input:{t:'lines',lines:[['x = ',null,'  f(x) = ',null]]},answer:[x0,A(val,`${fv(a*x0*x0)} + ln ${inv}`,`${a*x0*x0}+ln(${inv})`)],
+    solution:p_(`f′(x) = ${2*a}x − 1/x = (${2*a}x² − 1)/x. Nulový bod v D(f): x = 1/${inv}.`)+p_(`Funkcia klesá na (0, ${fv(x0)}) a rastie na (${fv(x0)}, ∞), preto je tam lokálne (aj globálne) minimum.`)+p_(`f(${fv(x0)}) = ${fv(a*x0*x0)} − ln ${fv(x0)} = <b>${fv(a*x0*x0)} + ln ${inv}</b> ≈ ${dec(val,4)}.`)}}
+
+function gSaddle(){
+  const n=pick([2,3,4,5,6]),c=pick([1,-1,2,-2]),s=pick([0,0,1,-1,2]),d=rnd(-2,3);
+  const f=add(mul(N(c),pow(xm(s),N(n))),N(d));
+  const type=n%2===1?2:(c>0?1:0);
+  const names=['lokálne maximum','lokálne minimum','sedlový bod (nie je lokálny extrém)'];
+  return fixedChoice('Typ stacionárneho bodu',`Funkcia ${FX(f)} má stacionárny bod x = ${nn(s)}. Čo je to za bod?`,names,type,
+    p_(`f′(x) = ${MQ(D(f))}, f′(${nn(s)}) = 0.`)+p_(`${n===2?'f″(x) = '+nn(2*c)+(c>0?' > 0: minimum.':' < 0: maximum.'):`Druhá derivácia aj ďalšie nižšie derivácie sú v bode ${nn(s)} nulové, test f″ nerozhodne. Rozhoduje znamienko f′ v okolí: čiže prvá nenulová derivácia je ${n}. rádu.`}`)+
+      p_(n%2===1?`Rád ${n} je nepárny: f′ nemení znamienko, funkcia rastie (alebo klesá) cez bod ${nn(s)}. Ide o sedlový bod.`:`Rád ${n} je párny a ${c>0?'kladný koeficient, funkcia na oboch stranách bodu rastie od hodnoty f('+nn(s)+'), čiže minimum.':'záporný koeficient, funkcia na oboch stranách bodu klesá, čiže maximum.'}`))}
+
+function gQuartic(){
+  let s1,s2;do{s1=rnd(-3,2);s2=rnd(-2,4)}while(s2<=s1||s2-s1>5);
+  const co=[1,-2*(s1+s2),6*s1*s2,0,0];const f=polyAst(co);const d=[0,1,0];const labs=[`(−∞, ${nn(s1)})`,`(${nn(s1)}, ${nn(s2)})`,`(${nn(s2)}, ∞)`];
+  return{kind:'Konvexnosť a konkávnosť',prompt:p_(`Vyšetri konvexnosť funkcie ${FX(f)}. Pre každý interval vyber, či je funkcia konvexná alebo konkávna.`),
+    input:{t:'rows',rows:labs.map(l=>({label:`na intervale <span class="m">${l}</span>`,opts:['konvexná','konkávna']}))},answer:d,
+    solution:p_(`f′(x) = ${MQ(D(f))}, f″(x) = ${MQ(polyAst([12,-12*(s1+s2),12*s1*s2]))} = ${MQ(mul(N(12),mul(xm(s1),xm(s2))))}.`)+
+      tblh(['x',`(−∞, ${nn(s1)})`,nn(s1),`(${nn(s1)}, ${nn(s2)})`,nn(s2),`(${nn(s2)}, ∞)`],[['f″(x)','+','0','−','0','+'],['f(x)','konvexná','inflexia','konkávna','inflexia','konvexná']])+
+      p_(`Inflexné body sú x = ${nn(s1)} a x = ${nn(s2)}, lebo f″ v nich mení znamienko.`)}}
+
+function gStudy(){
+  const a=pick([3,6,-3,-6]);
+  const F=x=>x*x*x-a*x*x;const xc=2*a/3;const ymaxmin=-4*a*a*a/27;
+  const maxPt=a>0?[0,0]:[xc,ymaxmin],minPt=a>0?[xc,ymaxmin]:[0,0];
+  const zeros=[0,a].sort((p,q)=>p-q);
+  const ff=sub(pow(X,N(3)),mul(N(a),pow(X,N(2))));LAST.f=ff;
+  const pl=plot({fns:[{f:F,cls:'c1'}],xr:[Math.min(0,a)-1.5,Math.max(0,a)+1.5],pts:[{x:maxPt[0],y:maxPt[1],l:'max'},{x:minPt[0],y:minPt[1],l:'min'},{x:a/3,y:F(a/3),l:'I'}],label:'graf funkcie'});
+  return{kind:'Súhrnné vyšetrenie priebehu',prompt:p_(`Vyšetri priebeh funkcie ${FX(ff)}: zapíš nulové body, súradnice lokálneho maxima a minima a x-ovú súradnicu inflexného bodu.`),
+    input:{t:'lines',lines:[['nulové body: ',{m:'set'}],['lokálne maximum: x = ',null,'  y = ',null],['lokálne minimum: x = ',null,'  y = ',null],['inflexný bod: x = ',null]]},answer:[zeros,maxPt[0],maxPt[1],minPt[0],minPt[1],a/3],
+    solution:p_(`D(f) = ℝ. Nulové body: x²(x ${a>0?'−':'+'} ${Math.abs(a)}) = 0, teda x = 0 (dvojnásobný) a x = ${nn(a)}.`)+
+      p_(`f′(x) = 3x² − ${nn(2*a)}x = x(3x − ${nn(2*a)}), stacionárne body 0 a ${fv(xc)}.`)+p_(`f″(x) = 6x − ${nn(2*a)}. f″(0) = ${nn(-2*a)} ${a>0?'< 0':'> 0'}, preto v 0 je lokálne ${a>0?'maximum':'minimum'}; f″(${fv(xc)}) = ${nn(2*a)} ${a>0?'> 0':'< 0'}, preto tam je lokálne ${a>0?'minimum':'maximum'} s hodnotou ${fv(ymaxmin)}.`)+
+      p_(`f″(x) = 0 pre x = ${fv(a/3)}, druhá derivácia tu mení znamienko, takže tam je inflexný bod [${fv(a/3)}; ${fv(F(a/3))}].`)+`<div class="plotw">${pl}</div>`}}
+
+const concPrb=conc('Teória: priebeh funkcie',[
+  {q:'Ak f′(x) > 0 na intervale (a, b), potom je funkcia na ňom:',o:['rastúca','klesajúca','konštantná','konvexná'],s:p_('Znamienko prvej derivácie určuje monotónnosť. Znamienko druhej derivácie určuje konvexnosť/konkávnosť.')},
+  {q:'Ak f″(x) > 0 na intervale, funkcia je tam:',o:['konvexná','konkávna','klesajúca','konštantná'],s:p_('f″ > 0 znamená, že f′ rastie, smernice dotyčníc sa zväčšujú a graf je konvexný (leží nad dotyčnicami).')},
+  {q:'Stacionárny bod je bod, v ktorom platí:',o:['f′(x) = 0','f″(x) = 0','f(x) = 0','f′(x) neexistuje'],s:p_('Kritické body sú tie, kde f′ = 0 (stacionárne) alebo f′ neexistuje.')},
+  {q:'Ak f′(a) = 0 a f″(a) > 0, tak v bode a má funkcia:',o:['lokálne minimum','lokálne maximum','inflexný bod','nedá sa rozhodnúť'],s:p_('Test druhej derivácie: f″(a) > 0 ⇒ minimum, f″(a) < 0 ⇒ maximum. Pri f″(a) = 0 test nerozhodne.')},
+  {q:'Pre funkciu f(x) = x⁴ je f″(0) = 0. Čo platí v bode 0?',o:['lokálne minimum','sedlový bod','inflexný bod','lokálne maximum'],s:p_('f′ = 4x³ mení znamienko z − na +, preto je v 0 lokálne minimum, hoci test druhej derivácie nerozhodol.')},
+  {q:'Funkcia f(x) = |x| má v bode 0:',o:['lokálne minimum, ale f′(0) neexistuje','lokálne maximum','stacionárny bod','inflexný bod'],s:p_('Extrém môže nastať aj tam, kde derivácia neexistuje. Tu je to globálne minimum.')},
+  {q:'Inflexný bod je bod, v ktorom druhá derivácia:',o:['mení znamienko','je kladná','je rovná 0 vždy','neexistuje'],s:p_('Rovnica f″(c) = 0 dá len kandidáta. Napríklad pre x⁴ je f″(0) = 0, ale znamienko sa nemení a inflexia tam nie je.')},
+  {q:'Globálne extrémy spojitej funkcie na ⟨a, b⟩ hľadáme porovnaním hodnôt v:',o:['stacionárnych bodoch a krajných bodoch','iba v stacionárnych bodoch','iba v krajných bodoch','inflexných bodoch'],s:p_('Krajné body nemusia spĺňať f′ = 0, a napriek tomu môžu byť miestom globálneho extrému.')},
+  {q:'Poradie krokov pri vyšetrovaní priebehu funkcie začína:',o:['definičný obor, priesečníky, symetria','druhá derivácia','nákres grafu','inflexné body'],s:p_('Postup: D(f), nuly a symetria; limity a asymptoty; f′ (monotónnosť, extrémy); f″ (konvexnosť, inflexia); tabuľka a graf.')}
+]);
+'use strict';
+/* ===== Teória k jednotlivým témam (podľa prednášok) ===== */
+const tsec=(t,h)=>`<div class="tsec"><h4>${t}</h4>${h}</div>`;
+const tex=h=>`<div class="tex">${h}</div>`;
+const ul=a=>`<ul>${a.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+const m_=s=>`<span class="m">${s}</span>`;
+
+const THEORY={};
+
+THEORY.fun={
+ theory:ul(['<b>Funkcia</b> f: X → Y priraďuje každému x ∈ X práve jedno y = f(x). Definičný obor D(f) je najväčšia množina, pre ktorú má predpis zmysel.','<b>Prostá</b>: f(x₁) = f(x₂) ⇒ x₁ = x₂. Inverzná funkcia existuje len k prostej funkcii.','<b>Párna</b>: f(−x) = f(x), <b>nepárna</b>: f(−x) = −f(x). <b>Periodická</b>: f(x + T) = f(x).','Zložená funkcia (f ∘ g)(x) = f(g(x)): vonkajšia f, vnútorná g.']),
+ full:
+  tsec('Definícia funkcie',p_('Funkcia f: X → Y je zobrazenie, ktoré každému prvku x ∈ X priradí jednoznačne prvok y ∈ Y. Zaoberáme sa reálnymi funkciami jednej reálnej premennej, teda X, Y ⊆ ℝ.')+
+    ul(['<b>Definičný obor</b> D(f): všetky x, pre ktoré je funkcia definovaná. Ak nie je uvedené inak, je to najväčšia možná množina reálnych čísel.','<b>Obor hodnôt</b> H(f): všetky hodnoty y, ktoré funkcia skutočne nadobúda.','Funkciu možno zadať vzorcom, tabuľkou, po častiach (napr. |x|, sgn x), parametricky alebo implicitne.'])+
+    tex(p_(`<b>Rovnosť funkcií</b>: f = g práve vtedy, keď D(f) = D(g) a f(x) = g(x) pre všetky x z tohto oboru.`)+p_(`Napríklad ${m_(`${frac('x² − 1','x − 1')} ≠ x + 1`)}, lebo ľavá strana nie je definovaná v bode 1. Naopak √(x²) = |x|, ale √(x²) ≠ x.`)))+
+  tsec('Definičný obor: čo sledovať',ul(['menovateľ ≠ 0','pod odmocninou (párnou) ≥ 0','argument logaritmu > 0','argument arcsin a arccos z ⟨−1, 1⟩','tg x: cos x ≠ 0'])+tex(p_(`Príklad: ${m_(`f(x) = ${frac('x + 1','√(x − 2)')}`)}. Odmocnina vyžaduje x − 2 ≥ 0, a keďže je v menovateli, musí byť x − 2 > 0. Teda D(f) = (2, ∞).`)))+
+  tsec('Zložená funkcia',p_('Ak H(g) ⊆ D(f), definujeme (f ∘ g)(x) = f(g(x)). Funkcia f je vonkajšia, g vnútorná zložka.')+tex(p_(`g(x) = √x, f(x) = sin x: ${m_('(f ∘ g)(x) = sin √x')}, ale ${m_('(g ∘ f)(x) = √(sin x)')}. Poradie záleží na tom.`))+p_('<span class="muted">Pozor: niektorí autori definujú zloženie opačne, preto treba vždy skontrolovať definíciu.</span>'))+
+  tsec('Inverzná funkcia',p_('Inverzná funkcia f⁻¹ existuje k prostej funkcii. Platí f⁻¹(f(x)) = x, D(f⁻¹) = H(f), H(f⁻¹) = D(f). Grafy f a f⁻¹ sú súmerné podľa priamky y = x.')+
+    tex(p_('<b>Postup:</b> 1. zapíš y = f(x); 2. vyjadri x pomocou y; 3. premenné x a y vymeň.')+p_(`Príklad: f(x) = 2x + 1 ⇒ y = 2x + 1 ⇒ x = (y − 1)/2 ⇒ ${m_(`f⁻¹(x) = ${frac('x − 1',2)}`)}.`))+p_('<span class="muted">Ak funkcia nie je prostá (napr. x²), musíme ju zúžiť na interval, kde prostá je (napr. x ≥ 0).</span>'))+
+  tsec('Vlastnosti funkcií',ul([
+    '<b>Prostosť</b>: každá vodorovná priamka pretne graf najviac raz. Rýdzo monotónna funkcia je prostá.',
+    '<b>Monotónnosť</b>: rastúca (x₁ < x₂ ⇒ f(x₁) < f(x₂)), klesajúca (⇒ f(x₁) > f(x₂)). Pozor: f(x) = 1/x klesá na (−∞, 0) aj na (0, ∞), ale nie na ich zjednotení.',
+    '<b>Ohraničenosť</b>: zhora ∃M: f(x) ≤ M, zdola ∃m: f(x) ≥ m.',
+    '<b>Parita</b>: párna funkcia má graf súmerný podľa osi y, nepárna podľa počiatku. Jediná funkcia, ktorá je párna aj nepárna, je f(x) = 0.',
+    '<b>Periodickosť</b>: f(x + T) = f(x), najmenšie T > 0 je základná perióda (sin, cos: 2π).',
+    '<b>Konvexnosť</b>: spojnica ľubovoľných dvoch bodov grafu leží nad grafom (x², eˣ). <b>Konkávnosť</b>: pod grafom (−x², ln x). <b>Inflexný bod</b>: zmena konvexnosti na konkávnosť alebo naopak.'])+
+    tex(p_(`<b>Parita:</b> súčet párnych je párna, súčet nepárnych je nepárna, súčin dvoch rovnakých parít je párna funkcia, súčin párnej a nepárnej je nepárna.`)+p_(`${m_('f(x) = x·sin x')}: f(−x) = (−x)·sin(−x) = x·sin x = f(x), teda párna.`)))
+};
+
+THEORY.pol={
+ theory:ul(['<b>Polynóm</b> P(x) = aₙxⁿ + … + a₀. Koreň r: P(r) = 0, potom P(x) = (x − r)·Q(x). Stupeň n ⇒ najviac n reálnych koreňov.','<b>Hornerova schéma</b> počíta P(r) a zároveň delí P(x) výrazom (x − r).','<b>Celočíselné korene</b> musia deliť absolútny člen.','<b>Parciálne zlomky</b>: lineárny činiteľ ⇒ A/(x − a), ireducibilný kvadratický ⇒ (Ax + B)/(x² + px + q).']),
+ full:
+  tsec('Polynómy',p_('Polynóm stupňa n má tvar P(x) = aₙxⁿ + aₙ₋₁xⁿ⁻¹ + … + a₁x + a₀, kde aₙ ≠ 0 je vedúci koeficient a a₀ absolútny člen. Dva polynómy sa rovnajú práve vtedy, keď majú rovnaký stupeň a rovnaké koeficienty.')+
+   ul(['<b>Koreň</b>: P(x₀) = 0; potom (x − x₀) je koreňový činiteľ a P(x) = (x − x₀)·Q(x).','<b>Násobnosť</b> koreňa k: P(x) = (x − x₀)ᵏ·Q(x), Q(x₀) ≠ 0. Pri nepárnej násobnosti graf os x pretína, pri párnej sa jej dotýka.','Polynóm stupňa n má najviac n reálnych koreňov, polynóm nepárneho stupňa má aspoň jeden reálny koreň.','<b>Kvadratický polynóm</b>: D > 0 dva korene, D = 0 jeden dvojnásobný, D < 0 žiadny reálny (ireducibilný).','Každý polynóm sa dá jednoznačne zapísať ako súčin vedúceho koeficientu, mocnín lineárnych činiteľov (x − r)ᵏ a mocnín ireducibilných kvadratických činiteľov (x² + px + q)ˡ.'])+
+   tex(p_(`${m_('x⁴ − 1 = (x² − 1)(x² + 1) = (x − 1)(x + 1)(x² + 1)')}`)))+
+  tsec('Delenie polynómov a Hornerova schéma',p_('Písomné delenie: vždy vydelíme vedúci člen aktuálneho polynómu vedúcim členom deliteľa, výsledok vynásobíme deliteľom a odpočítame.')+
+   p_('<b>Hornerova schéma</b> využíva zápis P(x) = (((aₙx + aₙ₋₁)x + aₙ₋₂)x + …)x + a₀. Pod koeficienty píšeme: prvý koeficient prepíšeme, každé ďalšie číslo je koeficient plus r krát predchádzajúce číslo spodného riadku. Posledné číslo je P(r), ostatné sú koeficienty podielu.')+
+   tex(p_(`${m_('P(x) = x⁴ − 3x³ − x² + 11x − 8')}, r = 1:`)+tblh(['','1','−3','−1','11','−8'],[['1','1','−2','−3','8','<b>0</b>'],['2','1','−1','−3','5','<b>2</b>'],['4','1','1','3','23','<b>84</b>']])+p_('P(1) = 0, takže 1 je koreň a P(x) = (x − 1)(x³ − 2x² − 3x + 8). P(2) = 2 a P(4) = 84 nie sú nulové.')))+
+  tsec('Celočíselné korene',p_('<b>Veta:</b> Ak má polynóm s celočíselnými koeficientmi a a₀ ≠ 0 celočíselný koreň k, potom k delí a₀.')+tex(p_(`P(x) = x³ − 2x² − 5x + 6: kandidáti ±1, ±2, ±3, ±6. Dosadením: korene −2, 1, 3.`)))+
+  tsec('Racionálne funkcie a parciálne zlomky',p_('Racionálna funkcia je podiel polynómov P(x)/Q(x), D(f) = {x; Q(x) ≠ 0}. Je <b>vlastná</b>, ak deg P < deg Q, inak <b>nevlastná</b> a delením sa prepíše na S(x) + R(x)/Q(x).')+
+   p_('Vlastnú racionálnu funkciu rozložíme na súčet jednoduchších zlomkov podľa činiteľov menovateľa:')+
+   tex(p_(`${m_(`${frac('P(x)','(x − a)(x − b)')} = ${frac('A','x − a')} + ${frac('B','x − b')}`)}`)+p_(`${m_(`${frac('P(x)','(x − a)²')} = ${frac('A','x − a')} + ${frac('B','(x − a)²')}`)}`)+p_(`${m_(`${frac('P(x)','(x − a)(x² + bx + c)')} = ${frac('A','x − a')} + ${frac('Bx + C','x² + bx + c')}`)}`))+
+   p_('Koeficienty nájdeme vynásobením menovateľom a dosadením koreňov (metóda zakrývania) alebo porovnaním koeficientov.')+tex(p_(`${m_(`${frac('x + 5','x² − 2x − 3')}`)}: menovateľ = (x − 3)(x + 1). x + 5 = A(x + 1) + B(x − 3). Pre x = 3: 8 = 4A, A = 2. Pre x = −1: 4 = −4B, B = −1.`)))+
+  tsec('Lineárna lomená funkcia',p_(`${m_(`f(x) = ${frac('ax + b','cx + d')}`)}, c ≠ 0. Graf je hyperbola. D(f) = ℝ ∖ {−d/c}, zvislá asymptota x = −d/c, vodorovná asymptota y = a/c.`))
+};
+
+THEORY.ele={
+ theory:ul(['<b>Exponenciálna</b> aˣ (a > 0, a ≠ 1): D = ℝ, H = (0, ∞), prechádza bodom (0, 1). <b>Logaritmická</b> log<sub>a</sub> x: inverzná, D = (0, ∞), prechádza (1, 0).','log(xy) = log x + log y, log(x/y) = log x − log y, log xʳ = r log x, log<sub>a</sub> x = ln x / ln a.','<b>Goniometrické</b>: sin² + cos² = 1, sin 2α = 2 sin α cos α, cos 2α = cos² α − sin² α.','<b>Cyklometrické</b> sú inverzné k suženým goniometrickým: arcsin ⟨−π/2, π/2⟩, arccos ⟨0, π⟩, arctg (−π/2, π/2), arccotg (0, π).']),
+ full:
+  tsec('Prehľad elementárnych funkcií',p_('Elementárne funkcie: polynomické, racionálne, mocninové, exponenciálne, logaritmické, goniometrické, cyklometrické, hyperbolické a hyperbolometrické, a všetky funkcie, ktoré z nich vzniknú súčtom, rozdielom, súčinom, podielom a zložením.'))+
+  tsec('Mocninové funkcie',p_(`${m_('f(x) = xᵗ')}. Pre t = 2n je párna, pre t = 2n + 1 nepárna a rastúca. Pre záporné celé t je D = ℝ ∖ {0}. Racionálne exponenty vedú na odmocniny.`))+
+  tsec('Exponenciálna a logaritmická funkcia',p_('aˣ pre a > 1 rastie, pre 0 < a < 1 klesá; je spojitá, prostá, bez núl, vodorovná asymptota y = 0. Platí a⁰ = 1, a⁻ˣ = 1/aˣ, aˣ⁺ʸ = aˣ·aʸ.')+
+    p_('Logaritmus je inverzná funkcia: y = aˣ ⇔ x = log<sub>a</sub> y. Zvislá asymptota x = 0.')+
+    tex(p_('log<sub>a</sub> 1 = 0, log<sub>a</sub> a = 1')+p_('log<sub>a</sub>(xy) = log<sub>a</sub> x + log<sub>a</sub> y &nbsp;&nbsp; log<sub>a</sub>(x/y) = log<sub>a</sub> x − log<sub>a</sub> y')+p_('log<sub>a</sub>(xʳ) = r·log<sub>a</sub> x &nbsp;&nbsp; log<sub>a</sub> x = ln x / ln a (zmena základu)'))+
+    p_('<b>Rovnice:</b> exponenciálnu riešime vyjadrením oboch strán ako mocniny rovnakého základu, logaritmickú prevodom do exponenciálneho tvaru a overením podmienok (argument > 0).'))+
+  tsec('Goniometrické funkcie',p_('Pre bod M = [cos α, sin α] na jednotkovej kružnici: sin α = y, cos α = x, tg α = sin α/cos α, cotg α = cos α/sin α.')+
+    tblh(['','sin x','cos x','tg x','cotg x'],[['D','ℝ','ℝ','ℝ ∖ {π/2 + kπ}','ℝ ∖ {kπ}'],['H','⟨−1, 1⟩','⟨−1, 1⟩','ℝ','ℝ'],['perióda','2π','2π','π','π'],['parita','nepárna','párna','nepárna','nepárna']])+
+    tblh(['x','0','π/6','π/4','π/3','π/2'],[['sin x','0','1/2','√2/2','√3/2','1'],['cos x','1','√3/2','√2/2','1/2','0'],['tg x','0','√3/3','1','√3','—']])+
+    tex(p_('sin² x + cos² x = 1, &nbsp; 1 + tg² x = 1/cos² x')+p_('sin(α ± β) = sin α cos β ± cos α sin β, &nbsp; cos(α ± β) = cos α cos β ∓ sin α sin β')+p_('sin 2α = 2 sin α cos α, &nbsp; cos 2α = cos² α − sin² α, &nbsp; sin²(α/2) = (1 − cos α)/2')))+
+  tsec('Cyklometrické funkcie',p_('Sú inverzné k goniometrickým funkciám zúženým na interval, kde sú prosté.')+tblh(['funkcia','D','H'],[['arcsin x','⟨−1, 1⟩','⟨−π/2, π/2⟩'],['arccos x','⟨−1, 1⟩','⟨0, π⟩'],['arctg x','ℝ','(−π/2, π/2)'],['arccotg x','ℝ','(0, π)']])+
+    tex(p_('Pozor: arcsin(sin x) = x len pre x ∈ ⟨−π/2, π/2⟩. Napríklad arcsin(sin(5π/6)) = arcsin(1/2) = π/6.')))+
+  tsec('Hyperbolické funkcie',p_(`${m_(`sinh x = ${frac('eˣ − e⁻ˣ',2)}, cosh x = ${frac('eˣ + e⁻ˣ',2)}, th x = ${frac('sinh x','cosh x')}`)}`)+p_('Platí cosh² x − sinh² x = 1. sinh je nepárna a rastúca, cosh je párna a cosh x ≥ 1, H(th) = (−1, 1).'))
+};
+
+THEORY.lim={
+ theory:ul(['<b>Limita</b> lim f(x) = L, x → a: hodnoty f(x) sa blížia k L, keď x je blízko a (x ≠ a). Hodnota f(a) nemusí existovať.','<b>Spojitosť</b> v a: lim f(x) = f(a). Elementárne funkcie sú spojité na svojom definičnom obore.','Neurčité tvary: 0/0, ∞/∞, 0·∞, ∞ − ∞, 1^∞, 0⁰, ∞⁰, treba ich upraviť (rozklad, rozšírenie, významné limity, l′Hospital).','Významné: sin x/x → 1, (1 + 1/x)ˣ → e, (eˣ − 1)/x → 1, ln(1 + x)/x → 1.']),
+ full:
+  tsec('Čo je limita',p_('Limita opisuje, kam smerujú hodnoty f(x), keď sa x približuje k a. Skúmame x blízke a, nie samotné x = a. Preto môže limita existovať aj tam, kde funkcia nie je definovaná:')+
+   tex(p_(`${m_(`${frac('x² − 4','x − 2')} = x + 2`)} pre x ≠ 2, preto ${m_(`lim<sub>x→2</sub> ${frac('x² − 4','x − 2')} = 4`)}.`))+
+   p_('<b>Jednostranné limity</b> lim<sub>x→a⁻</sub> a lim<sub>x→a⁺</sub>. Obojstranná limita existuje práve vtedy, keď sa obe rovnajú. Napríklad pre sgn x sú jednostranné limity v 0 rovné −1 a 1, takže limita neexistuje.')+
+   p_('<b>Presná definícia (ε–δ):</b> lim f(x) = L ⇔ ∀ε > 0 ∃δ > 0: 0 < |x − a| < δ ⇒ |f(x) − L| < ε. ε určuje cieľ (pás okolo L), δ okolie bodu a.')+
+   tex(p_(`lim<sub>x→2</sub>(3x + 1) = 7: |(3x + 1) − 7| = 3|x − 2| < ε, stačí δ = ε/3.`)))+
+  tsec('Spojitosť',p_('Funkcia f je spojitá v bode a ∈ D(f), ak lim<sub>x→a</sub> f(x) = f(a). To znamená tri veci: f(a) existuje, limita existuje a obe hodnoty sa rovnajú. Funkcia je spojitá, ak je spojitá v každom bode definičného oboru (napr. 1/x je spojitá, hoci sa graf nedá nakresliť jedným ťahom).')+
+   ul(['Súčet, rozdiel, súčin, podiel (g(a) ≠ 0) a zloženie spojitých funkcií je spojité.','Inverzná funkcia k spojitej rýdzo monotónnej funkcii je spojitá.','Na ⟨a, b⟩ je spojitá funkcia ohraničená a nadobúda minimum aj maximum (Weierstrass).','<b>Veta o prekročení rieky:</b> ak f spojitá na ⟨a, b⟩ a f(a)·f(b) < 0, existuje c ∈ (a, b), f(c) = 0 (základ metódy polovičného delenia).']))+
+  tsec('Ako počítať limity',ul(['<b>Spojitá funkcia</b>: stačí dosadiť.','<b>0/0 s polynómami</b>: rozložiť a skrátiť spoločný činiteľ.','<b>Odmocniny</b>: rozšíriť združeným výrazom (a − b)(a + b) = a² − b².','<b>x → ±∞, podiel polynómov</b> stupňov m a n: m < n ⇒ 0, m = n ⇒ podiel vedúcich koeficientov, m > n ⇒ ±∞.','<b>∞ − ∞</b>: racionalizácia, napr. √(x² + x) − x → 1/2.'])+
+   tex(p_(`${m_(`lim<sub>x→2</sub> ${frac('x² − 4','x² − 3x + 2')} = lim ${frac('(x − 2)(x + 2)','(x − 2)(x − 1)')} = 4`)}`)+p_(`${m_(`lim<sub>x→0</sub> ${frac('√(1 + x) − 1','x')} = lim ${frac('1','√(1 + x) + 1')} = ${frac(1,2)}`)}`))+
+   p_('<b>Sendvičová veta:</b> f ≤ g ≤ h a lim f = lim h = L ⇒ lim g = L. Dôsledok: ak f → 0 a g je ohraničená, f·g → 0 (napr. x² sin(1/x) → 0).'))+
+  tsec('Významné limity',tex(p_(`${m_(`lim<sub>x→0</sub> ${frac('sin x','x')} = 1`)}, &nbsp; ${m_(`lim<sub>x→0</sub> ${frac('sin ax','x')} = a`)}, &nbsp; ${m_(`lim<sub>x→0</sub> ${frac('tg x','x')} = 1`)}`)+p_(`${m_(`lim<sub>x→0</sub> ${frac('1 − cos x','x²')} = ${frac(1,2)}`)}`)+p_(`${m_(`lim<sub>x→∞</sub> (1 + ${frac('k','x')})ˣ = eᵏ`)}, &nbsp; ${m_(`${frac('eˣ − 1','x')} → 1`)}, &nbsp; ${m_(`${frac('ln(1 + x)','x')} → 1`)}`))+
+   p_('Typy 1<sup>∞</sup>, 0⁰, ∞⁰ pri kladnom základe: logaritmujeme, ln y = g(x)·ln f(x), a ak ln y → A, potom y → eᴬ.'))+
+  tsec('Nevlastné limity a asymptoty',p_('Pravidlá: r/±∞ = 0, k/0⁺ = +∞, k/0⁻ = −∞ (k > 0), k·(±∞) = ±∞, r ± ∞ = ±∞. Symbol ∞ nie je reálne číslo, je to spôsob zápisu správania funkcie.')+
+   ul(['<b>Zvislá asymptota x = a</b>: aspoň jedna jednostranná limita v a je ±∞.','<b>Šikmá asymptota y = kx + q</b> pre x → ±∞: k = lim f(x)/x, q = lim (f(x) − kx).','Pre k = 0 ide o vodorovnú asymptotu.'])+
+   tex(p_(`${m_(`f(x) = ${frac('x² − 3x','x + 1')} = x − 4 + ${frac(4,'x + 1')}`)}: zvislá x = −1, šikmá y = x − 4.`)))
+};
+
+THEORY.der={
+ theory:ul(['<b>Derivácia</b> f′(x₀) = lim (f(x₀ + h) − f(x₀))/h = smernica dotyčnice. Diferencovateľnosť ⇒ spojitosť (opak neplatí, napr. |x|).','(xⁿ)′ = nxⁿ⁻¹, (eˣ)′ = eˣ, (ln x)′ = 1/x, (sin x)′ = cos x, (cos x)′ = −sin x, (arctg x)′ = 1/(1 + x²).','(fg)′ = f′g + fg′, (f/g)′ = (f′g − fg′)/g², (f ∘ g)′ = f′(g)·g′.','Logaritmické derivovanie: (f<sup>g</sup>)′ = f<sup>g</sup>·(g ln f)′.']),
+ full:
+  tsec('Definícia a geometrický význam',p_('Diferenčný podiel Δf/Δx je smernica sečnice, a tiež priemerná rýchlosť. Limita pre Δx → 0 je okamžitá rýchlosť a smernica dotyčnice:')+tex(p_(`${m_(`f′(x₀) = lim<sub>h→0</sub> ${frac('f(x₀ + h) − f(x₀)','h')}`)}`))+
+   p_('Označenie: f′(x), y′, df/dx, dy/dx. <b>Jednostranné derivácie</b> f′₊, f′₋. Derivácia existuje práve vtedy, keď f′₋(x₀) = f′₊(x₀) ∈ ℝ.')+
+   ul(['<b>Roh</b>: |x| má v 0 jednostranné derivácie −1 a 1, derivácia neexistuje (funkcia je tam spojitá).','<b>Vertikálna dotyčnica</b>: √x v 0 má diferenčný podiel 1/√h → +∞, vlastná derivácia neexistuje.','<b>Diferencovateľnosť je silnejšia než spojitosť</b>: ak existuje f′(a), f je v a spojitá.'])+
+   tex(p_(`Z definície: ${m_('(x²)′')}: ((a + h)² − a²)/h = 2a + h → 2a.`)))+
+  tsec('Vzorce',tblh(['f(x)','f′(x)','f(x)','f′(x)'],[['c','0','sin x','cos x'],['xⁿ','n·xⁿ⁻¹','cos x','−sin x'],['eˣ','eˣ','tg x','1/cos² x'],['aˣ','aˣ ln a','cotg x','−1/sin² x'],['ln x','1/x','arcsin x','1/√(1 − x²)'],['log<sub>a</sub> x','1/(x ln a)','arccos x','−1/√(1 − x²)'],['√x','1/(2√x)','arctg x','1/(1 + x²)'],['1/x','−1/x²','arccotg x','−1/(1 + x²)']]))+
+  tsec('Pravidlá derivovania',tex(p_(`${m_(`(f ± g)′ = f′ ± g′, &nbsp; (cf)′ = c·f′`)}`)+p_(`<b>Súčin:</b> ${m_('(fg)′ = f′g + fg′')} (pozor, (fg)′ ≠ f′g′)`)+p_(`<b>Podiel:</b> ${m_(`(${frac('f','g')})′ = ${frac('f′g − fg′','g²')}`)}`)+p_(`<b>Zložená funkcia:</b> ${m_('(f ∘ g)′(x) = f′(g(x))·g′(x)')}: derivujeme vonkajšiu (argument nemeníme) a vynásobíme deriváciou vnútornej.`))+
+   p_(`Príklady: ${m_('(x² sin x)′ = 2x sin x + x² cos x')}, &nbsp; ${m_('((2 + 3x)¹⁷)′ = 51(2 + 3x)¹⁶')}, &nbsp; ${m_('(sin² x³)′ = 6x² sin x³ cos x³')}.`)+p_('Reťaz môže mať viac článkov; derivujeme od vonkajšej vrstvy dovnútra.'))+
+  tsec('Logaritmické derivovanie',p_('Pre y = f(x)<sup>g(x)</sup> s f > 0 využijeme y = e<sup>g ln f</sup>:')+tex(p_(`${m_('(f<sup>g</sup>)′ = f<sup>g</sup>·(g·ln f)′')}`)+p_(`${m_('(xˣ)′ = xˣ(ln x + 1)')}, &nbsp; ${m_(`(x<sup>sin x</sup>)′ = x<sup>sin x</sup>(cos x·ln x + ${frac('sin x','x')})`)}`))+p_('Metóda zjednoduší aj derivovanie veľkého súčinu: logaritmovaním sa súčin zmení na súčet.'))
+};
+
+THEORY.app={
+ theory:ul(['Dotyčnica v T = [x₀, f(x₀)]: y − f(x₀) = f′(x₀)(x − x₀). Normála: smernica −1/f′(x₀); ak f′(x₀) = 0, normála je x = x₀.','Rovnobežná s priamkou p: f′(x₀) = k<sub>p</sub>. Kolmá na p: f′(x₀)·k<sub>p</sub> = −1.','Diferenciál df = f′(x₀)Δx, f(x₀ + Δx) ≈ f(x₀) + f′(x₀)Δx.','f″ = (f′)′, f<sup>(n)</sup> = (f<sup>(n−1)</sup>)′.']),
+ full:
+  tsec('Derivácie vyšších rádov',p_('Ak príslušné derivácie existujú: f″ = (f′)′, f‴ = (f″)′, f<sup>(n)</sup> = (f<sup>(n−1)</sup>)′. Pri každom kroku derivujeme výsledok predchádzajúceho kroku.')+tex(p_(`f(x) = log₂(3x): ${m_(`f′ = ${frac(1,'x ln 2')}`)}, ${m_(`f″ = −${frac(1,'x² ln 2')}`)}, ${m_(`f‴ = ${frac(2,'x³ ln 2')}`)}.`)))+
+  tsec('Dotyčnica a normála',p_(`Priamka so smernicou k cez bod (x₀, y₀): y − y₀ = k(x − x₀). Pre graf y = f(x) v bode T = [x₀, f(x₀)]:`)+
+   tex(p_(`dotyčnica: ${m_('y − f(x₀) = f′(x₀)·(x − x₀)')}`)+p_(`normála (f′(x₀) ≠ 0): ${m_(`y − f(x₀) = −${frac(1,'f′(x₀)')}·(x − x₀)`)}`))+
+   p_('Ak f′(x₀) = 0, dotyčnica je y = f(x₀) a normála zvislá x = x₀.')+
+   tex(p_(`f(x) = x², x₀ = 2: T = [2, 4], k<sub>t</sub> = 4, dotyčnica y = 4x − 4, normála y = −x/4 + 9/2.`))+
+   p_('<b>Rovnobežná alebo kolmá dotyčnica</b>: ak má dané priamka smernicu k<sub>p</sub>, tak pre rovnobežnosť riešime f′(x₀) = k<sub>p</sub>, pre kolmosť f′(x₀)·k<sub>p</sub> = −1. Potom dopočítame y₀ = f(x₀).'))+
+  tsec('Diferenciál a lineárna aproximácia',p_('Pre malé Δx je zmena funkcie približne rovná zmene na dotyčnici:')+tex(p_(`Δf ≈ ${m_('df = f′(x₀)·Δx')}, &nbsp; ${m_('f(x) ≈ f(x₀) + f′(x₀)(x − x₀)')}`))+
+   p_('Zvolíme blízky bod x₀, v ktorom poznáme f(x₀) aj f′(x₀), a dosadíme.')+tex(p_(`√80: f = √x, x₀ = 81: f(81) = 9, f′(81) = 1/18, Δx = −1 ⇒ √80 ≈ 9 − 1/18 = 8,9444 (presne 8,94427).`)+p_('Užitočné pre x blízke 0: sin x ≈ x, eˣ ≈ 1 + x, ln(1 + x) ≈ x (uhly v radiánoch).')))
+};
+
+THEORY.tay={
+ theory:ul(['<b>Taylorov polynóm</b> T<sub>n</sub>(x) = Σ f<sup>(k)</sup>(x₀)/k! · (x − x₀)ᵏ. Pre x₀ = 0 je to MacLaurinov polynóm.','eˣ = 1 + x + x²/2! + x³/3! + …, sin x = x − x³/3! + x⁵/5! − …, cos x = 1 − x²/2! + x⁴/4! − …','<b>L′Hospital</b>: pre 0/0 alebo ∞/∞ platí lim f/g = lim f′/g′ (derivujeme osobitne). Ostatné tvary najprv upraviť na podiel.']),
+ full:
+  tsec('Taylorov polynóm',p_('Hľadáme polynóm T<sub>n</sub>, ktorý má v x₀ rovnakú hodnotu a prvých n derivácií ako f. Takým polynómom je práve:')+tex(p_(`${m_(`T<sub>n</sub>(x) = Σ<sub>k=0</sub><sup>n</sup> ${frac('f<sup>(k)</sup>(x₀)','k!')}·(x − x₀)ᵏ`)}`))+
+   p_('Koeficienty nie sú uhádnuté, sú určené deriváciami: ak T<sub>n</sub> = a₀ + a₁(x − x₀) + …, tak T<sub>n</sub><sup>(k)</sup>(x₀) = k!·a<sub>k</sub>. Čím vyšší stupeň, tým lepšie sa polynóm priblíži k funkcii, najmä blízko stredu.')+
+   p_('<b>Taylorova veta:</b> f(x) = T<sub>n</sub>(x) + R<sub>n</sub>(x), kde R<sub>n</sub>(x) = f<sup>(n+1)</sup>(ξ)/(n+1)! · (x − x₀)ⁿ⁺¹ pre nejaké ξ medzi x₀ a x.'))+
+  tsec('MacLaurinove polynómy (x₀ = 0)',tex(p_(`${m_('eˣ = 1 + x + x²/2! + x³/3! + …')}`)+p_(`${m_('sin x = x − x³/3! + x⁵/5! − …')} (nepárna ⇒ len nepárne mocniny)`)+p_(`${m_('cos x = 1 − x²/2! + x⁴/4! − …')} (párna ⇒ len párne mocniny)`)+p_(`${m_('ln(1 + x) = x − x²/2 + x³/3 − …')}, &nbsp; ${m_('1/(1 − x) = 1 + x + x² + …')}, &nbsp; ${m_('arctg x = x − x³/3 + …')}`)+p_(`${m_('tg x = x + x³/3 + …')}`))+
+   p_('Postup: vypíšeme f, f′, f″, … v bode x₀, vydelíme faktoriálmi a zložíme polynóm. Pri periodických deriváciách (sin, cos) sa hodnoty striedajú.'))+
+  tsec('Približné výpočty',p_('Hodnotu ťažko počítateľnej funkcie približne vypočítame dosadením do T<sub>n</sub> so stredom v blízkom bode.')+tex(p_(`ln(1,3) ≈ T₂: f = ln x, x₀ = 1, T₂ = (x − 1) − (x − 1)²/2 ⇒ 0,3 − 0,045 = 0,255 (presne 0,262).`)))+
+  tsec("L′Hospitalovo pravidlo",p_('Ak lim f = lim g = 0 alebo lim f = lim g = ±∞ a existuje lim f′/g′, potom lim f/g = lim f′/g′.')+
+   ul(['Najprv dosadením určíme tvar limity. Pravidlo smie len pri 0/0 alebo ∞/∞.','Čitateľa a menovateľa derivujeme <b>osobitne</b>, nejde o podielové pravidlo.','Možno použiť opakovane, aj pri jednostranných limitách a v nevlastných bodoch.','Tvary 0·∞, ∞ − ∞, 1<sup>∞</sup>, 0⁰, ∞⁰ najprv upravíme: súčin na podiel (f·g = f/(1/g)), mocniny logaritmovaním.'])+
+   tex(p_(`${m_(`lim<sub>x→0</sub> ${frac('x − sin x','x³')} = lim ${frac('1 − cos x','3x²')} = lim ${frac('sin x','6x')} = lim ${frac('cos x',6)} = ${frac(1,6)}`)}`)+p_(`${m_('lim<sub>x→0⁺</sub> x ln x')} = lim ln x / (1/x) = lim (1/x)/(−1/x²) = lim (−x) = 0.`)+p_(`${m_('lim<sub>x→∞</sub> x<sup>1/x</sup>')}: ln y = (ln x)/x → 0, preto y → e⁰ = 1.`)))
+};
+
+THEORY.prb={
+ theory:ul(['<b>f′ > 0</b> ⇒ rastie, <b>f′ < 0</b> ⇒ klesá. Kritické body: f′ = 0 (stacionárne) alebo f′ neexistuje.','<b>f″ > 0</b> ⇒ konvexná, <b>f″ < 0</b> ⇒ konkávna. Inflexia: zmena znamienka f″.','Lokálny extrém: f′ mení znamienko (+→− max, −→+ min), alebo f′(a) = 0 a f″(a) ≠ 0.','Globálne extrémy na ⟨a, b⟩: porovnať hodnoty v stacionárnych a krajných bodoch.']),
+ full:
+  tsec('Postup vyšetrovania priebehu funkcie',ul(['Definičný obor, priesečníky s osami, symetria (párnosť, periodickosť).','Limity na hraniciach D(f), asymptoty.','f′: kritické body, intervaly monotónnosti, extrémy.','f″: intervaly konvexnosti a konkávnosti, inflexné body.','Zhrnutie do tabuľky a náčrt grafu.']))+
+  tsec('Monotónnosť',p_('Ak f′(x) > 0 na (a, b), funkcia je tam ostro rastúca; ak f′(x) < 0, ostro klesajúca; ak f′ = 0 na celom intervale, je konštantná.')+
+   p_('<b>Kritický bod</b> c ∈ D(f): f′(c) = 0 (stacionárny bod) alebo f′(c) neexistuje. Pri znamienkovej tabuľke delíme D(f) aj bodmi mimo D(f).')+
+   tex(p_(`${m_('f(x) = 51 + 36x + 6x² − x³')}: f′ = −3(x + 2)(x − 6).`)+tblh(['x','(−∞, −2)','−2','(−2, 6)','6','(6, ∞)'],[['f′','−','0','+','0','−'],['f','↘','min','↗','max','↘']])+p_('Lokálne minimum f(−2) = 11, lokálne maximum f(6) = 267.')))+
+  tsec('Konvexnosť a inflexné body',p_('f″ > 0 ⇒ f′ rastie, smernice dotyčníc rastú, graf je konvexný (nad dotyčnicami). f″ < 0 ⇒ konkávna. Rovnica f″(c) = 0 dá len kandidáta na inflexný bod, inflexiu potvrdí až zmena znamienka f″.')+
+   tex(p_(`${m_('f(x) = x⁴')}: f″ = 12x², f″(0) = 0, ale f″ ≥ 0 na oboch stranách, 0 nie je inflexný bod. ${m_('g(x) = x³')}: g″ = 6x mení znamienko ⇒ 0 je inflexný bod.`)))+
+  tsec('Lokálne a globálne extrémy',p_('Ak má f vo vnútornom bode a lokálny extrém a existuje f′(a), potom f′(a) = 0. Extrém môže byť aj tam, kde derivácia neexistuje (|x| v 0).')+
+   tblh(['zmena znamienka f′ v okolí a','záver'],[['+ → −','lokálne maximum'],['− → +','lokálne minimum'],['+ → + alebo − → −','sedlový bod (nie je extrém)']])+
+   p_(`<b>Test druhej derivácie:</b> f′(a) = 0 a f″(a) > 0 ⇒ minimum, f″(a) < 0 ⇒ maximum. Pri f″(a) = 0 test nerozhodne (x⁴ má v 0 minimum, x³ nemá extrém), treba použiť test prvej derivácie.`)+
+   p_('<b>Globálne extrémy spojitej funkcie na ⟨a, b⟩:</b> nájdeme stacionárne body v (a, b), vypočítame f v nich aj v krajných bodoch a vyberieme najväčšiu a najmenšiu hodnotu.')+
+   tex(p_(`${m_('f(x) = x³ − 3x')} na ⟨−2, 2⟩: f′ = 3(x² − 1) = 0 pre x = ±1. Hodnoty: f(−2) = −2, f(−1) = 2, f(1) = −2, f(2) = 2. Maximum 2 (v −1 aj 2), minimum −2 (v −2 aj 1).`)))+
+  tsec('Príklad: f(x) = x³ − 3x²',ul(['D(f) = ℝ; nuly: x²(x − 3) = 0 ⇒ 0, 3.','f′ = 3x(x − 2): max v 0 (f = 0), min v 2 (f = −4).','f″ = 6(x − 1): konkávna na (−∞, 1), konvexná na (1, ∞), inflexný bod [1; −2].','Nemá asymptoty (polynóm); lim = ∞ pre x → ∞ a −∞ pre x → −∞.']))
+};
+
+/* priradenie teórie témam */
+function attachTheory(){TOPICS.forEach(t=>{const th=THEORY[t.id];if(th){t.theory=th.theory;t.full=th.full}})}
+/* ===== Registrácia tém ===== */
+const rep=(g,n)=>Array(n).fill(g);
+topic('fun','Funkcie','definičný obor, parita, inverzná, zložená',[gDomain,gDomain,gParity,gCompose,gInverse,gEqualFn,concFun]);
+topic('pol','Polynómy a racionálne funkcie','Horner, korene, delenie, parciálne zlomky',[gHorner,gIntRoots,gPolyDiv,gFactor,gPartial,gPartial,gLinFrac]);
+topic('ele','Elementárne funkcie','logaritmy, goniometria, cyklometrické, hyperbolické',[gLog,gExpEq,gTrig,gCyclo,gPyth,gHyper,concEle]);
+topic('lim','Limity a spojitosť','rozklad, združený výraz, ∞, asymptoty, ε–δ',[gLimFactor,gLimConj,gLimInf,gLimSig,gLimOne,gAsym,gContParam,gEpsDelta,concLim]);
+topic('der','Derivácie','pravidlá, reťazové pravidlo, z definície',[...rep(gDiff,6),gDiffPoint,gDefDeriv,concDer]);
+topic('app','Dotyčnica, diferenciál, vyššie derivácie','dotyčnica, normála, lineárna aproximácia',[gTangent,gTangentPar,gDifferential,gLinApprox,gHigher,concApp]);
+topic('tay','Taylor a l′Hospital','MacLaurin, Taylor, približné výpočty, limity',[gMaclaurin,gTaylor,gTaylorApprox,gLHop,gLHop,concTay]);
+topic('prb','Priebeh funkcie','monotónnosť, extrémy, inflexia, globálne extrémy',[gMonoRows,gLocalExt,gInflection,gGlobal,gSpecExt,gSaddle,gQuartic,gStudy,concPrb]);
+attachTheory();
+/* ---------- stav a uloženie ---------- */
+const KEY='ma-cvicebnica-v1';
+let ST={stats:{},streak:0,best:0};
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.stats)ST=s}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(ST))}catch(e){}};
+let U={view:'practice',topic:'mix',q:null,qt:null,sel:null,rows:[],counted:false,done:false,shown:false};
+const $=s=>document.querySelector(s);
+const tstat=id=>ST.stats[id]||(ST.stats[id]={ok:0,total:0});
+const totals=()=>Object.values(ST.stats).reduce((a,s)=>({ok:a.ok+s.ok,total:a.total+s.total}),{ok:0,total:0});
+
+/* ---------- navigácia ---------- */
+function renderNav(){
+  const all=totals();
+  const btn=(id,name,short,st)=>`<button class="tbtn" data-id="${id}" aria-pressed="${U.topic===id}"><span class="n"><span>${name}</span><em>${st.ok}/${st.total}</em></span><span class="s">${short}</span><div class="bar"><i style="width:${st.total?Math.round(100*st.ok/st.total):0}%"></i></div></button>`;
+  $('#nav').innerHTML=(U.view==='theory'?'':btn('mix','Všetko dokopy','náhodná téma',all))+TOPICS.map(t=>btn(t.id,t.name,t.short,tstat(t.id))).join('')+`<button class="reset" id="reset">Vynulovať štatistiku</button>`;
+  $('#nav').querySelectorAll('.tbtn').forEach(b=>b.onclick=()=>{U.topic=b.dataset.id;renderTheory();if(U.view==='theory')window.scrollTo({top:0});next()});
+  $('#reset').onclick=()=>{ST={stats:{},streak:0,best:0};save();renderNav()};
+  renderScore()}
+function renderScore(){const a=totals();
+  $('#score').innerHTML=`<div><b>${a.ok}/${a.total}</b><span>správne na 1. pokus</span></div><div><b>${ST.streak}</b><span>v rade</span></div><div><b>${ST.best}</b><span>najlepšia séria</span></div>`}
+function renderTheory(){
+  const t=TOPICS.find(x=>x.id===U.topic),d=$('#theory'),p=$('#tpane');
+  if(!t){d.hidden=true;p.innerHTML='';return}
+  d.hidden=false;d.querySelector('summary').textContent='Zhrnutie z prednášok: '+t.name;d.querySelector('.in').innerHTML=t.theory;
+  p.innerHTML=`<h3>${t.name}</h3>${t.full}`}
+function setView(v){
+  U.view=v;$('#app').dataset.view=v;
+  document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v));
+  if(v==='theory'&&U.topic==='mix'){U.topic='fun';renderTheory();next()}else{renderTheory();renderNav()}
+  $('#tpane').scrollTop=0}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setView(b.dataset.v));
+
+/* ---------- otázky ---------- */
+function next(){
+  const pool=U.topic==='mix'?TOPICS:TOPICS.filter(t=>t.id===U.topic);
+  let q=null,t=null;
+  for(let k=0;k<8&&!q;k++){try{t=pick(pool);q=pick(t.gens)()}catch(e){q=null}}
+  U={...U,q,qt:t,sel:null,rows:q&&q.input.t==='rows'?q.input.rows.map(()=>null):[],counted:false,done:false,shown:false};
+  renderNav();renderCard();
+  const cd=$('#card');if(cd.getBoundingClientRect().top<0)cd.scrollIntoView({block:'start',behavior:'auto'});
+  const f=$('#card input.cell');if(f&&matchMedia('(hover:hover)').matches)f.focus({preventScroll:true})}
+const CELL='autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"';
+const cellHtml=(k,m,label)=>`<input class="cell ${m==='set'?'wide':''}" id="c${k}" data-m="${m}" aria-label="${label}" ${CELL} inputmode="text">`;
+function inputsHtml(inp){
+  if(inp.t==='lines'){let k=0;return`<div class="answer"><span class="lbl2">Tvoja odpoveď</span>${inp.lines.map(l=>`<div class="ln">${l.map(x=>{if(x===null)return cellHtml(k++,'num','pole '+k);if(typeof x==='object')return cellHtml(k++,x.m,'pole '+k);return`<span class="t">${x}</span>`}).join('')}</div>`).join('')}</div>`}
+  if(inp.t==='expr'){return`<div class="answer"><span class="lbl2">Tvoja odpoveď</span><div class="ln"><input class="cell expr" id="c0" data-m="expr" aria-label="výraz" ${CELL} inputmode="text" placeholder="napr. 2x*cos(x)"></div>
+    <div class="insbar" aria-label="Vloženie znaku">${['^','(',')','/','√(','π','e'].map(c=>`<button type="button" class="ib" data-ins="${c}" aria-label="vložiť ${c}">${c}</button>`).join('')}</div>
+    <div class="muted">Premenná je <kbd>x</kbd>. Funkcie: <kbd>sin(x)</kbd>, <kbd>cos(x)</kbd>, <kbd>tg(x)</kbd>, <kbd>e^x</kbd>, <kbd>ln(x)</kbd>, <kbd>sqrt(x)</kbd>, <kbd>arctg(x)</kbd>. Uúčin môžeš písať bez znaku (<kbd>2x</kbd>). Argumenty a zlomky daj do zátvoriek.</div></div>`}
+  if(inp.t==='rows')return`<div class="rowsq">${inp.rows.map((r,i)=>`<div class="rq"><div class="rl">${r.label}</div><div class="ro" role="radiogroup">${r.opts.map((o,j)=>`<button class="opt sm" role="radio" aria-checked="false" data-r="${i}" data-i="${j}">${o}</button>`).join('')}</div></div>`).join('')}</div>`;
+  return`<div class="opts" role="radiogroup" aria-label="Možnosti">${inp.opts.map((o,i)=>`<button class="opt" role="radio" aria-checked="false" data-i="${i}">${o}</button>`).join('')}</div>`}
+function hintFor(inp){
+  if(inp.t!=='lines')return'';
+  const sp=specsOf(inp),h=[];
+  h.push('čísla, zlomky <kbd>2/7</kbd>, desatinné, výrazy ako <kbd>sqrt(3)/2</kbd>, <kbd>pi/6</kbd>, <kbd>e^2</kbd>; nekonečno <kbd>inf</kbd>, neexistuje <kbd>nex</kbd>');
+  if(sp.includes('set'))h.push('zoznam čísel oddelených čiarkou, prázdna množina <kbd>-</kbd>');
+  return`<div class="muted">Zápis: ${h.join('; ')}. Enter skočí na ďalšie pole.</div>`}
+function renderCard(){
+  const q=U.q,c=$('#card');
+  if(!q){c.innerHTML='<p>Príklad sa nepodarilo vytvoriť. Skús ďalší.</p><div class="actions"><button class="btn main" id="nx">Ďalší príklad</button></div>';$('#nx').onclick=next;return}
+  c.innerHTML=`<div class="meta"><span class="chip">${q.kind}</span><span>${U.qt.name}</span></div>
+   <div class="prompt">${q.prompt}</div>${inputsHtml(q.input)}${hintFor(q.input)}
+   <div id="fb" role="status" aria-live="polite"></div>
+   <div class="actions"><button class="btn main" id="chk">Skontrolovať</button><button class="btn" id="shw">Ukáž riešenie</button><button class="btn" id="nx">Ďalší príklad</button></div>
+   <div id="sol" class="sol" hidden></div>`;
+  $('#chk').onclick=check;$('#shw').onclick=reveal;$('#nx').onclick=next;
+  c.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(U.done||U.shown)return;
+    if(b.dataset.r!==undefined){const r=+b.dataset.r;U.rows[r]=+b.dataset.i;c.querySelectorAll(`.opt[data-r="${r}"]`).forEach(o=>{o.setAttribute('aria-checked',o===b);o.classList.remove('bad','ok')})}
+    else{U.sel=+b.dataset.i;c.querySelectorAll('.opt').forEach(o=>{o.setAttribute('aria-checked',o===b);o.classList.remove('bad','ok')})}});
+  const ins=[...c.querySelectorAll('input.cell')];
+  ins.forEach((el,i)=>el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if(U.done||U.shown)return next();if(i<ins.length-1)ins[i+1].focus();else check()}}));
+  c.querySelectorAll('.ib').forEach(b=>b.onclick=()=>{const el=$('#c0');if(!el||el.readOnly)return;const a=el.selectionStart??el.value.length,z=el.selectionEnd??a;el.value=el.value.slice(0,a)+b.dataset.ins+el.value.slice(z);el.focus();const p=a+b.dataset.ins.length;try{el.setSelectionRange(p,p)}catch(e){}})}
+function fb(cls,txt){$('#fb').innerHTML=`<div class="fb ${cls}">${txt}</div>`}
+function record(ok){const s=tstat(U.qt.id);s.total++;if(ok){s.ok++;ST.streak++;ST.best=Math.max(ST.best,ST.streak)}else ST.streak=0;U.counted=true;save();renderNav()}
+function finishOk(){U.done=true;fb('ok','Správne.');lockInputs();showSol(false);$('#chk').disabled=true;$('#nx').classList.add('main');$('#chk').classList.remove('main');$('#nx').focus({preventScroll:true})}
+function check(){
+  if(U.done||U.shown)return;
+  const q=U.q,inp=q.input,card=$('#card');
+  const ins=[...card.querySelectorAll('input.cell')];
+  const raw=inp.t==='choice'?U.sel:inp.t==='rows'?U.rows:inp.t==='expr'?ins[0].value:ins.map(e=>e.value);
+  const r=grade(q,raw);
+  if(r.hold){if(inp.t==='expr'){ins[0].classList.add('warn');ins[0].classList.remove('bad')}fb('warn',r.msg);return}
+  if(!U.counted)record(r.ok);
+  if(inp.t==='choice'){card.querySelectorAll('.opt').forEach((o,i)=>{if(i===U.sel)o.classList.add(r.ok?'ok':'bad')});if(r.ok)finishOk();else fb('bad','Zatiaľ nie. Skús inú možnosť alebo si zobraz riešenie.');return}
+  if(inp.t==='rows'){card.querySelectorAll('.opt').forEach(o=>{const rr=+o.dataset.r,i=+o.dataset.i;if(U.rows[rr]===i)o.classList.add(i===q.answer[rr]?'ok':'bad')});if(r.ok)finishOk();else fb('bad',`Správne ${r.hit} z ${r.total} riadkov. Červené oprav alebo si zobraz riešenie.`);return}
+  if(inp.t==='expr'){ins[0].classList.remove('warn');ins[0].classList.toggle('ok',!!r.ok);ins[0].classList.toggle('bad',!r.ok);if(r.ok)finishOk();else fb('bad',r.msg||'Výraz nesedí. Skús ho upraviť alebo si zobraz riešenie.');return}
+  ins.forEach((el,i)=>{el.classList.toggle('ok',r.per[i]);el.classList.toggle('bad',!r.per[i])});
+  if(r.ok)finishOk();else fb('bad',r.total>1?`Správne ${r.hit} z ${r.total} polí. Červené polia oprav alebo si zobraz riešenie.`:'Zatiaľ nie. Skús znova alebo si zobraz riešenie.')}
+function lockInputs(){$('#card').querySelectorAll('input.cell').forEach(i=>i.readOnly=true);$('#card').querySelectorAll('.opt').forEach(o=>o.disabled=true)}
+function showSol(open){const s=$('#sol');s.hidden=false;s.innerHTML=`<h3>Postup</h3>${U.q.solution}`;if(open)s.scrollIntoView({block:'nearest',behavior:'smooth'})}
+function reveal(){
+  if(!U.counted)record(false);
+  U.shown=true;const q=U.q,inp=q.input;
+  if(inp.t==='choice')$('#card').querySelectorAll('.opt').forEach((o,i)=>{o.disabled=true;if(i===q.answer[0])o.classList.add('ok')});
+  else if(inp.t==='rows')$('#card').querySelectorAll('.opt').forEach(o=>{o.disabled=true;if(+o.dataset.i===q.answer[+o.dataset.r])o.classList.add('ok')});
+  else if(inp.t==='expr'){const el=$('#c0');el.readOnly=true;el.value='';el.placeholder='riešenie je nižšie';el.classList.remove('bad','warn')}
+  else{const ins=[...$('#card').querySelectorAll('input.cell')];ins.forEach((el,i)=>{el.value=atext(q.answer[i]);el.classList.remove('bad');el.classList.add('ok');el.readOnly=true})}
+  if(!U.done)fb('warn','Riešenie je zobrazené, tento príklad sa počíta ako nesprávny.');
+  $('#chk').disabled=true;
+  const s=$('#sol');s.hidden=false;s.innerHTML=`<h3>Postup</h3>${inp.t==='expr'?`<div class="eq">Správna odpoveď: ${q.ref}</div>`:''}${q.solution}`;s.scrollIntoView({block:'nearest',behavior:'smooth'})}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&(U.done||U.shown)&&e.target===document.body)next()});
+attachTheory();renderTheory();next();
+</script>
