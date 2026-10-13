@@ -1,53 +1,40 @@
 # Cvičebnice
 
-Interaktívne cvičebnice na precvičovanie školských predmetov. Každý príklad sa generuje nový, odpoveď sa automaticky skontroluje a ku každému príkladu je k dispozícii postup riešenia. Popri cvičení si môžeš otvoriť aj teóriu z prednášok.
+Interaktívne cvičebnice na skúšky: **ADM**, **PPI** a **MA**. Otvoríš, vyberieš tému a počítaš. Každý príklad je nový, odpoveď sa hneď skontroluje a vždy si môžeš pozrieť postup.
 
-Je to statická stránka: žiadny server, žiadna inštalácia, všetko beží v prehliadači.
+Statická stránka, bez servera a bez inštalácie, všetko beží v prehliadači.
 
-## Cvičebnice
+## Čo sa tu ponúka
 
-| Predmet | Priečinok | Obsah |
-|---|---|---|
-| **ADM** | [`amd/`](amd/) | Matice, sústavy lineárnych rovníc, Gaussova eliminácia, inverzná matica, determinanty |
-| **PPI** | [`ppi/`](ppi/) | Booleove funkcie, normálne formy (MDNF, MKNF), Karnaughove mapy, logické obvody, automaty, preklápacie obvody |
-| **MA** | [`ma/`](ma/) | Funkcie, polynómy, elementárne funkcie, limity a spojitosť, derivácie, Taylorov polynóm, l'Hospital, priebeh funkcie |
+### ADM (`amd/`)
+Matice, sústavy lineárnych rovníc, Gaussova eliminácia, inverzná matica a determinanty.
 
-## Čo cvičebnice ponúkajú
+### PPI (`ppi/`)
+Booleove funkcie, MDNF a MKNF, Karnaughove mapy, logické obvody, automaty a preklápacie obvody.
 
-- **Nekonečne veľa príkladov.** Zadania sa generujú náhodne, takže sa nikdy nezopakujú.
-- **Kontrola odpovede.** Čísla, zlomky (`2/7`), výrazy (`sqrt(3)/2`, `pi/6`), zoznamy, výber z možností aj voľne zapísané výrazy (pri deriváciách sa porovná funkcia, nie tvar zápisu).
-- **Postup riešenia** ku každému príkladu, pri niektorých aj s grafom.
-- **Karta „Teória + cvičenie“.** Teória z prednášok vedľa príkladov, aby si ju mohol hneď vyskúšať.
-- **Štatistika.** Úspešnosť na prvý pokus za každú tému, aktuálna a najlepšia séria. Ukladá sa v prehliadači (`localStorage`), tlačidlom „Vynulovať štatistiku“ ju vymažeš.
-- **Svetlý aj tmavý režim**, použiteľné na mobile.
+### MA (`ma/`)
+Funkcie, polynómy a racionálne funkcie, elementárne funkcie, limity a spojitosť, derivácie, dotyčnice a diferenciál, Taylorov polynóm, l'Hospital a priebeh funkcie.
 
-## Štruktúra repozitára
+### Spoločné vlastnosti
+- Príklady sa generujú náhodne, nikdy sa nezopakujú.
+- Kontrola odpovede: čísla, zlomky (`2/7`), výrazy (`sqrt(3)/2`, `pi/6`), zoznamy, výber z možností. Pri deriváciách sa porovnáva funkcia, nie tvar zápisu.
+- Postup riešenia ku každému príkladu, pri niektorých aj s grafom.
+- Karta **Teória + cvičenie**: teória z prednášok vedľa príkladov, aby si ju hneď vyskúšal.
+- Štatistika za každú tému a séria správnych odpovedí v rade (ukladá sa v prehliadači).
+- Svetlý aj tmavý režim, funguje na mobile.
 
-```
-.
-├── index.html        # úvodná stránka s odkazmi na jednotlivé cvičebnice
-├── amd/index.html    # Cvičebnica ADM
-├── ppi/index.html    # Cvičebnica PPI
-├── ma/index.html     # Cvičebnica MA
-└── README.md
-```
+## Ako to vzniklo
 
-Každá cvičebnica je jeden samostatný súbor `index.html` (HTML, CSS a JavaScript dokopy). Jediná externá závislosť sú písma z Google Fonts, bez nich sa použijú systémové.
+Lenivo. Žiadne ručné programovanie ani vypisovanie príkladov.
 
-## Nasadenie na GitHub Pages
+1. Do Claude som nahral PDF z prednášok.
+2. Napísal som jednu vetu typu „urob mi z toho interaktívnu stránku, kde si to budem môcť precvičiť“.
+3. Claude z prednášok vytiahol témy, napísal generátory príkladov s riešeniami, teóriu aj celé rozhranie.
+4. Chyby som len zahlásil (screenshot, „toto nesedí“) a Claude ich opravil. Karnaughove mapy sa napríklad prerobili podľa referenčného súboru, ktorý som mu poslal.
+5. Výsledok sa otestoval automaticky: tisíce vygenerovaných príkladov, kontrola odpovedí a pri limitách a deriváciách aj číselné overenie.
 
-1. V repozitári otvor **Settings → Pages**.
-2. V časti **Build and deployment** vyber **Deploy from a branch**, vetvu `main` a priečinok `/ (root)`.
-3. Po minúte-dvoch bude stránka dostupná na `https://<používateľ>.github.io/<repozitár>/`.
+Ostatné (hosting, úvodná stránka, tlačidlá späť, tento README) išlo tou istou cestou, vždy jednou vetou.
 
-Cvičebnice sa potom otvárajú na `…/amd/`, `…/ppi/` a `…/ma/`. Lokálne stačí otvoriť `index.html` v prehliadači.
+## Upozornenie
 
-## Pridanie ďalšej cvičebnice
-
-1. Vytvor nový priečinok (napr. `xyz/`) a daj do neho `index.html`.
-2. Pridaj do neho odkaz späť: `<a class="backlink" href="../">← Cvičebnice</a>`.
-3. V koreňovom `index.html` pridaj ďalšiu kartu (`<a class="card" href="xyz/">…</a>`).
-
-## Poznámka
-
-Príklady a postupy sú generované programom a overované automatickými testami, no môžu v nich ostať chyby. Ak niečo nesedí, ber to ako podnet pozrieť si prednášku alebo skontrolovať výsledok inak.
+Príklady, postupy aj teória sú generované a overované testami, no môžu v nich ostať chyby. Pri pochybnostiach ber prednášku ako smerodajnú.
