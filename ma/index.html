@@ -170,6 +170,12 @@ svg.plot .ln2{stroke:var(--green);stroke-width:1.8;fill:none}
 svg.plot .fn{fill:none;stroke-width:2.2}
 svg.plot .fn.c1,svg.plot .fn{stroke:var(--blue)}
 svg.plot .fn.c2{stroke:var(--red)}
+svg.plot .fn.c3{stroke:var(--green)}
+svg.plot .fn.c4{stroke:var(--amber)}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin:10px 0}
+.gf{margin:0;min-width:0}
+.gf .plotw{margin:0}
+.gf figcaption{font-size:.82rem;color:var(--muted);margin-top:4px;line-height:1.3}
 svg.plot .pt{fill:var(--red);stroke:var(--card);stroke-width:1.5}
 svg.plot .pl{fill:var(--fg);font:600 11px var(--f-body)}
 svg.plot .tk{fill:var(--muted);font:10px var(--f-mono)}
@@ -195,8 +201,8 @@ svg.plot .tk{fill:var(--muted);font:10px var(--f-mono)}
   h1{font-size:2.2rem}.card{padding:16px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-.backlink{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-weight:600;font-size:.9rem;padding:6px 12px 6px 10px;border:1.5px solid var(--line);border-radius:99px;background:var(--card);transition:border-color .15s,color .15s}.backlink:hover{color:var(--blue);border-color:var(--blue)}.backlink:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 </style>
+<style>.backlink{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-weight:600;font-size:.9rem;padding:6px 12px 6px 10px;border:1.5px solid var(--line);border-radius:99px;background:var(--card);transition:border-color .15s,color .15s}.backlink:hover{color:var(--blue);border-color:var(--blue)}.backlink:focus-visible{outline:3px solid var(--blue);outline-offset:2px}</style>
 <div class="app" id="app" data-view="practice">
   <a class="backlink" href="../">← Cvičebnice</a>
   <header class="top">
@@ -467,7 +473,7 @@ function checkFn(src,ref,xs=XS){
 function niceStep(r){const raw=r/5,p=Math.pow(10,Math.floor(Math.log10(raw))),m=raw/p;return(m<1.5?1:m<3.5?2:m<7.5?5:10)*p}
 /* o: {fns:[{f,cls}], xr:[a,b], yr?:[c,d], pts:[{x,y,l,cls}], vl:[x], hl:[y], lines:[{k,q,cls}] } */
 function plot(o){
-  const W=420,Hh=250,pad={l:30,r:12,t:12,b:22};
+  const W=o.W||420,Hh=o.H||250,pad={l:30,r:12,t:12,b:22};
   const [x0,x1]=o.xr;let ymin=Infinity,ymax=-Infinity;
   const samp=(f)=>{const out=[];const n=320;for(let i=0;i<=n;i++){const x=x0+(x1-x0)*i/n;let y;try{y=f(x)}catch(e){y=NaN}out.push([x,y])}return out};
   const all=o.fns.map(g=>({g,pts:samp(g.f)}));
@@ -495,8 +501,12 @@ function plot(o){
       if(prev!==null&&Math.abs(y-prev)>(ymax-ymin)*1.5){pen=false}
       d+=(pen?'L':'M')+sx(x).toFixed(1)+' '+sy(clipY(y)).toFixed(1);pen=true;prev=y});
     s+=`<path class="fn ${g.cls||''}" d="${d}"/>`});
+  (o.inv||[]).forEach(g=>{let d='',pen=false;samp(g.f).forEach(([t,y])=>{if(!Number.isFinite(y)||y<x0-(x1-x0)||y>x1+(x1-x0)){pen=false;return}d+=(pen?'L':'M')+sx(y).toFixed(1)+' '+sy(t).toFixed(1);pen=true});s+=`<path class="fn ${g.cls||''}" d="${d}"/>`});
   (o.pts||[]).forEach(p=>{s+=`<circle class="pt ${p.cls||''}" cx="${sx(p.x)}" cy="${sy(p.y)}" r="4"/>`;if(p.l)s+=`<text class="pl" x="${sx(p.x)+6}" y="${sy(p.y)-6}">${p.l}</text>`});
   return s+'</svg>'}
+
+const gfig=(o,cap)=>{const s=plot(o);return s?`<figure class="gf"><div class="plotw">${s}</div>${cap?`<figcaption>${cap}</figcaption>`:''}</figure>`:''};
+const gal=items=>`<div class="gal">${items.map(it=>gfig(Object.assign({W:300,H:190},it.o),it.c)).join('')}</div>`;
 'use strict';
 /* ===== Spoločné pomôcky pre generátory, hodnotenie a témy 1 až 3 ===== */
 const TOPICS=[];
@@ -565,7 +575,8 @@ function gDomain(){
   let t;do{t=pick(T)()}while(!t);
   const mm=x=>x.replace(/-(?=\d)/g,'−');
   const opts=[t.ans,...shuffle(uniq(t.wr).filter(w=>w!==t.ans)).slice(0,3)];
-  return choiceQ('Definičný obor',`Aký je definičný obor funkcie ${FX(t.f)}?`,opts.map(o=>`<span class="m">${mm(o)}</span>`),0,p_(mm(t.why))+p_(`D(f) = <span class="m">${mm(t.ans)}</span>`))}
+  const gr=gfig({fns:[{f:x=>ev(t.f,x),cls:'c1'}],xr:[-7,7],label:'graf funkcie'},'Graf funkcie existuje len na definičnom obore.');
+  return choiceQ('Definičný obor',`Aký je definičný obor funkcie ${FX(t.f)}?`,opts.map(o=>`<span class="m">${mm(o)}</span>`),0,p_(mm(t.why))+p_(`D(f) = <span class="m">${mm(t.ans)}</span>`)+gr)}
 'use strict';
 /* ===== Témy 1 až 3: funkcie, polynómy, elementárne funkcie (pokračovanie) ===== */
 const fixedChoice=(kind,prompt,opts,ans,solution)=>({kind,prompt,input:{t:'choice',opts},answer:[ans],solution});
@@ -596,7 +607,7 @@ function gParity(){
   const mf=subst(f,neg(X));
   const concl=['f(−x) = f(x), funkcia je párna.','f(−x) = −f(x), funkcia je nepárna.','Neplatí ani f(−x) = f(x), ani f(−x) = −f(x), funkcia nie je ani párna, ani nepárna.'][ans];
   return fixedChoice('Párnosť funkcie',`Rozhodni, či je funkcia ${FX(f)} párna, nepárna, alebo ani jedno.`,['párna','nepárna','ani párna, ani nepárna'],ans,
-    p_(`Dosadíme −x: ${MQ(mf)}.`)+p_(why)+p_(concl))}
+    p_(`Dosadíme −x: ${MQ(mf)}.`)+p_(why)+p_(concl)+gfig({fns:[{f:x=>ev(f,x),cls:'c1'}],xr:[-4,4],label:'graf funkcie'},ans===0?'Graf je súmerný podľa osi y.':ans===1?'Graf je súmerný podľa počiatku.':'Graf nemá ani jednu z týchto súmerností.'))}
 
 function gCompose(){
   const FS=['x^2+1','sin(x)','sqrt(x)','ln(x)','1/x','e^x','2x-3','x^3','arctg(x)','cos(x)','x^2','3x+1','1/(x+1)','x^2-4'];
@@ -628,7 +639,7 @@ function gInverse(){
     ()=>{const b=rnd(-4,4)||2;const f=add(pow(X,N(3)),N(b));const g=pow(sub(X,N(b)),div(N(1),N(3)));
       return{f,g,st:['y = x³ + b','x³ = y − b','x = ∛(y − b)']}},
     ()=>{const b=rnd(1,4);const f=sub(pow(X,N(2)),N(b));const g=sqrtN(add(X,N(b)));
-      return{f,g,st:['y = x² − b, x ≥ 0','x² = y + b','x = √(y + b)'],note:'Funkcia je daná pre x ≥ 0 (inak by nebola prostá), preto berieme kladnú odmocninu.'}},
+      return{f,g,st:['y = x² − b, x ≥ 0','x² = y + b','x = √(y + b)'],note:'Funkcia je daná pre x ≥ 0 (inak by nebola prostá), preto berieme kladnú odmocninu.',dom:0}},
     ()=>{const a=rnd(1,4),b=rnd(-3,3);const f=add(div(N(1),add(X,N(a))),N(b));const g=sub(div(N(1),sub(X,N(b))),N(a));
       return{f,g,st:['y = 1/(x + a) + b','y − b = 1/(x + a)','x + a = 1/(y − b)','x = 1/(y − b) − a']}}
   ];
@@ -639,7 +650,7 @@ function gInverse(){
   if(!t)return null;
   return{kind:'Inverzná funkcia',prompt:p_(`Nájdi inverznú funkciu f⁻¹(<i>x</i>) k funkcii ${FX(t.f)}.`)+(t.note?p_(`<span class="muted">${t.note}</span>`):'')+p_(`<span class="muted">Zápis napríklad <kbd>ln(x-1)</kbd>, <kbd>(x-3)/2</kbd>, <kbd>sqrt(x+2)</kbd>.</span>`),
     input:{t:'expr'},check:s=>checkFn(s,x=>ev(t.g,x)),ref:MQ(t.g),refAst:t.g,
-    solution:p_('Rovnicu y = f(x) vyriešime vzhľadom na x a potom premenné <i>x</i> a <i>y</i> vymeníme.')+t.st.map(x=>`<div class="eq"><span class="m">${x}</span></div>`).join('')+p_(`Po výmene premenných: f⁻¹(<i>x</i>) = ${MQ(t.g)}.`)+p_('<span class="muted">Kontrola: f⁻¹(f(x)) = x. Grafy f a f⁻¹ sú súmerné podľa priamky y = x.</span>')}}
+    solution:p_('Rovnicu y = f(x) vyriešime vzhľadom na x a potom premenné <i>x</i> a <i>y</i> vymeníme.')+t.st.map(x=>`<div class="eq"><span class="m">${x}</span></div>`).join('')+p_(`Po výmene premenných: f⁻¹(<i>x</i>) = ${MQ(t.g)}.`)+p_('<span class="muted">Kontrola: f⁻¹(f(x)) = x. Grafy f a f⁻¹ sú súmerné podľa priamky y = x.</span>')+gfig({W:280,H:280,xr:[-6,6],yr:[-6,6],fns:[{f:x=>(t.dom!=null&&x<t.dom)?NaN:ev(t.f,x),cls:'c1'}],inv:[{f:x=>(t.dom!=null&&x<t.dom)?NaN:ev(t.f,x),cls:'c2'}],lines:[{k:1,q:0,cls:'as'}],label:'graf funkcie, inverznej funkcie a priamky y = x'},'Modrá: f, červená: f⁻¹, prerušovaná: y = x.')}}
 
 function gEqualFn(){
   const a=rnd(2,5),b=rnd(1,4);
@@ -971,17 +982,17 @@ function gAsym(){
     return{kind:'Asymptoty',prompt:p_(`Nájdi asymptoty grafu funkcie ${FX(f)}.`),input:{t:'lines',lines:[['zvislá asymptota x = ',null],['šikmá asymptota y = k·x + q:  k = ',null,'  q = ',null]]},answer:[-d,k,q],verify:()=>near(ev(f,1e5)-(k*1e5+q),0,1e-3),
       solution:p_(`Zvislá: menovateľ x ${sg(d)} ${Math.abs(d)} = 0 pre x = ${nn(-d)}. Čitateľ je tam nenulový (${nn(polyEv([a,b,c],-d))}), preto ide naozaj o asymptotu.`)+
         p_(`Stupeň čitateľa je o 1 väčší, preto existuje šikmá asymptota. Vydelíme polynómy: ${H(f)} = ${H(add(mul(N(k),X),N(q)))} + zvyšok/(x ${sg(d)} ${Math.abs(d)}).`)+
-        p_(`Zvyšný zlomok ide do 0, preto y = <b>${H(polyAst([k,q]))}</b> (k = ${nn(k)}, q = ${nn(q)}).`)}}
+        p_(`Zvyšný zlomok ide do 0, preto y = <b>${H(polyAst([k,q]))}</b> (k = ${nn(k)}, q = ${nn(q)}).`)+gfig({xr:[-d-6,-d+6],yr:[-14,14],fns:[{f:x=>ev(f,x),cls:'c1'}],vl:[-d],lines:[{k,q,cls:'as'}],label:'graf s asymptotami'},'Prerušované čiary sú asymptoty.')}}
   if(v==='b'){let a,b,c,d;do{a=rnd(-4,4);b=rnd(-4,4);c=pick([1,2,3,-1,-2]);d=rnd(-5,5)}while(!a||a*d-b*c===0);
     const f=div(add(mul(N(a),X),N(b)),add(mul(N(c),X),N(d)));
     return{kind:'Asymptoty',prompt:p_(`Nájdi asymptoty grafu funkcie ${FX(f)}.`),input:{t:'lines',lines:[['zvislá asymptota x = ',null],['vodorovná asymptota y = ',null]]},answer:[-d/c,a/c],
-      solution:p_(`Zvislá: ${nn(c)}x ${sg(d)} ${Math.abs(d)} = 0 pre x = ${fv(-d/c)}.`)+p_(`Vodorovná: ${L2('x→±∞',MQ(f))} = ${frac(nn(a),nn(c))} = <b>${fv(a/c)}</b>.`)}}
+      solution:p_(`Zvislá: ${nn(c)}x ${sg(d)} ${Math.abs(d)} = 0 pre x = ${fv(-d/c)}.`)+p_(`Vodorovná: ${L2('x→±∞',MQ(f))} = ${frac(nn(a),nn(c))} = <b>${fv(a/c)}</b>.`)+gfig({xr:[-d/c-6,-d/c+6],yr:[a/c-6,a/c+6],fns:[{f:x=>ev(f,x),cls:'c1'}],vl:[-d/c],hl:[a/c],label:'graf s asymptotami'},'Prerušované čiary sú asymptoty.')}}
   if(v==='c'){const k=rnd(1,4);const f=add(X,div(N(k),X));
     return{kind:'Asymptoty',prompt:p_(`Nájdi asymptoty grafu funkcie ${FX(f)}.`),input:{t:'lines',lines:[['zvislá asymptota x = ',null],['šikmá asymptota y = k·x + q:  k = ',null,'  q = ',null]]},answer:[0,1,0],
-      solution:p_(`Zvislá: v bode x = 0 ide funkcia do ±∞ (${nn(k)}/x → ±∞), preto x = 0 je asymptota.`)+p_(`Šikmá: k = lim f(x)/x = lim (1 + ${k}/x²) = 1, q = lim (f(x) − x) = lim ${k}/x = 0. Teda y = x.`)}}
+      solution:p_(`Zvislá: v bode x = 0 ide funkcia do ±∞ (${nn(k)}/x → ±∞), preto x = 0 je asymptota.`)+p_(`Šikmá: k = lim f(x)/x = lim (1 + ${k}/x²) = 1, q = lim (f(x) − x) = lim ${k}/x = 0. Teda y = x.`)+gfig({xr:[-6,6],yr:[-8,8],fns:[{f:x=>ev(f,x),cls:'c1'}],vl:[0],lines:[{k:1,q:0,cls:'as'}],label:'graf s asymptotami'},'Prerušované čiary sú asymptoty.')}}
   const a=rnd(1,3),d=pick([1,2,3,-1,-2]);const f=div(sqrtN(add(mul(N(a*a),pow(X,N(2))),N(1))),xm(d));
   return{kind:'Asymptoty',prompt:p_(`Nájdi asymptoty grafu funkcie ${FX(f)}.`),input:{t:'lines',lines:[['zvislá asymptota x = ',null],['vodorovná asymptota pre x → ∞:  y = ',null],['vodorovná asymptota pre x → −∞:  y = ',null]]},answer:[d,a,-a],
-    solution:p_(`Zvislá: x − ${nn(d)} = 0, čitateľ je v tomto bode kladný, preto x = ${nn(d)}.`)+p_(`Pre x → +∞: √(${a*a}x² + 1) = x·√(${a*a} + 1/x²) → ${a}x, preto f → ${a}.`)+p_(`Pre x → −∞ je √(…) = |x|·√(…) = −x·√(…), preto f → <b>${nn(-a)}</b>. Dve rôzne vodorovné asymptoty: y = ${a} a y = ${nn(-a)}.`)}}
+    solution:p_(`Zvislá: x − ${nn(d)} = 0, čitateľ je v tomto bode kladný, preto x = ${nn(d)}.`)+p_(`Pre x → +∞: √(${a*a}x² + 1) = x·√(${a*a} + 1/x²) → ${a}x, preto f → ${a}.`)+p_(`Pre x → −∞ je √(…) = |x|·√(…) = −x·√(…), preto f → <b>${nn(-a)}</b>. Dve rôzne vodorovné asymptoty: y = ${a} a y = ${nn(-a)}.`)+gfig({xr:[d-8,d+8],yr:[-3*a-1,3*a+1],fns:[{f:x=>ev(f,x),cls:'c1'}],vl:[d],hl:[a,-a],label:'graf s asymptotami'},'Prerušované čiary sú asymptoty.')}}
 
 function gContParam(){
   const a=rnd(2,6),b=rnd(2,5),k=rnd(1,5);
@@ -1516,6 +1527,60 @@ THEORY.prb={
    tex(p_(`${m_('f(x) = x³ − 3x')} na ⟨−2, 2⟩: f′ = 3(x² − 1) = 0 pre x = ±1. Hodnoty: f(−2) = −2, f(−1) = 2, f(1) = −2, f(2) = 2. Maximum 2 (v −1 aj 2), minimum −2 (v −2 aj 1).`)))+
   tsec('Príklad: f(x) = x³ − 3x²',ul(['D(f) = ℝ; nuly: x²(x − 3) = 0 ⇒ 0, 3.','f′ = 3x(x − 2): max v 0 (f = 0), min v 2 (f = −4).','f″ = 6(x − 1): konkávna na (−∞, 1), konvexná na (1, ∞), inflexný bod [1; −2].','Nemá asymptoty (polynóm); lim = ∞ pre x → ∞ a −∞ pre x → −∞.']))
 };
+
+
+/* ===== galérie grafov ===== */
+const PI_=Math.PI;
+const L_=(k,q,cls)=>({k,q,cls});
+THEORY.fun.full+=tsec('Ako vyzerajú základné funkcie',p_('Pri každom grafe sa pozri na definičný obor, súmernosť a rast.')+gal([
+ {o:{fns:[{f:x=>x*x,cls:'c1'}],xr:[-3,3],yr:[-1,7]},c:'y = x²: párna, klesá na (−∞, 0), rastie na (0, ∞)'},
+ {o:{fns:[{f:x=>x*x*x,cls:'c1'}],xr:[-2.2,2.2],yr:[-8,8]},c:'y = x³: nepárna, rastúca, prostá'},
+ {o:{fns:[{f:x=>1/x,cls:'c1'}],xr:[-4,4],yr:[-5,5],vl:[0],hl:[0]},c:'y = 1/x: nepárna, D = ℝ ∖ {0}, asymptoty'},
+ {o:{fns:[{f:x=>Math.sqrt(x),cls:'c1'}],xr:[-1,9],yr:[-1,4]},c:'y = √x: D = ⟨0, ∞), rastúca'},
+ {o:{fns:[{f:x=>Math.abs(x),cls:'c1'}],xr:[-4,4],yr:[-1,5]},c:'y = |x|: párna, v 0 má „roh“'},
+ {o:{fns:[{f:x=>x<0?NaN:Math.floor(x),cls:'c1'}],xr:[-1,5],yr:[-1,5]},c:'y = ⌊x⌋ (celá časť): schodovitá, nie je spojitá'}
+]));
+THEORY.pol.full+=tsec('Grafy polynómov a lomených funkcií',p_('Korene polynómu sú priesečníky grafu s osou x. Stupeň a znamienko vedúceho koeficientu určujú správanie na okrajoch.')+gal([
+ {o:{fns:[{f:x=>(x+1)*(x-3),cls:'c1'}],xr:[-3,5],yr:[-6,8],pts:[{x:-1,y:0,l:'−1'},{x:3,y:0,l:'3'}]},c:'(x + 1)(x − 3): dva korene, D > 0'},
+ {o:{fns:[{f:x=>(x-1)*(x-1),cls:'c1'}],xr:[-2,4],yr:[-1,6],pts:[{x:1,y:0,l:'1'}]},c:'(x − 1)²: dvojnásobný koreň, graf sa osi dotýka'},
+ {o:{fns:[{f:x=>(x+2)*(x-1)*(x-3)/3,cls:'c1'}],xr:[-3.5,4.2],yr:[-6,8],pts:[{x:-2,y:0},{x:1,y:0},{x:3,y:0}]},c:'kubický polynóm s tromi koreňmi'},
+ {o:{fns:[{f:x=>(2*x+1)/(x-1),cls:'c1'}],xr:[-5,7],yr:[-6,10],vl:[1],hl:[2]},c:'(2x + 1)/(x − 1): hyperbola s asymptotami x = 1, y = 2'}
+]));
+THEORY.ele.full+=tsec('Grafy elementárnych funkcií',gal([
+ {o:{fns:[{f:x=>Math.exp(x),cls:'c1'},{f:x=>Math.pow(.5,x),cls:'c2'}],xr:[-3,3],yr:[-1,8],hl:[0]},c:'eˣ rastie (a > 1), (1/2)ˣ klesá (0 < a < 1). Obe idú cez (0, 1)'},
+ {o:{fns:[{f:x=>x<=0?NaN:Math.log(x),cls:'c1'}],xr:[-1,8],yr:[-4,3],vl:[0]},c:'ln x: D = (0, ∞), prechádza cez (1, 0), asymptota x = 0'},
+ {o:{fns:[{f:Math.sin,cls:'c1'},{f:Math.cos,cls:'c2'}],xr:[-2*PI_,2*PI_],yr:[-1.6,1.6]},c:'sin x (modrá) a cos x (červená), perióda 2π'},
+ {o:{fns:[{f:Math.tan,cls:'c1'}],xr:[-PI_*1.4,PI_*1.4],yr:[-4,4],vl:[-PI_/2,PI_/2]},c:'tg x: perióda π, asymptoty v π/2 + kπ'},
+ {o:{fns:[{f:x=>Math.abs(x)>1?NaN:Math.asin(x),cls:'c1'},{f:x=>Math.abs(x)>1?NaN:Math.acos(x),cls:'c2'}],xr:[-1.3,1.3],yr:[-2,3.4]},c:'arcsin x (modrá) a arccos x (červená), D = ⟨−1, 1⟩'},
+ {o:{fns:[{f:Math.atan,cls:'c1'}],xr:[-8,8],yr:[-2,2],hl:[PI_/2,-PI_/2]},c:'arctg x: rastúca, asymptoty y = ±π/2'},
+ {o:{fns:[{f:Math.sinh,cls:'c1'},{f:Math.cosh,cls:'c2'}],xr:[-3,3],yr:[-4,6]},c:'sinh x (modrá, nepárna) a cosh x (červená, párna)'}
+]));
+THEORY.lim.full+=tsec('Limity na grafoch',p_('Limita sa pozerá na správanie funkcie v okolí bodu, hodnota v samotnom bode môže chýbať.')+gal([
+ {o:{fns:[{f:x=>x===0?NaN:Math.sin(x)/x,cls:'c1'}],xr:[-12,12],yr:[-.4,1.2],pts:[{x:0,y:1,l:'1'}]},c:'sin x / x → 1 pre x → 0, hoci v 0 nie je definovaná'},
+ {o:{fns:[{f:x=>x===2?NaN:(x*x-4)/(x-2),cls:'c1'}],xr:[-2,6],yr:[-1,9],pts:[{x:2,y:4,l:'4'}]},c:'(x² − 4)/(x − 2) = x + 2 pre x ≠ 2: v bode 2 „diera“, limita 4'},
+ {o:{fns:[{f:x=>1/(x*x),cls:'c1'}],xr:[-4,4],yr:[-1,10],vl:[0],hl:[0]},c:'1/x² → +∞ pre x → 0, vodorovná asymptota y = 0'},
+ {o:{fns:[{f:Math.atan,cls:'c1'}],xr:[-10,10],yr:[-2,2],hl:[PI_/2,-PI_/2]},c:'arctg x → ±π/2 pre x → ±∞'},
+ {o:{fns:[{f:x=>Math.abs(x)<1e-9?NaN:x*Math.sin(1/x),cls:'c1'}],xr:[-.6,.6],yr:[-.6,.6],pts:[{x:0,y:0}]},c:'x·sin(1/x) → 0 (sendvičová veta, |x·sin(1/x)| ≤ |x|)'},
+ {o:{fns:[{f:x=>x<0?-1:1,cls:'c1'}],xr:[-4,4],yr:[-2,2],pts:[{x:0,y:-1},{x:0,y:1}]},c:'sgn x: jednostranné limity −1 a 1, limita v 0 neexistuje'}
+]));
+THEORY.der.full+=tsec('Geometria derivácie',p_('Sečnica prechádza dvoma bodmi grafu. Keď sa druhý bod blíži k prvému, sečnica prejde na dotyčnicu a jej smernica je derivácia.')+gal([
+ {o:{W:300,H:230,fns:[{f:x=>x*x/2,cls:'c1'}],xr:[-1,4],yr:[-1,6],lines:[L_(1.5,-1.5,'as'),L_(1,-.5,'ln2')],pts:[{x:1,y:.5,l:'A'},{x:3,y:4.5,l:'B'}]},c:'sečnica AB (prerušovaná) a dotyčnica v A (zelená)'},
+ {o:{fns:[{f:x=>Math.abs(x),cls:'c1'}],xr:[-3,3],yr:[-.5,3.5],pts:[{x:0,y:0,l:'roh'}]},c:'|x| v 0: f′₋ = −1, f′₊ = 1, derivácia neexistuje'},
+ {o:{fns:[{f:x=>x<0?NaN:Math.sqrt(x),cls:'c1'}],xr:[-.5,4],yr:[-.5,2.5],pts:[{x:0,y:0}]},c:'√x v 0: zvislá dotyčnica, derivácia nie je vlastná'},
+ {o:{fns:[{f:x=>Math.pow(Math.abs(x),1/3)*Math.sign(x),cls:'c1'}],xr:[-3,3],yr:[-2,2],pts:[{x:0,y:0}]},c:'∛x v 0: zvislá dotyčnica (f′ = +∞), funkcia je tam spojitá'}
+]));
+THEORY.app.full+=tsec('Dotyčnica a normála na obrázku',p_('Normála je kolmá na dotyčnicu. Preto sú ich smernice k a −1/k.')+gal([
+ {o:{W:280,H:280,fns:[{f:x=>x*x,cls:'c1'}],xr:[-2,4],yr:[-2,6],lines:[L_(2,-1,'ln2'),L_(-.5,1.5,'as')],pts:[{x:1,y:1,l:'T'}]},c:'f(x) = x² v T = [1; 1]: dotyčnica y = 2x − 1 (zelená), normála y = −x/2 + 3/2 (prerušovaná)'},
+ {o:{fns:[{f:x=>Math.sqrt(x),cls:'c1'}],xr:[-.5,9],yr:[-.5,4],lines:[L_(1/6,1.5,'ln2')],pts:[{x:9,y:3,l:'T'}]},c:'lineárna aproximácia: √x ≈ 3 + (x − 9)/6 blízko x₀ = 9'}
+]));
+THEORY.tay.full+=tsec('Taylorove polynómy na grafoch',p_('Čím vyšší stupeň, tým dlhšie sa polynóm drží pri funkcii. Mimo stredu sa vždy odchýli.')+gal([
+ {o:{fns:[{f:Math.sin,cls:'c1'},{f:x=>x,cls:'c2'},{f:x=>x-x*x*x/6,cls:'c3'},{f:x=>x-x*x*x/6+Math.pow(x,5)/120,cls:'c4'}],xr:[-5,5],yr:[-2.5,2.5]},c:'sin x (modrá) a T₁, T₃, T₅ (červená, zelená, oranžová) v bode 0'},
+ {o:{fns:[{f:Math.exp,cls:'c1'},{f:x=>1+x,cls:'c2'},{f:x=>1+x+x*x/2,cls:'c3'},{f:x=>1+x+x*x/2+x*x*x/6,cls:'c4'}],xr:[-3,2.5],yr:[-2,10]},c:'eˣ (modrá) a T₁, T₂, T₃ v bode 0'}
+]));
+THEORY.prb.full+=tsec('Priebeh funkcie na obrázku',p_('Funkcia f(x) = x³ − 3x², lokálne maximum v 0, lokálne minimum v 2 a inflexný bod v 1.')+gal([
+ {o:{fns:[{f:x=>x*x*x-3*x*x,cls:'c1'}],xr:[-1.5,3.5],yr:[-6,6],pts:[{x:0,y:0,l:'max'},{x:2,y:-4,l:'min'},{x:1,y:-2,l:'inflexia'}]},c:'f′ = 3x(x − 2), f″ = 6(x − 1)'},
+ {o:{fns:[{f:x=>3*x*x-6*x,cls:'c2'},{f:x=>6*x-6,cls:'c3'}],xr:[-1.5,3.5],yr:[-8,12],pts:[{x:0,y:0},{x:2,y:0},{x:1,y:0}]},c:'f′ (červená): nuly v 0 a 2, f″ (zelená): nula v 1'}
+]));
 
 /* priradenie teórie témam */
 function attachTheory(){TOPICS.forEach(t=>{const th=THEORY[t.id];if(th){t.theory=th.theory;t.full=th.full}})}
