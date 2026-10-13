@@ -142,8 +142,9 @@ kbd{font:500 .8em var(--f-mono);background:var(--soft);padding:1px 6px;border-ra
 .sw.ring{background:transparent;border:2px solid var(--c)}
 
 sub{font-size:.72em;line-height:0}
-.ov{display:inline-block;border-top:1.5px solid currentColor;padding:3px 1px 0;line-height:1.15}
-.ov .ov{margin-top:0}
+.ov{text-decoration:overline;text-decoration-thickness:1.5px;text-underline-offset:0}
+.ov:has(.ov){text-decoration:none;border-top:1.5px solid currentColor;padding:4px 1px 0}
+.ov:has(.ov .ov){padding-top:9px}
 .ttwrap{overflow-x:auto;max-width:100%;margin:8px 0}
 .tt{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:.92rem}
 .tt th,.tt td{border:1px solid var(--line);padding:3px 10px;text-align:center}
