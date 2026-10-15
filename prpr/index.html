@@ -1,0 +1,1728 @@
+<title>Cvičebnica PRPR</title>
+<meta property="og:type" content="website">
+<meta property="og:title" content="Cvičebnica PRPR">
+<meta property="og:description" content="Procedurálne programovanie v C: výstup programov, operátory, cykly, funkcie, súbory, ukazovatele, reťazce a dynamická pamäť.">
+<meta property="og:url" content="https://boborkoyt.github.io/cvicebnice/prpr/">
+<meta property="og:image" content="https://boborkoyt.github.io/cvicebnice/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#c42a3c">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: ľavý panel s témami, vpravo karta s príkladom. Farby skupín v mape sú tokeny --g1 až --g6 */
+:root{
+  --bg:#f3f5f8; --card:#ffffff; --fg:#1c2331; --muted:#5d6678; --rule:#dfe6f0; --line:#cfd8e6;
+  --red:#c42a3c; --blue:#1d5fc4; --green:#1b8450; --amber:#b86e00;
+  --ok-bg:#e3f4ea; --bad-bg:#fbe6e8; --soft:#e9eef7;
+  --g1:#d6336c; --g2:#12875a; --g3:#d9730d; --g4:#6a4fd1; --g5:#0f86c4; --g6:#9a7b00; --wire:#44506a;
+  --f-display:'Caveat','Segoe Print','Bradley Hand',cursive; --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif; --f-mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111620; --card:#192030; --fg:#e7ebf3; --muted:#9aa5ba; --rule:#202a3c; --line:#33415a;
+  --red:#ff7f8c; --blue:#80aaff; --green:#58d28e; --amber:#f0b14a;
+  --ok-bg:#16382a; --bad-bg:#44212a; --soft:#222c40; --g1:#ff7ab0; --g2:#4fd69e; --g3:#ffa94d; --g4:#a99bff; --g5:#5cc6ff; --g6:#e6c24a; --wire:#9fb0cf; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111620; --card:#192030; --fg:#e7ebf3; --muted:#9aa5ba; --rule:#202a3c; --line:#33415a;
+  --red:#ff7f8c; --blue:#80aaff; --green:#58d28e; --amber:#f0b14a;
+  --ok-bg:#16382a; --bad-bg:#44212a; --soft:#222c40; --g1:#ff7ab0; --g2:#4fd69e; --g3:#ffa94d; --g4:#a99bff; --g5:#5cc6ff; --g6:#e6c24a; --wire:#9fb0cf; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.55 var(--f-body);padding-inline:16px;padding-block:20px 40px;
+  background-image:linear-gradient(var(--rule) 1px,transparent 1px);background-size:100% 32px}
+.app{max-width:1060px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font:700 2.6rem/1 var(--f-display);color:var(--red);margin:0;letter-spacing:.01em}
+.top{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:flex-end;justify-content:space-between}
+.sub{margin:4px 0 0;color:var(--muted);font-size:.95rem}
+.score{display:flex;gap:18px;font-variant-numeric:tabular-nums}
+.score div{display:flex;flex-direction:column;line-height:1.2}
+.score b{font:600 1.4rem var(--f-body)}
+.score span{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:20px;align-items:start}
+nav.topics{display:flex;flex-direction:column;gap:8px;position:sticky;top:16px}
+.tbtn{all:unset;box-sizing:border-box;cursor:pointer;display:block;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;transition:border-color .15s,background .15s}
+.tbtn:hover{border-color:var(--blue)}
+.tbtn:focus-visible,.btn:focus-visible,.opt:focus-visible,summary:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.tbtn[aria-pressed="true"]{border-color:var(--blue);background:var(--soft)}
+.tbtn .n{display:flex;justify-content:space-between;gap:8px;font-weight:600;font-size:.95rem}
+.tbtn .n em{font-style:normal;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums;font-size:.85rem}
+.tbtn .s{font-size:.8rem;color:var(--muted)}
+.bar{height:4px;border-radius:2px;background:var(--rule);margin-top:7px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green);width:0}
+.reset{all:unset;cursor:pointer;font-size:.8rem;color:var(--muted);text-decoration:underline;padding:4px 2px}
+.reset:focus-visible{outline:3px solid var(--blue)}
+main{display:flex;flex-direction:column;gap:14px;min-width:0}
+details.theory{background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:0}
+details.theory summary{cursor:pointer;padding:10px 14px;font:700 1.35rem var(--f-display);color:var(--green);list-style:none}
+details.theory summary::before{content:"＋ ";font-family:var(--f-body);font-size:.9rem}
+details.theory[open] summary::before{content:"− "}
+details.theory .in{padding:0 16px 12px;font-size:.93rem}
+details.theory ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:5px}
+.card{scroll-margin-top:12px;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:20px 20px 22px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.meta{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;color:var(--muted);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase}
+.chip{background:var(--soft);color:var(--blue);padding:3px 10px;border-radius:99px;font-weight:600}
+.prompt{font-size:1.05rem;min-width:0}
+.prompt p{margin:.5em 0}.muted{color:var(--muted);font-size:.88rem}
+.eq{margin:10px 0;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;overflow-x:auto;max-width:100%;padding-block:4px}
+.gap{display:inline-block;width:14px}
+.lbl{color:var(--blue);font-weight:600;white-space:nowrap}
+.sys{display:inline-flex;flex-direction:column;gap:2px;margin:8px 0;padding:4px 0 4px 14px;border-left:3px solid var(--blue);font-size:1.1rem;font-variant-numeric:tabular-nums}
+.op{display:inline-block;background:var(--soft);color:var(--red);padding:1px 8px;border-radius:6px;font-family:var(--f-mono);font-size:.88em;white-space:nowrap}
+.mx{display:inline-block;position:relative;padding:4px 10px;margin:0 3px;vertical-align:middle}
+.mx::before,.mx::after{content:"";position:absolute;top:0;bottom:0;width:7px;border:2px solid currentColor}
+.mx::before{left:0;border-right:0}.mx::after{right:0;border-left:0}
+.mx table{border-collapse:collapse}
+.mx td{padding:3px 9px;text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mx td.aug{border-left:2px solid currentColor}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:.82em;line-height:1.1;margin:0 .1em}
+.fr i{font-style:normal;padding:0 .2em}.fr i:first-child{border-bottom:1.5px solid currentColor}
+.answer{display:flex;flex-direction:column;gap:10px;align-items:flex-start;padding:14px 16px;background:var(--soft);border-radius:10px;max-width:100%;overflow-x:auto}
+.answer .lbl2{font:700 1.25rem var(--f-display);color:var(--red)}
+.cell{font:500 1rem var(--f-mono);width:4.6em;padding:6px 6px;text-align:center;border:1.5px solid var(--line);border-radius:7px;background:var(--card);color:var(--fg)}
+.cell:focus{outline:3px solid var(--blue);outline-offset:0;border-color:var(--blue)}
+.cell.ok{border-color:var(--green);background:var(--ok-bg)}.cell.bad{border-color:var(--red);background:var(--bad-bg)}
+.cell:read-only{cursor:default}
+.ln{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
+.ln .t{white-space:nowrap}
+.mx.in td{padding:3px 4px}
+.opts{display:flex;flex-direction:column;gap:8px;align-items:stretch;width:100%;max-width:520px}
+.opt{all:unset;box-sizing:border-box;cursor:pointer;border:1.5px solid var(--line);background:var(--card);border-radius:9px;padding:10px 14px;display:block}
+.opt:hover{border-color:var(--blue)}
+.opt[aria-checked="true"]{border-color:var(--blue);background:var(--soft)}
+.opt.ok{border-color:var(--green);background:var(--ok-bg)}.opt.bad{border-color:var(--red);background:var(--bad-bg)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{all:unset;box-sizing:border-box;cursor:pointer;padding:10px 18px;border-radius:9px;font-weight:600;border:1.5px solid var(--line);background:var(--card);color:var(--fg)}
+.btn:hover{border-color:var(--blue)}
+.btn.main{background:var(--blue);border-color:var(--blue);color:#fff}
+:root[data-theme="dark"] .btn.main{color:#0d1424}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.main{color:#0d1424}}
+.btn[disabled]{opacity:.45;cursor:default}
+.fb{padding:10px 14px;border-radius:9px;font-weight:500}
+.fb.ok{background:var(--ok-bg);color:var(--green)}.fb.bad{background:var(--bad-bg);color:var(--red)}.fb.warn{background:var(--soft);color:var(--amber)}
+.sol{border-top:2px dashed var(--line);padding-top:12px}
+.sol h3{font:700 1.4rem var(--f-display);color:var(--green);margin:0 0 4px}
+.sol p{margin:.4em 0}.sol ul{margin:.4em 0;padding-left:1.2em}
+.steps{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.st{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;overflow-x:auto;max-width:100%}
+.st .op{min-width:8.5em}
+kbd{font:500 .8em var(--f-mono);background:var(--soft);padding:1px 6px;border-radius:5px}
+
+.tabs{display:flex;flex-wrap:wrap;gap:6px;border-bottom:2px solid var(--line)}
+.tab{all:unset;box-sizing:border-box;cursor:pointer;padding:9px 16px;font-weight:600;color:var(--muted);border:2px solid transparent;border-bottom:0;border-radius:9px 9px 0 0;margin-bottom:-2px}
+.tab:hover{color:var(--fg)}
+.tab[aria-selected="true"]{color:var(--blue);background:var(--card);border-color:var(--line)}
+.tab:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.split{display:flex;flex-direction:column;gap:14px;min-width:0}
+.tpane{display:none;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:6px 20px 18px;min-width:0}
+.tpane h3{font:700 2rem/1.1 var(--f-display);color:var(--red);margin:12px 0 0}
+.tsec{padding-top:14px}
+.tsec h4{font:700 1.45rem/1.1 var(--f-display);color:var(--green);margin:0 0 4px}
+.tsec p{margin:.4em 0}.tsec ul,.tsec ol{margin:.4em 0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+.tex{border-left:3px solid var(--blue);background:var(--soft);border-radius:0 8px 8px 0;padding:6px 12px;margin:8px 0;overflow-x:auto;max-width:100%}
+.tex p{margin:.3em 0}
+.app[data-view="theory"]{max-width:1320px}
+.app[data-view="theory"] details.theory{display:none}
+.app[data-view="theory"] .tpane{display:block}
+@media (min-width:1100px){
+  .app[data-view="theory"] .split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;gap:18px}
+  .app[data-view="theory"] .card{position:sticky;top:16px;max-height:calc(100vh - 32px);overflow-y:auto}
+}
+
+.ttwrap{overflow-x:auto;max-width:100%;margin:8px 0}
+.tt{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:.92rem}
+.tt th,.tt td{border:1px solid var(--line);padding:3px 10px;text-align:center}
+.tt th{background:var(--soft);font-weight:600}
+.tt td.de{color:var(--muted)}
+.tt td.o.one{color:var(--blue);font-weight:600}
+.tt.tl td,.tt.tl th{text-align:left}
+details.gl{margin:4px 0}details.gl summary{cursor:pointer;color:var(--muted);font-size:.85rem}
+details.gl ul,ul.gl2{margin:4px 0;padding-left:0;list-style:none;display:flex;flex-wrap:wrap;gap:2px 22px}
+.cell.wide{width:11em;text-align:left}
+.cell.expr{width:min(100%,26em);text-align:left;font-size:1.05rem}
+.cell.warn{border-color:var(--amber)}
+.insbar{display:flex;gap:6px;flex-wrap:wrap}
+.ib{all:unset;box-sizing:border-box;cursor:pointer;min-width:2.4rem;text-align:center;padding:5px 10px;border:1.5px solid var(--line);border-radius:7px;background:var(--card);font:500 1rem var(--f-mono)}
+.ib:hover{border-color:var(--blue)}.ib:focus-visible{outline:3px solid var(--blue)}
+.rowsq{display:flex;flex-direction:column;gap:10px}
+.rq{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:8px}
+.rl{flex:1 1 18em;min-width:0}
+.ro{display:flex;gap:6px}
+.opt.sm{padding:6px 12px;font-size:.9rem;white-space:nowrap}
+code.w{font:500 1rem var(--f-mono);background:var(--soft);padding:1px 8px;border-radius:6px;letter-spacing:.1em}
+.cell{width:3.6em}
+.ln .cell.expr{width:min(100%,26em)}
+@media (max-width:820px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  nav.topics{flex-direction:row;overflow-x:auto;position:static;padding-bottom:6px;gap:8px}
+  .tbtn{flex:0 0 auto;min-width:170px}
+  .tbtn .s{display:none}
+  h1{font-size:2.2rem}.card{padding:16px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* --- PRPR: kód a výstup programu --- */
+pre.code{margin:10px 0;padding:12px 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;overflow-x:auto;font:500 .88rem/1.5 var(--f-mono);max-width:100%;tab-size:4}
+pre.code code{font:inherit;white-space:pre}
+pre.code.inl{margin:0;padding:6px 10px;font-size:.82rem;background:transparent;border:0}
+pre.code .k{color:var(--blue);font-weight:600}pre.code .c{color:var(--muted);font-style:italic}pre.code .s{color:var(--green)}pre.code .p{color:var(--amber)}pre.code .n{color:var(--red)}
+code.ic{font:500 .88em var(--f-mono);background:var(--soft);padding:1px 6px;border-radius:5px;white-space:pre-wrap}
+pre.outbox{margin:6px 0;padding:8px 12px;background:var(--card);border:1.5px dashed var(--line);border-radius:8px;font:500 .9rem/1.45 var(--f-mono);overflow-x:auto;max-width:100%}
+textarea.cell.out{width:min(100%,36em);min-height:5.5em;text-align:left;font:500 .95rem/1.45 var(--f-mono);resize:vertical;white-space:pre;overflow:auto}
+.tt.tl td code.ic{white-space:nowrap}
+@media (min-width:821px){nav.topics{max-height:calc(100vh - 32px);overflow-y:auto;padding-right:4px}}
+.opt pre.code{overflow-x:auto}
+</style>
+<style>.backlink{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--muted);font-weight:600;font-size:.9rem;padding:6px 12px 6px 10px;border:1.5px solid var(--line);border-radius:99px;background:var(--card);transition:border-color .15s,color .15s}.backlink:hover{color:var(--blue);border-color:var(--blue)}.backlink:focus-visible{outline:3px solid var(--blue);outline-offset:2px}</style>
+<div class="app" id="app" data-view="practice">
+  <a class="backlink" href="../">← Cvičebnice</a>
+  <header class="top">
+    <div>
+      <h1>Cvičebnica PRPR</h1>
+      <p class="sub">Procedurálne programovanie v jazyku C: operátory, cykly, funkcie, súbory, ukazovatele, reťazce a dynamická pamäť. Každý príklad je nový, programy si odkrokuješ sám.</p>
+    </div>
+    <div class="score" id="score"></div>
+  </header>
+  <div class="tabs" role="tablist" aria-label="Zobrazenie"><button class="tab" role="tab" id="tab-practice" aria-selected="true" data-v="practice">Cvičenie</button><button class="tab" role="tab" id="tab-theory" aria-selected="false" data-v="theory">Teória + cvičenie</button></div>
+  <div class="layout">
+    <nav class="topics" id="nav" aria-label="Témy"></nav>
+    <main>
+      <details class="theory" id="theory"><summary></summary><div class="in"></div></details>
+      <div class="split"><article class="tpane" id="tpane" aria-label="Teória"></article><section class="card" id="card" aria-live="off"></section></div>
+    </main>
+  </div>
+</div>
+<style>
+/* --- nadstavby: skúška, ťahák, kartičky, tlač --- */
+.xv,#printarea{display:none}
+.app[data-view="exam"] #xv-exam,.app[data-view="sheet"] #xv-sheet,.app[data-view="cards"] #xv-cards{display:block}
+.app[data-view="exam"] .layout,.app[data-view="sheet"] .layout,.app[data-view="cards"] .layout{display:none}
+.xcard{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:18px 20px 20px;margin-bottom:14px}
+.xcard h3,.xv h4{font:700 1.7rem/1.1 var(--f-display);color:var(--red);margin:0 0 6px}
+.xv h4{font-size:1.3rem;color:var(--green);margin:14px 0 6px}
+.xgrid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:20px}
+@media (max-width:760px){.xgrid{grid-template-columns:minmax(0,1fr)}}
+.chks{display:flex;flex-direction:column;gap:4px}
+.chk,.fld{display:flex;gap:8px;align-items:flex-start;font-size:.95rem}
+.chk input{margin-top:.3em;accent-color:var(--blue)}
+.fld{flex-direction:column;gap:4px;margin:8px 0;font-weight:600}
+.fld select{font:500 1rem var(--f-body);padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);color:var(--fg);max-width:100%}
+.xhead{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;margin-bottom:12px;padding:10px 14px;background:var(--card);border:1.5px solid var(--line);border-radius:12px}
+.xtime{font:600 1.3rem var(--f-mono);font-variant-numeric:tabular-nums;color:var(--blue)}.xtime.low{color:var(--red)}
+.weak{margin:4px 0;padding-left:1.2em}
+details.rev{background:var(--card);border:1.5px solid var(--line);border-radius:10px;margin:8px 0;padding:0 14px}
+details.rev summary{cursor:pointer;padding:10px 0;font-weight:600;list-style:none}
+details.rev .mark{display:inline-block;width:1.5em;text-align:center;font-weight:700}
+details.rev.ok{border-color:var(--green)}details.rev.ok .mark{color:var(--green)}
+details.rev.bad{border-color:var(--red)}details.rev.bad .mark{color:var(--red)}
+details.rev[open]{padding-bottom:12px}
+.chl{margin:6px 0;padding-left:1.2em}.chl .right{color:var(--green)}
+.golink{all:unset;cursor:pointer;margin-left:12px;color:var(--blue);text-decoration:underline;font-weight:500}
+.golink:focus-visible{outline:3px solid var(--blue)}
+label.focus{display:flex;gap:8px;align-items:flex-start;font-size:.82rem;color:var(--muted);padding:6px 2px}
+label.focus input{accent-color:var(--blue);margin-top:.2em}
+.io{display:flex;flex-direction:column;gap:2px}
+.sheetgrid{columns:2 320px;column-gap:20px}
+.sheetgrid section{break-inside:avoid;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:2px 14px 10px;margin:0 0 14px;font-size:.9rem}
+.sheetgrid ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:4px}
+.flash{background:var(--soft);border-radius:12px;padding:18px 20px;margin:12px 0;min-height:7em}
+.flash.back{border:2px solid var(--green)}
+.flash .ans{margin:12px 0;padding:8px 12px;background:var(--ok-bg);border-radius:8px}
+.lab{border:1.5px solid var(--line);border-radius:12px;background:var(--soft);padding:10px 14px 14px;margin:14px 0}
+.lab h5{font:700 1.25rem var(--f-display);color:var(--red);margin:0 0 6px}
+.lab .ctr{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;margin-top:8px}
+.lab label{display:grid;grid-template-columns:minmax(7em,auto) minmax(0,1fr) 3.6em;gap:8px;align-items:center;font-size:.9rem}
+.lab label b{font:500 .85rem var(--f-mono);text-align:right}
+.lab input[type=range]{width:100%;accent-color:var(--blue)}
+.lab select{font:500 .95rem var(--f-body);padding:5px 8px;border:1.5px solid var(--line);border-radius:7px;background:var(--card);color:var(--fg);max-width:100%}
+.lab .out{margin-top:6px;font-size:.92rem;min-height:2.6em}
+.lab .plotw{margin:0 auto}
+.apl{border:1.5px solid var(--line);border-radius:12px;background:var(--soft);padding:10px 14px 14px;margin:12px 0}
+.apl h5{font:700 1.25rem var(--f-display);color:var(--red);margin:0 0 6px}
+.apl .wd{display:flex;gap:4px;flex-wrap:wrap;margin:6px 0}
+.apl .wd span{min-width:2em;text-align:center;padding:3px 6px;border:1.5px solid var(--line);border-radius:6px;background:var(--card);font:500 1rem var(--f-mono)}
+.apl .wd span.cur{border-color:var(--blue);background:var(--blue);color:#fff}
+.apl .wd span.done{color:var(--muted)}
+.apl .st-out{font-size:.92rem;min-height:2.2em;margin:4px 0}
+.apl .ctl{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.apl .ctl button{all:unset;cursor:pointer;padding:6px 14px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);font-weight:600;font-size:.9rem}
+.apl .ctl button:hover{border-color:var(--blue)}
+.apl .ctl button:focus-visible{outline:3px solid var(--blue)}
+svg.aut .st.on{fill:var(--blue);stroke:var(--blue)}
+svg.aut .st.on ~ .sn,svg.aut .st.on ~ .so{fill:#fff}
+svg.aut .e.on{stroke:var(--blue);stroke-width:3}
+@media print{
+  body{background:#fff!important;color:#000!important;padding:0!important;background-image:none!important}
+  .app[data-view="sheet"]>*:not(#xv-sheet){display:none!important}
+  .noprint{display:none!important}
+  .sheetgrid{columns:2;column-gap:14px;font-size:9.5pt}
+  .sheetgrid section{border:1px solid #888;background:#fff}
+  body.ws .app{display:none!important}
+  body.ws #printarea{display:block;font-size:11pt}
+  #printarea h2{font:700 18pt var(--f-body);margin:0 0 6px}
+  .wsq{break-inside:avoid;margin:0 0 14px;padding-bottom:8px;border-bottom:1px dashed #999}
+  .wsl{margin-top:12px}
+  .pbreak{break-after:page}
+  #printarea .sol{display:none}
+}
+/* karta sa po odpovedi nesmie zmršťovať: položky si držia výšku, karta sa skrolluje */
+.card>*{flex-shrink:0}
+.answer{flex-shrink:0;overflow-y:hidden}
+</style>
+<script>
+'use strict';
+/* ================= náhoda a pomôcky ================= */
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[R(0,a.length-1)];
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=R(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+const uniq=a=>[...new Set(a)];
+const sg=n=>n<0?'−'+(-n):''+n;
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const NUL=null;
+const linesIn=l=>({t:'lines',lines:l});
+const mcq=(opts,cor)=>{const o=shuf(opts);return{input:{t:'choice',opts:o},answer:[o.indexOf(cor)]}};
+const mcq3=(cor,wrong)=>mcq([cor,...shuf(uniq(wrong).filter(x=>x!==cor)).slice(0,3)],cor);
+const bank=arr=>()=>{const [q,c,w,e]=pick(arr);return{kind:'Teória',prompt:q,...mcq3(c,w),solution:`<p>${e||c}</p>`}};
+const i32=x=>x|0;
+const tdiv=(a,b)=>Math.trunc(a/b);
+
+/* ================= kód: zvýraznenie ================= */
+const KW=/^(int|char|float|double|void|long|short|unsigned|signed|const|if|else|for|while|do|switch|case|default|break|continue|return|sizeof|struct|static|FILE|NULL|EOF|size_t)$/;
+function hl(src){
+  const re=/(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|("(?:\\.|[^"\\\n])*")|('(?:\\.|[^'\\\n])+')|(^[ \t]*#[^\n]*)|([A-Za-z_]\w*)|(\b\d[\w.]*)/gm;
+  let out='',last=0,m;
+  while((m=re.exec(src))){
+    out+=esc(src.slice(last,m.index));const t=m[0];
+    if(m[1])out+=`<span class="c">${esc(t)}</span>`;
+    else if(m[2]||m[3])out+=`<span class="s">${esc(t)}</span>`;
+    else if(m[4])out+=`<span class="p">${esc(t)}</span>`;
+    else if(m[5])out+=KW.test(t)?`<span class="k">${t}</span>`:t;
+    else out+=`<span class="n">${t}</span>`;
+    last=re.lastIndex}
+  return out+esc(src.slice(last))}
+const code=src=>`<pre class="code"><code>${hl(String(src).replace(/\s+$/,''))}</code></pre>`;
+const ic=s=>`<code class="ic">${esc(s)}</code>`;
+const outbox=s=>`<pre class="outbox">${esc(String(s).replace(/\n$/,''))}</pre>`;
+const HDR='#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <ctype.h>\n';
+
+/* ================= printf: emulácia formátov ================= */
+function cfix(x,n){
+  const ax=Math.abs(x);let s=ax.toFixed(n);
+  const sc=Math.pow(10,n),y=ax*sc;
+  if(y-Math.floor(y)===0.5&&Number.isInteger(ax*Math.pow(2,n+1))){const f=Math.floor(y);s=((f%2===0?f:f+1)/sc).toFixed(n)}
+  return (x<0?'-':'')+s}
+function cexp(x,p,up){
+  let s=x.toExponential(p);s=s.replace(/e([+-])(\d)$/,'e$10$2');return up?s.toUpperCase():s}
+function cg(x,p,up){
+  if(p===undefined)p=6;if(p===0)p=1;
+  if(x===0)return'0';
+  const e=x.toExponential(p-1),X=+e.split('e')[1];
+  let s;
+  if(X<-4||X>=p){s=cexp(x,p-1,up);s=s.replace(/\.?0+(e)/i,'$1')}
+  else{s=x.toFixed(Math.max(0,p-1-X));if(s.includes('.'))s=s.replace(/\.?0+$/,'')}
+  return s}
+function cprintf(fmt,...args){
+  let ai=0;
+  return fmt.replace(/%([-0+ #]*)(\d+)?(?:\.(\d+))?(hh|h|ll|l|L|z)?([diouxXcsfeEgG%])/g,(m,fl,w,p,len,cv)=>{
+    if(cv==='%')return'%';
+    const a=args[ai++];let s,num=true;
+    switch(cv){
+      case'd':case'i':s=String(Math.trunc(a));if(fl.includes('+')&&a>=0)s='+'+s;else if(fl.includes(' ')&&a>=0)s=' '+s;break;
+      case'u':s=String(a<0?a+(len==='l'||len==='ll'||len==='z'?18446744073709551616:4294967296):a);break;
+      case'x':s=(a>>>0).toString(16);break;
+      case'X':s=(a>>>0).toString(16).toUpperCase();break;
+      case'o':s=(a>>>0).toString(8);break;
+      case'c':s=typeof a==='string'?a:String.fromCharCode(a);num=false;break;
+      case's':s=String(a);if(p!==undefined)s=s.slice(0,+p);num=false;break;
+      case'f':s=cfix(a,p===undefined?6:+p);if(fl.includes('+')&&a>=0)s='+'+s;break;
+      case'e':case'E':s=cexp(a,p===undefined?6:+p,cv==='E');break;
+      default:s=cg(a,p===undefined?undefined:+p,cv==='G')}
+    if(w&&s.length<+w){
+      const pad=+w-s.length;
+      if(fl.includes('-'))s=s+' '.repeat(pad);
+      else if(fl.includes('0')&&num){const sign=/^[+-]/.test(s)?s[0]:'';s=sign+'0'.repeat(pad)+s.slice(sign.length)}
+      else s=' '.repeat(pad)+s}
+    return s})}
+
+/* ================= pomocné konštruktory úloh ================= */
+const normOut=s=>String(s).replace(/\r/g,'').split('\n').map(l=>l.replace(/[ \t]+/g,' ').trim()).join('\n').replace(/^\n+|\n+$/g,'');
+const rowsOf=e=>Math.max(2,Math.min(10,String(e).split('\n').length+1));
+/* úloha „čo vypíše program“: src je celý program (bez #include), T je údaj pre automatický test v gcc */
+function outQ(kind,intro,src,expect,solution,o={}){
+  const stdin=o.stdin||'',files=o.files||{};
+  const inHtml=stdin?`<p>Vstup z klávesnice:</p>${outbox(stdin)}`:'';
+  const fHtml=Object.keys(files).map(k=>`<p>Súbor <b>${k}</b>${files[k].note?' ('+files[k].note+')':''}:</p>${outbox(files[k].text)}`).join('');
+  return{kind,prompt:`${intro}${code(src)}${inHtml}${fHtml}<p>Čo program vypíše na obrazovku?</p>`,
+    input:{t:'out',rows:rowsOf(expect)},answer:[expect],solution,
+    T:{src:HDR+src,stdin,files:Object.fromEntries(Object.keys(files).map(k=>[k,files[k].text])),expect}}}
+/* číselná odpoveď na otázku k programu; test porovná výstup programu s hodnotou */
+function numQ(kind,intro,src,labels,vals,solution,o={}){
+  const body=src?code(src):'';
+  return{kind,prompt:`${intro}${body}`,input:linesIn(labels.map(l=>[l,NUL])),answer:vals,solution,
+    T:src&&o.expect!==undefined?{src:HDR+src,stdin:o.stdin||'',files:{},expect:o.expect}:undefined}}
+const fmtList=(a,sep=' ')=>a.join(sep);
+const tbl=(head,rows)=>`<div class="ttwrap"><table class="tt tl"><thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+/* tabuľka krokov: hlavička + riadky (hodnoty premenných po jednotlivých krokoch) */
+const trace=(head,rows)=>tbl(head,rows);
+'use strict';
+/* ===== 1. Kompilácia a základy ===== */
+const B1=[
+ ['Ktorý príkaz vykoná iba predspracovanie zdrojového súboru program.c (odstránenie komentárov, vloženie hlavičkových súborov, makrá)?','gcc -E program.c',['gcc -S program.c','gcc -c program.c','gcc -o program.c'],'Prepínač -E zastaví preklad po predspracovaní (preprocesor). -S dá asemblerový kód, -c objektový súbor .o.'],
+ ['Ktorý prepínač gcc preloží zdrojový kód do asemblerového kódu (súbor .s)?','-S',['-E','-c','-o'],'-E predspracovanie, -S kompilácia do asembleru, -c zostavenie do objektového súboru, bez prepínača sa vykoná aj linkovanie.'],
+ ['Čo vytvorí príkaz gcc -c program.c?','Objektový súbor program.o (bez linkovania)',['Spustiteľný súbor a.out','Asemblerový súbor program.s','Predspracovaný zdrojový kód'],'Prepínač -c vykoná preklad a zostavenie, ale nelinkuje. Výsledkom je objektový súbor .o so strojovým kódom a relatívnymi adresami.'],
+ ['Čo robí prepínač -o pri príkaze gcc program.c -o moj_program?','Určí meno výstupného (spustiteľného) súboru',['Optimalizuje program','Vypíše podrobné hlásenia kompilátora','Zapne ladenie programu'],'Bez -o sa vytvorí súbor a.out (Linux). Prepínač -o nastaví vlastné meno.'],
+ ['Ktorá fáza prekladu nahradí relatívne adresy absolútnymi a spojí objektové súbory a knižnice do spustiteľného súboru?','Linkovanie (linker)',['Predspracovanie (preprocesor)','Kompilácia do asembleru','Zostavovanie (assembler)'],'Linker spája .o súbory a knižnice (napr. štandardnú knižnicu C) a vytvorí spustiteľný binárny súbor.'],
+ ['Ktorá fáza prekladu prekladá asemblerový kód do strojového kódu (objektový súbor)?','Zostavovanie (assembler)',['Predspracovanie','Linkovanie','Ladenie (debugger)'],'Poradie: preprocesor (.c → .c), kompilátor (.c → .s), assembler (.s → .o), linker (.o → spustiteľný súbor).'],
+ ['Ktorá fáza prekladu kontroluje syntax a prekladá zdrojový kód do asembleru?','Kompilácia',['Predspracovanie','Zostavovanie','Linkovanie'],'Kompilátor kontroluje syntax a generuje asemblerový kód (gcc -S).'],
+ ['Na čo slúži riadok #include <stdio.h>?','Vloží hlavičkový súbor s deklaráciami funkcií štandardného vstupu a výstupu (printf, scanf, …)',['Spustí program','Definuje funkciu main','Importuje celú štandardnú knižnicu do programu ako moduly'],'Jazyk C je nízkej úrovne, mnohé funkcie nie sú súčasťou jazyka, ale knižníc. Hlavičkový súbor .h obsahuje ich deklarácie.'],
+ ['Ako sa v C zapisuje komentár?','/* komentár */',['# komentár','<!-- komentár -->','** komentár **'],'Komentár /* … */ (aj viacriadkový). Od C99 aj // do konca riadku. Vnorené komentáre /* /* */ */ jazyk C nepovoľuje.'],
+ ['Čo spôsobí vnorený komentár /* a /* b */ c */ v jazyku C?','Komentár sa skončí prvým */, zvyšok " c */" je chybný kód',['Vnorené komentáre fungujú, celé je komentár','Kompilátor komentár ignoruje','Prvý /* sa ignoruje'],'C nepodporuje vnorené komentáre. Prvé */ ukončí komentár, zvyšok sa považuje za kód a spôsobí chybu prekladu.'],
+ ['Ktorá z vlastností jazyka C je pravdivá?','Nekontroluje sa rozsah indexov polí (range-checking)',['Má automatickú správu pamäte (garbage collection)','Podporuje výnimky','Podporuje triedy a objekty'],'C nepodporuje výnimky, kontrolu rozsahu, garbage collection, objekty ani polymorfizmus.'],
+ ['Do ktorej paradigmy programovania patrí jazyk C?','Procedurálna',['Objektovo-orientovaná','Funkcionálna','Logická'],'Procedurálna paradigma: procedúry (funkcie) a riadiace štruktúry (cykly, podmienky). Patria sem C, Pascal, COBOL.'],
+ ['Čo platí o neinicializovanej lokálnej premennej v C?','Má náhodnú hodnotu (predchádzajúci obsah pamäte)',['Je automaticky 0','Je automaticky NULL','Spôsobí chybu prekladu'],'Lokálne premenné sa neinicializujú automaticky. Pred prvým použitím im treba priradiť hodnotu.'],
+ ['Aký je rozdiel medzi definíciou a deklaráciou premennej?','Definícia pridelí pamäť a meno, deklarácia iba oznámi typ',['Žiadny, sú to synonymá','Deklarácia pridelí pamäť, definícia iba typ','Definícia je možná iba pre globálne premenné'],'Definícia (int i;) vyhradí pamäť. Deklarácia len oznámi kompilátoru typ a meno (neprideľuje pamäť).'],
+ ['Čo je nutné, aby program v C mal vždy?','Funkciu main',['Funkciu start','Aspoň jednu globálnu premennú','Príkaz return 1'],'Spracovanie programu začína volaním funkcie main a končí jej opustením. Hodnota 0 znamená, že nenastala chyba.'],
+ ['Čo znamená návratová hodnota 0 z funkcie main?','Program skončil bez chyby',['Program skončil chybou','Program sa nespustil','Program čaká na vstup'],'main vráti 0, ak nenastala chyba, inak nenulovú hodnotu.'],
+ ['Rozlišuje C veľké a malé písmená v názvoch premenných?','Áno, pom, Pom a POM sú rôzne premenné',['Nie, sú to rovnaké premenné','Iba pri názvoch funkcií','Iba v prvom písmene'],'C je case-sensitive.']
+];
+const IDS=[['pom_x',1,'platný názov'],['_pom',1,'syntakticky platný (názvy začínajúce _ sú však systémové, nepoužívať ich)'],['Pom',1,'platný, líši sa od pom'],['x1',1,'platný, číslica nesmie byť na začiatku, inde je v poriadku'],['cislo_2',1,'platný'],['2cislo',0,'začína číslicou'],['moje cislo',0,'obsahuje medzeru'],['a-b',0,'obsahuje znak -, ktorý nie je písmeno, číslica ani _'],['for',0,'kľúčové slovo jazyka'],['int',0,'kľúčové slovo jazyka'],['while',0,'kľúčové slovo jazyka'],['rok.2026',0,'obsahuje bodku'],['pocet$',0,'obsahuje znak $'],['sucet',1,'platný'],['maxHodnota',1,'platný'],['return',0,'kľúčové slovo jazyka']];
+const G1=[
+ bank(B1),bank(B1),bank(B1),
+ ()=>{const four=shuf(IDS).slice(0,4);
+  return{kind:'Názvy premenných',prompt:'Rozhodni, či je to platný názov premennej v jazyku C (prekladač ho prijme):',input:{t:'rows',rows:four.map(x=>({label:`<code class="ic">${esc(x[0])}</code>`,opts:['platný','neplatný']}))},answer:four.map(x=>x[1]?0:1),
+   solution:`<p>Názov sa začína písmenom alebo _, obsahuje len písmená, číslice a _ a nesmie byť kľúčovým slovom.</p><ul>${four.map(x=>`<li><code class="ic">${esc(x[0])}</code>: ${x[1]?'platný':'neplatný'}, ${x[2]}</li>`).join('')}</ul>`}},
+ ()=>{const stage=pick([['predspracovanie (preprocesor)','gcc -E','.c → .c','odstráni komentáre, vloží hlavičkové súbory, rozvinie makrá'],['kompilácia','gcc -S','.c → .s','skontroluje syntax a preloží do asemblerového kódu'],['zostavovanie (assembler)','gcc -c','.s → .o','preloží asembler do strojového kódu s relatívnymi adresami'],['linkovanie (linker)','gcc program.o','.o → spustiteľný','spojí objektové súbory a knižnice, nahradí relatívne adresy absolútnymi']]);
+  const all=['predspracovanie (preprocesor)','kompilácia','zostavovanie (assembler)','linkovanie (linker)'];
+  const idx=all.indexOf(stage[0]);
+  return{kind:'Fázy prekladu',prompt:`Ktorá fáza prekladu ${stage[3]}?`,...mcq(all,stage[0]),solution:`<p>Poradie fáz: predspracovanie, kompilácia, zostavovanie, linkovanie. Fáza „${stage[0]}“ zodpovedá príkazu <code class="ic">${stage[1]}</code> (${stage[2]}).</p>`}}
+];
+
+/* ===== 2. Typy a vstup/výstup ===== */
+const PFMT=[
+ {f:'%d',t:'int'},{f:'%5d',t:'int'},{f:'%-5d',t:'int',bar:1},{f:'%05d',t:'int'},{f:'%x',t:'int',u:1},{f:'%o',t:'int',u:1},{f:'%c',t:'chr'},{f:'%d',t:'chr'},{f:'%.2f',t:'dbl'},{f:'%8.3f',t:'dbl'},{f:'%.0f',t:'dbl'},{f:'%g',t:'dbl'},{f:'%e',t:'dbl'}];
+const G2=[
+ ()=>{ // printf: formáty
+  const iv=R(11,987),cv=R(97,122),dv=pick([3.14159,2.71828,12.5,0.05,100.456,7.0,0.333333,45.6789,1234.5678,0.00123]);
+  const picks=shuf(PFMT).slice(0,3);
+  let lines=[],expl=[];
+  const stm=[],out=[];
+  picks.forEach(p=>{
+    let arg,val,txt;
+    if(p.t==='int'){arg='i';val=iv}else if(p.t==='chr'){arg='c';val=cv}else{arg='x';val=dv}
+    const fmtStr=p.f+(p.bar?'|':'');
+    const s=cprintf(fmtStr,p.t==='chr'?(p.f==='%c'?String.fromCharCode(val):val):val);
+    stm.push(`printf("${fmtStr}\\n", ${arg});`);out.push(s);
+    expl.push(`<li><code class="ic">${esc(p.f)}</code> s hodnotou ${p.t==='dbl'?dv:p.t==='chr'?"'"+String.fromCharCode(cv)+"' ("+cv+")":iv}: <b>${esc(s)}</b>${{'%5d':' (šírka 5, zarovnané vpravo)','%-5d':' (šírka 5, zarovnané vľavo, | značí koniec)','%05d':' (šírka 5, doplnené nulami)','%x':' (hexadecimálne)','%o':' (osmičkovo)','%8.3f':' (šírka 8, 3 desatinné miesta)','%.2f':' (2 desatinné miesta, zaokrúhlené)','%.0f':' (bez desatinných miest, zaokrúhlené)','%g':' (kratší z formátov %f a %e, bez zbytočných núl)','%e':' (vedecký zápis)','%c':' (znak s týmto kódom)'}[p.f]||''}</li>`)});
+  const src=`int main() {\n    int i = ${iv};\n    char c = ${cv};   /* kód znaku */\n    double x = ${dv};\n    ${stm.join('\n    ')}\n    return 0;\n}`;
+  const expect=out.join('\n');
+  return outQ('Formát printf','Dané je:',src,expect,`<p>Každý printf vypíše hodnotu podľa formátovej špecifikácie a skončí riadkom.</p><ul>${expl.join('')}</ul>`)},
+ ()=>{ // scanf návratová hodnota
+  const variants=[
+   {fmt:'%d %d',n:2,vars:['a','b'],types:['int','int']},
+   {fmt:'%d%c',n:2,vars:['a','c'],types:['int','char']},
+   {fmt:'%d %c',n:2,vars:['a','c'],types:['int','char']},
+   {fmt:'%c%c',n:2,vars:['c','d'],types:['char','char']}];
+  const v=pick(variants);
+  const toks=[];let input;
+  if(v.fmt==='%d %d'){input=pick([`${R(1,50)} ${R(1,50)}`,`${R(1,50)} x${R(1,9)}`,`x ${R(1,50)}`,`${R(1,50)}\n${R(1,50)}`,`${R(1,50)}`]);}
+  else if(v.fmt==='%d%c')input=pick([`${R(1,50)} Z`,`${R(1,50)}Z`,`${R(1,50)}\nZ`]);
+  else if(v.fmt==='%d %c')input=pick([`${R(1,50)} Z`,`${R(1,50)}Z`,`${R(1,50)}\nZ`]);
+  else input=pick(['A B','AB','A\nB']);
+  // simulácia scanf
+  let pos=0,cnt=0;const val=v.vars.map((x,i)=>v.types[i]==='int'?-1:'?');
+  const sk=()=>{while(pos<input.length&&/\s/.test(input[pos]))pos++};
+  const spec=v.fmt.match(/ |%[dc]/g);let ok=true;let ai=0;
+  for(const sp of spec){if(!ok)break;
+    if(sp===' ')sk();
+    else if(sp==='%d'){sk();const m=/^[+-]?\d+/.exec(input.slice(pos));if(!m){ok=false;break}pos+=m[0].length;val[ai++]=+m[0];cnt++}
+    else{if(pos>=input.length){ok=false;break}val[ai++]=input[pos++].charCodeAt(0);cnt++}}
+  const decl=v.vars.map((x,i)=>v.types[i]==='int'?`int ${x} = -1`:`char ${x} = '?'`).join(', ');
+  const initC=v.types.map((t,i)=>t==='int'?-1:63);
+  const finalVals=v.vars.map((x,i)=>v.types[i]==='int'?val[i]:(typeof val[i]==='number'?val[i]:63));
+  const prints=v.vars.map((x,i)=>v.types[i]==='int'?'%d':'%d').join(' ');
+  const src=`int main() {\n    ${v.types.map((t,i)=>t==='int'?`int ${v.vars[i]} = -1;`:`char ${v.vars[i]} = '?';`).join(' ')}\n    int n = scanf("${v.fmt}", ${v.vars.map(x=>'&'+x).join(', ')});\n    printf("%d | ${v.vars.map(x=>'%d').join(' ')}\\n", n, ${v.vars.join(', ')});\n    return 0;\n}`;
+  const expect=`${cnt} | ${finalVals.join(' ')}`;
+  const shown=input.replace(/\n/g,'⏎\n');
+  return outQ('scanf: návratová hodnota',`Program načíta vstup pomocou scanf. Premenná typu char sa vypisuje ako číslo (kód znaku, '?' má kód 63).${v.fmt.includes('%c')?' Pozor: pri %c sa biele znaky neignorujú (medzera vo formáte ich preskočí), znak nového riadku má kód 10.':''}`,src,expect,
+   `<p>scanf vráti počet úspešne načítaných a uložených hodnôt. Pri neúspechu zostane premenná nezmenená (-1, resp. '?' = 63).</p><p>Formát <code class="ic">${esc(v.fmt)}</code>${v.fmt==='%d%c'?' bez medzery: %c prečíta hneď nasledujúci znak, aj medzeru alebo koniec riadku (kód 10).':v.fmt==='%d %c'?' s medzerou: medzera preskočí všetky biele znaky a až potom sa číta %c.':v.fmt==='%c%c'?': každé %c načíta presne jeden znak vrátane bielych znakov.':': %d preskočí biele znaky, prečíta celé číslo a pri inom znaku zlyhá.'}</p>`,{stdin:input.replace(/\n$/,'')+(input.endsWith('\n')?'\n':'')})},
+ ()=>{ // char aritmetika
+  const base=pick([['A','Z'],['a','z']]);const c=String.fromCharCode(R(base[0].charCodeAt(0),base[1].charCodeAt(0)-4));
+  const k=R(1,3);const up=base[0]==='a';
+  const src=`int main() {\n    char c = '${c}';\n    printf("%c %d\\n", c, c);\n    printf("%c\\n", c + ${k});\n    c = c ${up?'-':'+'} 'a' ${up?'+':'-'} 'A';\n    printf("%c %d\\n", c, c);\n    return 0;\n}`;
+  const cc=c.charCodeAt(0);const c2=up?cc-32:cc+32;
+  const expect=`${c} ${cc}\n${String.fromCharCode(cc+k)}\n${String.fromCharCode(c2)} ${c2}`;
+  return outQ('Znaky a ASCII',`Znak je v pamäti číslo (ASCII kód). Veľké písmená majú kódy 65 až 90, malé 97 až 122 (rozdiel 32, teda 'a' - 'A' = 32).`,src,expect,
+   `<p>c = '${c}' má kód ${cc}. Výraz c + ${k} je int ${cc+k}, formát %c ho vypíše ako znak '${String.fromCharCode(cc+k)}'.</p><p>Výraz c ${up?'-':'+'} 'a' ${up?'+':'-'} 'A' ${up?'odpočíta rozdiel 32':'pripočíta 32'} a zmení ${up?'malé písmeno na veľké':'veľké písmeno na malé'}: ${c2}, znak '${String.fromCharCode(c2)}'.</p>`)},
+ ()=>{ // sizeof
+  const T=[['char',1],['short',2],['int',4],['long long',8],['float',4],['double',8],['int *',8],['char *',8],['long',8],['unsigned int',4]];
+  const arrs=[[`int a[${R(3,9)}]`,'int',4],[`double d[${R(2,6)}]`,'double',8],[`char s[${R(5,20)}]`,'char',1],[`short h[${R(3,9)}]`,'short',2]];
+  const t=shuf(T).slice(0,2),a=pick(arrs);const n=+a[0].match(/\[(\d+)\]/)[1];
+  return{kind:'sizeof',prompt:`Na 64-bitovom Linuxe s gcc (typicky: char 1, short 2, int 4, long 8, float 4, double 8, ukazovateľ 8 bajtov) zisti hodnoty výrazov:${code(`${a[0]};\nsizeof(${t[0][0]})\nsizeof(${t[1][0]})\nsizeof(${a[0].split('[')[0].split(' ')[1]})`)}`,
+   input:linesIn([[`sizeof(${t[0][0]}) =`,NUL],[`sizeof(${t[1][0]}) =`,NUL],[`sizeof(${a[0].split(' ')[1].split('[')[0]}) =`,NUL]]),answer:[t[0][1],t[1][1],n*a[2]],
+   solution:`<p>sizeof vráti veľkosť v bajtoch. Pre pole platí sizeof(pole) = počet prvkov × veľkosť prvku = ${n} × ${a[2]} = ${n*a[2]}.</p><p>Veľkosti závisia od prekladača a platformy. Pod 64-bitovým Windowsom má long iba 4 bajty.</p>`}},
+ ()=>{ // unsigned pretekanie
+  const k=pick(['unsigned char','unsigned short']);const mod=k==='unsigned char'?256:65536;
+  const a=k==='unsigned char'?R(200,255):R(65000,65535),b=R(10,90);
+  const op=pick(['+','*']);
+  const bb=op==='*'?R(2,5):b;
+  const full=op==='+'?a+bb:a*bb;
+  const src=`int main() {\n    ${k} x = ${a};\n    int s = x ${op} ${bb};\n    x = x ${op} ${bb};\n    printf("%d %d\\n", s, x);\n    return 0;\n}`;
+  const expect=`${full} ${full%mod}`;
+  return outQ('Rozsah typov',`Typ ${k} má ${mod===256?8:16} bitov, hodnoty 0 až ${mod-1}. Pri uložení väčšej hodnoty sa zvyšok po delení ${mod} zachová (pretečenie).`,src,expect,
+   `<p>Výraz x ${op} ${bb} sa počíta v type int (menšie typy sa najprv rozšíria na int): ${a} ${op} ${bb} = ${full}. Do premennej s sa uloží ${full}.</p><p>Priradením do x (${k}) sa hodnota zmestí do ${mod===256?8:16} bitov: ${full} mod ${mod} = ${full%mod}.</p>`)},
+ ()=>{ // escape sekvencie
+  const n=R(5,99),w=pick(['text','C','abc','ok']);
+  const forms=[
+   {c:`printf("Cesta: C:\\\\${w}\\\\x\\n");`,nl:1,o:`Cesta: C:\\${w}\\x`,e:'\\\\ vypíše jedno spätné lomítko (backslash)'},
+   {c:`printf("Povedal \\"${w}\\"!\\n");`,nl:1,o:`Povedal "${w}"!`,e:'\\" vypíše úvodzovky'},
+   {c:`printf("${n}%%\\n");`,nl:1,o:`${n}%`,e:'%% vypíše jeden znak %'},
+   {c:`printf("a\\nb\\n${w}");`,o:`a\nb\n${w}`,e:'\\n ukončí riadok'},
+   {c:`printf("'%c'\\n", '\\'');`,nl:1,o:`'''`,e:"\\' je apostrof"}];
+  const pk=shuf(forms).slice(0,2);
+  const src=`int main() {\n    ${pk.map(p=>p.c).join('\n    ')}\n    return 0;\n}`;
+  const expect=pk.map(p=>p.o+(p.nl?'\n':'')).join('');
+  return outQ('Escape sekvencie',`Escape sekvencie: \\n nový riadok, \\\\ spätné lomítko, \\" úvodzovky, \\' apostrof, %% znak %.`,src,expect,`<ul>${pk.map(p=>`<li>${esc(p.c)}: ${p.e}</li>`).join('')}</ul>`)},
+ bank([
+  ['Ktorý formát použiješ v scanf na načítanie premennej typu double?','%lf',['%f','%d','%Lf'],'Pri scanf platí: float → %f, double → %lf, long double → %Lf. Pri printf sa používa %f pre float aj double.'],
+  ['Ktorý formát použiješ v scanf na načítanie premennej typu float?','%f',['%lf','%d','%c'],'scanf: %f pre float, %lf pre double. printf: %f pre oba (float sa pri volaní povýši na double).'],
+  ['Ktorý formát je v printf vhodný pre premennú typu long?','%ld',['%d','%lf','%c'],'%ld je long, %lu unsigned long, %d je int.'],
+  ['Prečo scanf("%d", i) (bez &) nie je správne?','scanf potrebuje adresu premennej, kam má hodnotu uložiť',['Nie je správne len pre typ char','Pretože %d sa používa len v printf','Je to správne, & je voliteľné'],'scanf zapisuje do premennej, preto mu treba odovzdať jej adresu (&i). Pri printf sa & nepoužíva.'],
+  ['Čo sa stane, ak v printf("%d %d", a) je menej argumentov ako formátov?','Kompilátor spravidla len varuje a výstup je nepredvídateľný',['Chyba prekladu, program sa nevytvorí','Vypíše sa 0','Vypíše sa iba prvé číslo'],'Počet % musí súhlasiť s počtom argumentov. Kompilátor chybu nehlási (iba varovanie), program sa nespráva správne.'],
+  ['Ktorý formát vypíše celé číslo v šestnástkovej sústave malými písmenami?','%x',['%X','%o','%h'],'%x malé písmená (ff), %X veľké (FF), %o osmičková sústava.'],
+  ['Čo vráti funkcia scanf?','Počet úspešne načítaných položiek',['Načítanú hodnotu','Vždy 1','Dĺžku vstupu'],'Návratovú hodnotu scanf treba kontrolovať, najmä keď počet vstupov nie je vopred známy (vráti EOF, ak nie sú dáta).'],
+  ['Prečo je getchar() vhodnejšie na načítanie jedného znaku ako scanf("%c")?','Je jednoduchšie, bez formátovania a adresy',['scanf("%c") nefunguje','getchar ignoruje biele znaky','getchar načíta celý riadok'],'getchar vráti ďalší znak zo vstupu (ako int). Biele znaky nepreskakuje.']])
+];
+'use strict';
+/* ===== 3. Operátory a výrazy ===== */
+function genTree(d,leaf){
+  if(d===0||(d<3&&Math.random()<.3))return leaf();
+  const op=pick(['+','-','*','/','%','+','-','*']);
+  return{op,l:genTree(d-1,leaf),r:genTree(d-1,leaf)}}
+const PREC={'*':2,'/':2,'%':2,'+':1,'-':1};
+function treeStr(t,par,right){
+  if(t.v!==undefined)return t.n;
+  const p=PREC[t.op],s=`${treeStr(t.l,p,false)} ${t.op} ${treeStr(t.r,p,true)}`;
+  return(par&&(p<par||(p===par&&right)))?`(${s})`:s}
+function treeEval(t,steps){
+  if(t.v!==undefined)return t.v;
+  const a=treeEval(t.l,steps),b=treeEval(t.r,steps);let v;
+  if((t.op==='/'||t.op==='%')&&b===0)throw new Error('div0');
+  v=t.op==='+'?a+b:t.op==='-'?a-b:t.op==='*'?a*b:t.op==='/'?Math.trunc(a/b):a%b;
+  if(Math.abs(v)>9999)throw new Error('big');
+  if(v===0)v=0;
+  if(steps)steps.push(`${a<0?'('+a+')':a} ${t.op} ${b<0?'('+b+')':b} = ${v}`);
+  return v}
+function mkStep(){return pick(['x','y'])}
+const G3=[
+ ()=>{ // delenie a modulo
+  const b=pick([-7,-5,-4,-3,-2,2,3,4,5,6,7,9]),a=R(-30,40)||5;
+  const src=`int main() {\n    int a = ${a}, b = ${b};\n    printf("%d %d\\n", a / b, a % b);\n    printf("%.2f\\n", a * 1.0 / b);\n    printf("%d\\n", (a + b) / b - a % 3);\n    return 0;\n}`;
+  const e1=tdiv(a,b),e2=a%b||0,e3=tdiv(a+b,b)-(a%3||0);
+  const expect=`${e1} ${e2}\n${cprintf('%.2f',a*1.0/b)}\n${e3}`;
+  return outQ('Celočíselné delenie a modulo','Pri delení dvoch celých čísel je výsledok celé číslo (desatinná časť sa odreže smerom k nule). Zvyšok po delení (%) má znamienko deliteľa a.',src,expect,
+   `<p>${a} / ${b} = ${e1} (odrezanie smerom k nule), ${a} % ${b} = ${e2}. Platí a = (a / b)·b + a % b: ${e1}·${b} + ${e2} = ${a}.</p><p>a * 1.0 / b je reálne delenie: ${cprintf('%.2f',a*1.0/b)}.</p><p>(a + b) / b = ${a+b} / ${b} = ${tdiv(a+b,b)}, a % 3 = ${a%3||0}, výsledok ${tdiv(a+b,b)} − (${a%3||0}) = ${e3}.</p>`)},
+ ()=>{ // ++ a --
+  const names=['i','j','k'],st={i:R(1,9),j:R(1,9),k:R(1,9)};
+  const init={...st};const stm=[],rows=[];
+  const T=[
+   (x,y)=>({c:`${x} = ++${y};`,f:s=>{s[y]++;s[x]=s[y]}}),
+   (x,y)=>({c:`${x} = ${y}++;`,f:s=>{s[x]=s[y];s[y]++}}),
+   (x,y)=>({c:`${x} = --${y} + ${R(1,5)};`,f:null,k:1}),
+   (x,y)=>({c:`${x} = ${y}-- - ${R(1,5)};`,f:null,k:2}),
+   (x,y)=>({c:`${x} += ${y}++;`,f:s=>{s[x]+=s[y];s[y]++}}),
+   (x,y)=>({c:`${x} = ${y}++ + ${y};`,f:null,bad:1})];
+  for(let n=0;n<3;n++){
+    const x=pick(names),y=pick(names.filter(z=>z!==x));
+    let t=pick(T.slice(0,5))(x,y);
+    if(t.k){const m=/(\d+);$/.exec(t.c);const c=+m[1];t.f=t.k===1?s=>{s[y]--;s[x]=s[y]+c}:s=>{s[x]=s[y]-c;s[y]--}}
+    t.f(st);stm.push(t.c);rows.push([t.c,st.i,st.j,st.k])}
+  const src=`int main() {\n    int i = ${init.i}, j = ${init.j}, k = ${init.k};\n    ${stm.join('\n    ')}\n    printf("%d %d %d\\n", i, j, k);\n    return 0;\n}`;
+  return outQ('Inkrement a dekrement','Prefix (++x) zmení hodnotu pred jej použitím, postfix (x++) po použití. Pôvodná hodnota premennej sa vo výraze použije pri postfixe.',src,`${st.i} ${st.j} ${st.k}`,
+   `<p>Začiatok: i = ${init.i}, j = ${init.j}, k = ${init.k}.</p>${trace(['príkaz','i','j','k'],rows)}`)},
+ ()=>{ // priorita operátorov
+  let t,steps,v,tries=0;
+  const vals={a:R(1,12),b:R(2,9),c:R(1,9),d:R(2,7),e:R(1,15)};
+  const ks=Object.keys(vals);
+  while(true){
+    if(++tries>200){t={op:'+',l:{n:'a',v:vals.a},r:{n:'b',v:vals.b}}}
+    else{const used=shuf(ks);let u=0;t=genTree(3,()=>{const k=used[u++%used.length];return{n:k,v:vals[k]}});if(t.v!==undefined)continue}
+    steps=[];try{v=treeEval(t,steps)}catch(e){continue}
+    if(steps.length>=3)break}
+  const src=`int main() {\n    int a = ${vals.a}, b = ${vals.b}, c = ${vals.c}, d = ${vals.d}, e = ${vals.e};\n    printf("%d\\n", ${treeStr(t)});\n    return 0;\n}`;
+  return outQ('Priorita operátorov','Najprv sa vyhodnotia zátvorky, potom *, / a % (zľava doprava), potom + a - (zľava doprava). Celočíselné delenie odrezáva desatinnú časť.',src,String(v),
+   `<p>Dosadíme hodnoty a vyhodnocujeme operácie od najvyššej priority (nezávislé časti v ľubovoľnom poradí):</p><ol>${steps.map(s=>`<li>${s}</li>`).join('')}</ol><p>Výsledok: <b>${v}</b>.</p>`)},
+ ()=>{ // skrátené vyhodnocovanie
+  const OPD=[
+   (n,t)=>({c:`x++ > ${t}`,f:s=>{const r=s.x>t;s.x++;return r?1:0},e:`x++ > ${t}`}),
+   (n,t)=>({c:`++y < ${t}`,f:s=>{s.y++;return s.y<t?1:0}}),
+   (n,t)=>({c:`y-- == ${t}`,f:s=>{const r=s.y===t;s.y--;return r?1:0}}),
+   (n,t)=>({c:`x % 2 == 0`,f:s=>s.x%2===0?1:0})];
+  const st0={x:R(1,8),y:R(1,8)};const st={...st0};
+  const op=pick(['&&','||']);
+  const A=pick(OPD)(0,R(1,8)),B=pick(OPD)(1,R(1,8));
+  const ra=A.f(st);let evaluated=2,r;
+  if(op==='&&'){if(!ra){r=0;evaluated=1}else{r=B.f(st)?1:0}}
+  else{if(ra){r=1;evaluated=1}else{r=B.f(st)?1:0}}
+  const src=`int main() {\n    int x = ${st0.x}, y = ${st0.y}, r;\n    r = (${A.c}) ${op} (${B.c});\n    printf("%d %d %d\\n", r, x, y);\n    return 0;\n}`;
+  return outQ('Skrátené vyhodnocovanie',`Operátory && a || vyhodnocujú zľava doprava a skončia, keď je výsledok zrejmý: pri && po prvej nepravde, pri || po prvej pravde. Druhý operand sa potom už nevyhodnotí, teda sa nevykonajú ani jeho vedľajšie účinky (++, --).`,src,`${r} ${st.x} ${st.y}`,
+   `<p>Prvý operand (${esc(A.c)}) je ${ra?'pravdivý':'nepravdivý'}. ${evaluated===1?`Pri ${op} to stačí na výsledok, <b>druhý operand sa nevyhodnotí</b>, preto sa jeho ++ alebo -- nevykoná.`:'Výsledok ešte nie je známy, vyhodnotí sa aj druhý operand.'}</p><p>Výsledok r = ${r}, x = ${st.x}, y = ${st.y}.</p>`)},
+ ()=>{ // zložené priradenia
+  const s={a:R(2,12),b:R(1,9),c:R(1,9)};const init={...s};const stm=[],rows=[];
+  const T=[
+   ()=>{const k=R(2,4);return{c:`a += b * ${k};`,f:s=>{s.a+=s.b*k}}},
+   ()=>({c:`b -= a;`,f:s=>{s.b-=s.a}}),
+   ()=>({c:`c *= a + 1;`,f:s=>{s.c*=s.a+1}}),
+   ()=>({c:`a /= 2;`,f:s=>{s.a=tdiv(s.a,2)}}),
+   ()=>({c:`c %= 4;`,f:s=>{s.c=s.c%4}}),
+   ()=>({c:`c = a = b + 1;`,f:s=>{s.a=s.b+1;s.c=s.a}}),
+   ()=>({c:`a = b = c;`,f:s=>{s.b=s.c;s.a=s.b}}),
+   ()=>({c:`b *= c -= 2;`,f:s=>{s.c-=2;s.b*=s.c}})];
+  for(const t of shuf(T).slice(0,4)){const x=t();x.f(s);stm.push(x.c);rows.push([x.c,s.a,s.b,s.c])}
+  const src=`int main() {\n    int a = ${init.a}, b = ${init.b}, c = ${init.c};\n    ${stm.join('\n    ')}\n    printf("%d %d %d\\n", a, b, c);\n    return 0;\n}`;
+  return outQ('Priraďovacie operátory','x op= výraz znamená x = x op (výraz). Priradenie je výraz s hodnotou a vyhodnocuje sa sprava doľava, takže a = b = c uloží c do b a potom do a.',src,`${s.a} ${s.b} ${s.c}`,
+   `<p>Začiatok: a = ${init.a}, b = ${init.b}, c = ${init.c}.</p>${trace(['príkaz','a','b','c'],rows)}`)},
+ ()=>{ // bitové
+  const a=R(5,63),b=R(5,63),k=R(1,3);
+  const bin=(x,n=8)=>x.toString(2).padStart(n,'0');
+  const r=[a&b,a|b,a^b,a<<k,b>>k,(~a)&63];
+  const src=`int main() {\n    int a = ${a}, b = ${b};\n    printf("%d %d %d\\n", a & b, a | b, a ^ b);\n    printf("%d %d %d\\n", a << ${k}, b >> ${k}, ~a & 63);\n    return 0;\n}`;
+  return outQ('Bitové operátory','& je bitový súčin (AND), | súčet (OR), ^ XOR, ~ negácia všetkých bitov, << posun doľava (násobenie 2^k), >> posun doprava (celočíselné delenie 2^k).',src,`${r[0]} ${r[1]} ${r[2]}\n${r[3]} ${r[4]} ${r[5]}`,
+   `<p>a = ${a} = ${bin(a)}, b = ${b} = ${bin(b)}.</p>${tbl(['výraz','bity','hodnota'],[['a & b',bin(a&b),r[0]],['a | b',bin(a|b),r[1]],['a ^ b',bin(a^b),r[2]],[`a << ${k}`,bin(a<<k),r[3]],[`b >> ${k}`,bin(b>>k),r[4]],['~a & 63',bin(r[5]),r[5]]])}`)},
+ ()=>{ // = vs ==
+  const A=R(1,9),C=pick([0,0,R(1,9)]);
+  const src=`int main() {\n    int x = ${A}, y = ${C};\n    if (x = y)\n        printf("pravda");\n    else\n        printf("nepravda");\n    printf(" %d\\n", x);\n    return 0;\n}`;
+  return outQ('Priradenie vs. porovnanie','Pozor: = je priradenie, == porovnanie. Priradenie je výraz, jeho hodnotou je priradená hodnota. Nenulová hodnota je pravda, nula nepravda.',src,`${C?'pravda':'nepravda'} ${C}`,
+   `<p>V podmienke je <b>priradenie</b> x = y. Do x sa uloží ${C} a hodnota výrazu je ${C}, čo je ${C?'nenulové (pravda)':'nula (nepravda)'}. Potom x = ${C}.</p>`)},
+ ()=>{ // ternárny a čiarka
+  const i=R(1,9),j=R(1,9),m0=0;
+  const k=i>j?i:j,m=k%2?k*3:k/2,n=(m+1);
+  const m1=k%2?k*3:k/2;
+  const src=`int main() {\n    int i = ${i}, j = ${j}, k, m, n;\n    k = (i > j) ? i : j;\n    m = k % 2 ? k * 3 : k / 2;\n    n = (i++, i + m);\n    printf("%d %d %d %d\\n", k, m, n, i);\n    return 0;\n}`;
+  const n2=i+1+m1;
+  return outQ('Ternárny operátor a čiarka','podmienka ? výraz1 : výraz2 vráti výraz1, ak je podmienka pravdivá, inak výraz2. Operátor čiarka vyhodnotí výrazy zľava doprava a hodnotou je posledný z nich.',src,`${k} ${m1} ${n2} ${i+1}`,
+   `<p>k = max(i, j) = ${k}. ${k} % 2 je ${k%2}, ${k%2?`teda nepravda nie je, m = k * 3 = ${m1}`:`teda nula (nepravda), m = k / 2 = ${m1}`}.</p><p>(i++, i + m): najprv i++ (i = ${i+1}), potom hodnota výrazu i + m = ${i+1} + ${m1} = ${n2}.</p>`)},
+ ()=>{ // výrazy z cvičenia 2.7
+  if(Math.random()<.5){
+   const a=R(2,9),b=R(1,6),c=R(1,4),e=R(2,30);
+   const s1=tdiv(e,a-1),s2=s1*b,r=tdiv(s2,c);
+   const src=`int main() {\n    int a = ${a}, b = ${b}, c = ${c}, e = ${e}, r;\n    r = e / --a * b++ / c++;\n    printf("%d %d %d %d\\n", r, a, b, c);\n    return 0;\n}`;
+   return outQ('Zložený výraz (cvičenie)','Operátory *, / sa vyhodnocujú zľava doprava, prefix --a zníži a pred použitím, postfix b++ a c++ použijú pôvodnú hodnotu.',src,`${r} ${a-1} ${b+1} ${c+1}`,
+    `<p>Výraz je ((e / --a) * b++) / c++.</p><ol><li>--a: a = ${a-1}, e / ${a-1} = ${s1}</li><li>${s1} * b (pôvodné ${b}) = ${s2}, potom b = ${b+1}</li><li>${s2} / c (pôvodné ${c}) = ${r}, potom c = ${c+1}</li></ol>`)}
+  else{
+   const a=R(5,40),b=R(1,9),d=R(1,9),e=R(0,20);
+   const v=1+tdiv(e,2),na=a%v;
+   const src=`int main() {\n    int a = ${a}, b = ${b}, d = ${d}, e = ${e}, r;\n    r = a %= b = d = 1 + e / 2;\n    printf("%d %d %d %d\\n", r, a, b, d);\n    return 0;\n}`;
+   return outQ('Zložené priradenie (cvičenie)','Priradenie sa vyhodnocuje sprava doľava, hodnotou priradenia je priradená hodnota.',src,`${na} ${na} ${v} ${v}`,
+    `<p>Zprava: 1 + e / 2 = 1 + ${tdiv(e,2)} = ${v}. Uloží sa do d aj b (b = d = ${v}), potom a %= ${v}: ${a} % ${v} = ${na}. Hodnota výrazu a %= … je ${na}, uloží sa do r.</p>`)}}
+];
+
+/* ===== 4. Vetvenie ===== */
+const CONDS=[
+ (v,K)=>({t:`${v} % ${K} == 0`,f:e=>e[v]%K===0}),
+ (v,K)=>({t:`${v} > ${K}`,f:e=>e[v]>K}),
+ (v,K)=>({t:`${v} < ${K}`,f:e=>e[v]<K}),
+ (v,K)=>({t:`${v} == ${K}`,f:e=>e[v]===K}),
+ (v,K)=>({t:`${v} % 2 != 0`,f:e=>e[v]%2!==0})];
+const G4=[
+ ()=>{ // reťaz if else if
+  const a=R(1,30);const e={a};
+  const cs=[pick(CONDS)('a',R(2,5)),pick(CONDS)('a',R(8,20))];
+  const rs=[{t:`a / ${R(2,4)}`},{t:`a - ${R(1,9)}`},{t:`a * 2`},{t:`a + ${R(1,9)}`}];
+  const ch=shuf(rs).slice(0,3);
+  const fn=t=>{const m=/^a (.) (\d+)$/.exec(t);const k=+m[2];return m[1]==='/'?tdiv(a,k):m[1]==='-'?a-k:m[1]==='*'?a*k:a+k};
+  let r,which;
+  if(cs[0].f(e)){r=fn(ch[0].t);which=0}else if(cs[1].f(e)){r=fn(ch[1].t);which=1}else{r=fn(ch[2].t);which=2}
+  const src=`int main() {\n    int a = ${a}, r;\n    if (${cs[0].t})\n        r = ${ch[0].t};\n    else if (${cs[1].t})\n        r = ${ch[1].t};\n    else\n        r = ${ch[2].t};\n    printf("%d\\n", r);\n    return 0;\n}`;
+  return outQ('Vetvenie if – else if',`Podmienky sa testujú zhora nadol, vykoná sa iba prvá vetva, ktorej podmienka platí.`,src,String(r),
+   `<p>a = ${a}. Podmienka ${esc(cs[0].t)} je ${cs[0].f(e)?'pravdivá':'nepravdivá'}${which>0?`, ďalej ${esc(cs[1].t)} je ${cs[1].f(e)?'pravdivá':'nepravdivá'}`:''}. Vykoná sa ${which===2?'vetva else':'vetva č. '+(which+1)}: r = ${ch[which].t} = ${r}.</p>`)},
+ ()=>{ // dangling else
+  const a=pick([-1,0,1,2,3]),b=pick([-1,0,1,2,3]);
+  const braces=Math.random()<.5,mis=Math.random()<.4;
+  let src,out;
+  if(!braces){
+   src=`int main() {\n    int a = ${a}, b = ${b};\n    if (a > 0)\n        ${mis?'if (b > 0) printf("A\\n");\n    else printf("B\\n");':'if (b > 0)\n            printf("A\\n");\n        else\n            printf("B\\n");'}\n    printf("koniec\\n");\n    return 0;\n}`;
+   out=(a>0?(b>0?'A\n':'B\n'):'')+'koniec'}
+  else{
+   src=`int main() {\n    int a = ${a}, b = ${b};\n    if (a > 0) {\n        if (b > 0)\n            printf("A\\n");\n    } else\n        printf("B\\n");\n    printf("koniec\\n");\n    return 0;\n}`;
+   out=(a>0?(b>0?'A\n':''):'B\n')+'koniec'}
+  return outQ('Vnorené if a else',`Pravidlo: else patrí vždy k najbližšiemu predchádzajúcemu if, ktoré ešte nemá else. Odsadenie kompilátor ignoruje. Zložené zátvorky { } zmenia príslušnosť.`,src,out,
+   `<p>${braces?'Zložené zátvorky uzatvárajú vnútorný if, takže else patrí k vonkajšiemu if (a > 0).':'Bez zátvoriek patrí else k <b>vnútornému</b> if (b > 0), nie k vonkajšiemu, aj keď to odsadenie naznačuje inak.'}</p><p>a = ${a}, b = ${b}.</p>`)},
+ ()=>{ // switch s prepadnutím
+  const vals=shuf([1,2,3,4,5]).slice(0,4);const letters=shuf(['A','B','C','D','E','F']).slice(0,5);
+  const cases=vals.slice(0,3).map((v,i)=>({v,l:letters[i],brk:Math.random()<.55}));
+  const hasDef=Math.random()<.8;const defIdx=hasDef?pick([0,1,2,3]):-1;
+  const list=[...cases.map(c=>({...c}))];
+  if(hasDef)list.splice(Math.min(defIdx,list.length),0,{def:1,l:'D',brk:Math.random()<.5});
+  const pickv=pick([...vals.slice(0,3),vals[3],cases[0].v]);
+  let start=list.findIndex(c=>!c.def&&c.v===pickv);if(start<0)start=list.findIndex(c=>c.def);
+  let out='';const path=[];
+  if(start>=0){for(let i=start;i<list.length;i++){out+=list[i].l;path.push(list[i].def?'default':'case '+list[i].v);if(list[i].brk)break}}
+  const body=list.map(c=>`        ${c.def?'default':'case '+c.v}: printf("${c.l}");${c.brk?' break;':''}`).join('\n');
+  const src=`int main() {\n    int x = ${pickv};\n    switch (x) {\n${body}\n    }\n    printf("!\\n");\n    return 0;\n}`;
+  return outQ('Príkaz switch',`Vykonávanie začína pri vetve s hodnotou x (alebo pri default) a pokračuje cez nasledujúce vetvy, kým nenarazí na break alebo koniec switch.`,src,out+'!',
+   `<p>x = ${pickv}. Vykonávanie začne ${start>=0&&list[start].def?'pri vetve default (žiadna vetva nesedí)':'pri vetve case '+pickv}${path.length>1?' a pokračuje cez '+path.slice(1).join(', ')+' (chýba break)':''}. Vypíše sa „${out}“ a potom „!“.</p>`)},
+ ()=>{ // vnorený ternárny
+  const a=R(1,20),b=R(1,20),c=R(1,20);
+  const r=a>b?a:(b>c?b:c);
+  const src=`int main() {\n    int a = ${a}, b = ${b}, c = ${c};\n    printf("%d\\n", a > b ? a : b > c ? b : c);\n    return 0;\n}`;
+  return outQ('Vnorený ternárny operátor','Ternárny operátor sa viaže sprava: a > b ? a : (b > c ? b : c).',src,String(r),
+   `<p>a > b: ${a} > ${b} je ${a>b?'pravda, výsledok je a = '+a:'nepravda, vyhodnotí sa b > c: '+b+' > '+c+' je '+(b>c?'pravda, výsledok b = '+b:'nepravda, výsledok c = '+c)}.</p>`)},
+ ()=>{ // typ znaku zo vstupu
+  const type=pick(['L','l','D','S']);
+  const c=type==='L'?String.fromCharCode(R(65,90)):type==='l'?String.fromCharCode(R(97,122)):type==='D'?String(R(0,9)):pick(['#','+','?','!','$','-','%']);
+  const src=`int main() {\n    char c = getchar();\n    if (c >= 'a' && c <= 'z')\n        printf("male pismeno\\n");\n    else if (c >= 'A' && c <= 'Z')\n        printf("velke pismeno\\n");\n    else if (c >= '0' && c <= '9')\n        printf("cislica\\n");\n    else\n        printf("ine\\n");\n    return 0;\n}`;
+  const out=type==='l'?'male pismeno':type==='L'?'velke pismeno':type==='D'?'cislica':'ine';
+  return outQ('Typ znaku',`Znaky sa porovnávajú podľa ASCII kódov: '0' až '9' sú 48 až 57, 'A' až 'Z' 65 až 90, 'a' až 'z' 97 až 122.`,src,out,
+   `<p>Znak '${c}' má kód ${c.charCodeAt(0)}. ${out==='ine'?'Nepatrí do žiadneho z rozsahov, vypíše sa vetva else.':'Patrí do príslušného rozsahu, vypíše sa „'+out+'“.'}</p>`,{stdin:c})},
+ bank([
+  ['Čo vypíše program: int x = 7; if (x = 10) printf("A"); else printf("B");','A',['B','AB','Nič, chyba prekladu'],'Podmienka obsahuje priradenie x = 10. Hodnota výrazu je 10 (nenulová, teda pravda), vypíše sa A a x je 10.'],
+  ['Čo sa stane vo switch, ak vetva nekončí príkazom break?','Vykonávanie pokračuje do nasledujúcej vetvy (prepadnutie)',['Program skončí chybou','Vykoná sa vetva default','Prekladač hlási chybu'],'Bez break program neopustí switch, ale spracováva nasledujúcu vetvu až po najbližšie break alebo koniec switch.'],
+  ['Ktorý typ výrazu môže byť v switch(výraz)?','int alebo typ prevoditeľný na int (napr. char)',['double','reťazec (char *)','Ľubovoľný typ'],'Výraz v switch musí byť celočíselný (int, char, short, long).'],
+  ['Pri ktorej hodnote sa vykoná vetva default?','Keď žiadna vetva case nezodpovedá',['Vždy ako prvá','Vždy po poslednej vetve case','Iba ak chýba break'],'default sa vykoná, keď žiadna iná vetva nesedí. Nemusí byť posledná, zvykne sa tam dávať.'],
+  ['Ktorý zápis je ekvivalentný s if (a == 0) { if (b == 0) { … } }?','if (a == 0 && b == 0) { … }',['if (a == 0 || b == 0) { … }','if (a == 0 & b == 0 | 1) { … }','if (a = 0 && b = 0) { … }'],'Vnorené podmienky bez else môžeme spojiť logickým súčinom &&.'],
+  ['Čo je výsledkom výrazu 5 > 3 v jazyku C?','1 (pravda je nenulová hodnota, porovnanie vráti 1)',['true','5','Chyba, C nemá logické hodnoty'],'Relačné operátory vracajú int: 1 pre pravdu a 0 pre nepravdu. Od C99 existuje aj typ bool v stdbool.h.']])
+];
+
+/* ===== 5. Cykly ===== */
+const G5=[
+ ()=>{ // for – trasovanie
+  const v=R(0,4);let src,out,expl;
+  if(v===0){const A=R(1,6),S=R(1,3),B=A+S*R(3,6),K=R(1,4);const o=[];for(let i=A;i<=B;i+=S)o.push(i*K);
+   src=`int main() {\n    int i;\n    for (i = ${A}; i <= ${B}; i += ${S})\n        printf("%d ", i * ${K});\n    printf("| %d\\n", i);\n    return 0;\n}`;
+   let i=A;while(i<=B)i+=S;out=o.join(' ')+' | '+i;expl=`<p>i prebieha hodnotami ${A}, ${A+S}, …, kým platí i <= ${B}. Po cykle je i = ${i} (prvá hodnota, pre ktorú podmienka už neplatí).</p>`}
+  else if(v===1){const N=R(8,20),S=R(2,4);const o=[];let i;for(i=N;i>0;i-=S)o.push(i);
+   src=`int main() {\n    int i;\n    for (i = ${N}; i > 0; i -= ${S})\n        printf("%d ", i);\n    printf("| %d\\n", i);\n    return 0;\n}`;out=o.join(' ')+' | '+i;expl=`<p>i klesá po ${S} od ${N}, kým platí i > 0. Po cykle je i = ${i}.</p>`}
+  else if(v===2){const N=R(3,7);let s=0,i,o=[];for(i=1,s=0;i<=N;s+=i,i++)o.push(s);
+   src=`int main() {\n    int i, s;\n    for (i = 1, s = 0; i <= ${N}; s += i, i++)\n        printf("%d ", s);\n    printf("| %d %d\\n", i, s);\n    return 0;\n}`;out=o.join(' ')+` | ${i} ${s}`;
+   expl=`<p>Čiarka v hlavičke cyklu: inicializácia aj zmena oboch premenných. Telo cyklu vypíše s <b>pred</b> pripočítaním i.</p>${trace(['i pri výpise','s vypísané'],o.map((x,k)=>[k+1,x]))}`}
+  else if(v===3){const N=R(10,20),M=R(2,4),Rm=R(0,M-1);const o=[];for(let i=0;i<N;i++)if(i%M===Rm)o.push(i);
+   src=`int main() {\n    int i;\n    for (i = 0; i < ${N}; i++)\n        if (i % ${M} == ${Rm})\n            printf("%d ", i);\n    printf("\\n");\n    return 0;\n}`;out=o.join(' ');expl=`<p>Vypíšu sa čísla od 0 do ${N-1}, ktoré dávajú po delení ${M} zvyšok ${Rm}.</p>`}
+  else{const N=R(20,90),K=pick([2,3]);const o=[];let i;for(i=1;i<N;i*=K)o.push(i);
+   src=`int main() {\n    int i;\n    for (i = 1; i < ${N}; i *= ${K})\n        printf("%d ", i);\n    printf("| %d\\n", i);\n    return 0;\n}`;out=o.join(' ')+' | '+i;expl=`<p>i sa v každom kroku vynásobí ${K}, kým platí i < ${N}. Po cykle je i = ${i}.</p>`}
+  return outQ('Cyklus for','Cyklus for: inicializácia (raz), podmienka (pred každou iteráciou), zmena (na konci každej iterácie).',src,out,expl)},
+ ()=>{ // while cez cifry
+  const n=R(100,99999),kind=pick(['sum','rev','cnt','even']);
+  let src,out,expl;const digs=String(n).split('').reverse().map(Number);
+  if(kind==='sum'){src=`int main() {\n    int n = ${n}, s = 0;\n    while (n > 0) {\n        s += n % 10;\n        n /= 10;\n    }\n    printf("%d\\n", s);\n    return 0;\n}`;out=String(digs.reduce((a,b)=>a+b,0));expl=`<p>V každom kroku sa k s pripočíta posledná cifra (n % 10) a n sa vydelí 10. Cifry (od konca): ${digs.join(', ')}, súčet ${out}.</p>`}
+  else if(kind==='rev'){src=`int main() {\n    int n = ${n};\n    while (n != 0) {\n        printf("%d", n % 10);\n        n = n / 10;\n    }\n    printf("\\n");\n    return 0;\n}`;out=digs.join('');expl=`<p>Vypisujú sa cifry od poslednej: ${digs.join(', ')}. Výstup je číslo čítané odzadu.</p>`}
+  else if(kind==='cnt'){src=`int main() {\n    int n = ${n}, k = 0;\n    do {\n        k++;\n        n /= 10;\n    } while (n > 0);\n    printf("%d\\n", k);\n    return 0;\n}`;out=String(digs.length);expl=`<p>Telo sa vykoná pre každú cifru (n sa delí 10, kým nie je 0). Číslo ${n} má ${digs.length} cifier.</p>`}
+  else{src=`int main() {\n    int n = ${n}, k = 0;\n    while (n > 0) {\n        if (n % 10 % 2 == 0)\n            k++;\n        n /= 10;\n    }\n    printf("%d\\n", k);\n    return 0;\n}`;out=String(digs.filter(d=>d%2===0).length);expl=`<p>Počíta sa, koľko cifier je párnych. Cifry: ${digs.slice().reverse().join(' ')}, párnych je ${out}.</p>`}
+  return outQ('Cyklus while a cifry čísla','Posledná cifra čísla je n % 10, číslo bez poslednej cifry je n / 10 (celočíselne).',src,out,expl)},
+ ()=>{ // break a continue
+  const N=R(8,15),A=R(2,4),B=R(5,N-1);const o=[];
+  for(let i=1;i<=N;i++){if(i%A===0)continue;if(i>B)break;o.push(i)}
+  const src=`int main() {\n    int i;\n    for (i = 1; i <= ${N}; i++) {\n        if (i % ${A} == 0)\n            continue;\n        if (i > ${B})\n            break;\n        printf("%d ", i);\n    }\n    printf("| %d\\n", i);\n    return 0;\n}`;
+  let i;for(i=1;i<=N;i++){if(i%A===0)continue;if(i>B)break}
+  return outQ('break a continue','continue preskočí zvyšok tela cyklu a pokračuje ďalšou iteráciou, break cyklus úplne ukončí.',src,o.join(' ')+' | '+i,
+   `<p>Preskočia sa násobky ${A}. Cyklus skončí pri prvom čísle väčšom ako ${B}, ktoré nie je násobkom ${A}, a to je ${i}. Po cykle je i = ${i}.</p>`)},
+ ()=>{ // do-while vs while
+  const kind=pick(['do','while']);const A=R(1,8),S=R(1,3),B=pick([R(1,A),A+R(2,8)]);
+  const o=[];let i=A;
+  if(kind==='do'){do{o.push(i);i+=S}while(i<B)}else{while(i<B){o.push(i);i+=S}}
+  const src=`int main() {\n    int i = ${A};\n    ${kind==='do'?`do {\n        printf("%d ", i);\n        i += ${S};\n    } while (i < ${B});`:`while (i < ${B}) {\n        printf("%d ", i);\n        i += ${S};\n    }`}\n    printf("| %d\\n", i);\n    return 0;\n}`;
+  return outQ(kind==='do'?'Cyklus do-while':'Cyklus while',kind==='do'?'do-while testuje podmienku až po vykonaní tela, preto sa telo vykoná vždy aspoň raz.':'while testuje podmienku pred každým vykonaním tela, telo sa nemusí vykonať ani raz.',src,(o.length?o.join(' ')+' ':'')+'| '+i,
+   `<p>${kind==='do'?`Telo sa vykoná vždy prvýkrát (i = ${A}).`:(o.length?'Podmienka '+A+' < '+B+' platí.':`Podmienka ${A} < ${B} neplatí, telo sa nevykoná ani raz.`)} Po cykle je i = ${i}.</p>`)},
+ ()=>{ // vnorené cykly, obrazce
+  const n=R(3,5),kind=pick(['tri','sach','ram','diag']);let cond,desc,f;
+  if(kind==='tri'){cond=`c <= r ? '*' : '-'`;f=(r,c)=>c<=r?'*':'-';desc='trojuholník'}
+  else if(kind==='sach'){cond=`(r + c) % 2 == 0 ? 'c' : 'b'`;f=(r,c)=>(r+c)%2===0?'c':'b';desc='šachovnica'}
+  else if(kind==='ram'){cond=`r == 0 || r == ${n-1} || c == 0 || c == ${n-1} ? '#' : '.'`;f=(r,c)=>(r===0||r===n-1||c===0||c===n-1)?'#':'.';desc='rám'}
+  else{cond=`r == c || r + c == ${n-1} ? 'X' : '-'`;f=(r,c)=>(r===c||r+c===n-1)?'X':'-';desc='diagonály'}
+  const lines=[];for(let r=0;r<n;r++){let s='';for(let c=0;c<n;c++)s+=f(r,c);lines.push(s)}
+  const src=`int main() {\n    int r, c;\n    for (r = 0; r < ${n}; r++) {\n        for (c = 0; c < ${n}; c++)\n            printf("%c", ${cond});\n        printf("\\n");\n    }\n    return 0;\n}`;
+  return outQ('Vnorené cykly',`Vonkajší cyklus prechádza riadky r, vnútorný stĺpce c. Po každom riadku sa vypíše koniec riadku.`,src,lines.join('\n'),
+   `<p>Pre každú dvojicu (r, c) sa vypíše znak podľa podmienky. Vzniká ${desc}:</p>${outbox(lines.join('\n'))}`)},
+ ()=>{ // počet iterácií
+  const kind=pick(['for','dbl','do']);let src,n,expl;
+  if(kind==='for'){const A=R(0,5),S=pick([2,3,4]),B=A+R(8,25);n=0;for(let i=A;i<B;i+=S)n++;
+   src=`int main() {\n    int i, n = 0;\n    for (i = ${A}; i < ${B}; i += ${S})\n        n++;\n    printf("%d\\n", n);\n    return 0;\n}`;expl=`<p>i nadobúda hodnoty ${A}, ${A+S}, ${A+2*S}, … kým i < ${B}. Počet je ⌈(${B} − ${A}) / ${S}⌉ = ${n}.</p>`}
+  else if(kind==='dbl'){const N=R(20,200),K=pick([2,3]);let x=1;n=0;while(x<N){x*=K;n++}
+   src=`int main() {\n    int x = 1, n = 0;\n    while (x < ${N}) {\n        x *= ${K};\n        n++;\n    }\n    printf("%d\\n", n);\n    return 0;\n}`;expl=`<p>x sa násobí ${K}: 1, ${K}, ${K*K}, … Cyklus skončí, keď x ≥ ${N}, čo nastane po ${n} iteráciách.</p>`}
+  else{const A=R(5,15),B=R(1,4);n=0;let i=A;do{n++;i-=B}while(i>0);
+   src=`int main() {\n    int i = ${A}, n = 0;\n    do {\n        n++;\n        i -= ${B};\n    } while (i > 0);\n    printf("%d\\n", n);\n    return 0;\n}`;expl=`<p>i klesá po ${B} z ${A}. do-while vykoná telo najprv a potom testuje i > 0. Počet iterácií je ${n}.</p>`}
+  return numQ('Počet iterácií','Koľkokrát sa vykoná telo cyklu (hodnota n na výstupe)?',src,['n ='],[n],expl,{expect:String(n)})},
+ ()=>{ // nekonečný cyklus
+  const inf=[['for ( ; ; )\n    i++;','for bez podmienky je nekonečný cyklus'],['while (1)\n    i++;','podmienka 1 je vždy pravda'],['while (i = 1)\n    i++;','v podmienke je priradenie, hodnota výrazu je vždy 1 (pravda)'],['while (i < 5);\n{\n    i++;\n}','za while je bodkočiarka, telo cyklu je prázdny príkaz, i sa nikdy nezmení'],['do {\n    i = i + 0;\n} while (i < 5);','i sa nemení, podmienka je stále pravdivá']];
+  const fin=['for (i = 0; i < 5; i++)\n    ;','while (i < 5)\n    i++;','do {\n    i++;\n} while (i < 5);','for (i = 5; i > 0; i--)\n    ;','while (i != 5)\n    i++;'];
+  const [ic0,why]=pick(inf);const wrong=shuf(fin).slice(0,3);
+  const opts=[ic0,...wrong];
+  return{kind:'Nekonečný cyklus',prompt:`Pred každým z cyklov je nastavené i = 0. Ktorý z nich je nekonečný?`,...(()=>{const o=shuf(opts);return{input:{t:'choice',opts:o.map(x=>`<pre class="code inl"><code>${hl(x)}</code></pre>`)},answer:[o.indexOf(ic0)]}})(),
+   solution:`<p>Nekonečný je cyklus <code class="ic">${esc(ic0.split('\n')[0])}</code>: ${why}.</p><p>Ostatné skončia, lebo sa riadiaca premenná v nich približuje k ukončovacej hodnote.</p>`}}
+];
+
+/* ===== 6. Funkcie ===== */
+const LIB={
+ sq:{def:'int sq(int x) {\n    return x * x;\n}',n:1,f:a=>a[0]*a[0]},
+ dbl:{def:'int dbl(int x) {\n    return 2 * x;\n}',n:1,f:a=>2*a[0]},
+ inc:{def:'int inc(int x) {\n    return x + 1;\n}',n:1,f:a=>a[0]+1},
+ add:{def:'int add(int x, int y) {\n    return x + y;\n}',n:2,f:a=>a[0]+a[1]},
+ sub:{def:'int sub(int x, int y) {\n    return x - y;\n}',n:2,f:a=>a[0]-a[1]},
+ mx:{def:'int mx(int x, int y) {\n    if (x > y)\n        return x;\n    return y;\n}',n:2,f:a=>a[0]>a[1]?a[0]:a[1]},
+ mn:{def:'int mn(int x, int y) {\n    return x < y ? x : y;\n}',n:2,f:a=>a[0]<a[1]?a[0]:a[1]},
+ ab:{def:'int ab(int x) {\n    if (x < 0)\n        return -x;\n    return x;\n}',n:1,f:a=>Math.abs(a[0])}};
+const G6=[
+ ()=>{ // hodnotou
+  const A=R(1,9),K=R(2,5),C=R(1,9);
+  if(Math.random()<.5){
+   const src=`void zmen(int x) {\n    x = x * ${K} + ${C};\n    printf("vo funkcii: %d\\n", x);\n}\n\nint main() {\n    int a = ${A};\n    zmen(a);\n    printf("v main: %d\\n", a);\n    return 0;\n}`;
+   return outQ('Odovzdanie hodnotou',`Parametre funkcie sú jej lokálne premenné, do ktorých sa skopíruje hodnota argumentu. Zmena parametra sa neprejaví v premennej volajúceho.`,src,`vo funkcii: ${A*K+C}\nv main: ${A}`,`<p>Funkcia dostane kópiu hodnoty ${A}, zmení svoju kópiu na ${A*K+C}. Premenná a v main zostáva ${A}.</p>`)}
+  const f=x=>(x+C)*2;
+  const src=`int f(int x) {\n    x += ${C};\n    return x * 2;\n}\n\nint main() {\n    int a = ${A};\n    int b = f(a);\n    printf("%d %d %d\\n", a, b, f(b));\n    return 0;\n}`;
+  return outQ('Návratová hodnota',`Funkcia vracia hodnotu príkazom return. Zmena parametra x vo funkcii sa neprejaví v premennej a.`,src,`${A} ${f(A)} ${f(f(A))}`,`<p>f(a) = (${A} + ${C}) · 2 = ${f(A)}, a zostáva ${A}. f(b) = (${f(A)} + ${C}) · 2 = ${f(f(A))}.</p>`)},
+ ()=>{ // rozsah platnosti
+  const A=R(1,9),B=R(10,19),C=R(20,29),D=R(1,5);
+  const variant=pick([0,1]);let src,out,expl;
+  if(variant===0){
+   src=`int g = ${A};\n\nvoid f(void) {\n    int g = ${B};\n    g++;\n    printf("f: %d\\n", g);\n}\n\nint main() {\n    printf("1: %d\\n", g);\n    f();\n    printf("2: %d\\n", g);\n    {\n        int g = ${C};\n        g += 2;\n        printf("3: %d\\n", g);\n    }\n    printf("4: %d\\n", g);\n    return 0;\n}`;
+   out=`1: ${A}\nf: ${B+1}\n2: ${A}\n3: ${C+2}\n4: ${A}`;expl='<p>Lokálna premenná (vo funkcii alebo bloku) <b>zatieni</b> globálnu rovnakého mena. Zmeny lokálnej premennej sa globálnej netýkajú. Po skončení bloku lokálna premenná zaniká.</p>'}
+  else{
+   src=`int g = ${A};\n\nvoid h(void) {\n    g += ${D};\n}\n\nvoid k(int g) {\n    g += ${D};\n}\n\nint main() {\n    h();\n    printf("%d\\n", g);\n    k(g);\n    printf("%d\\n", g);\n    h();\n    printf("%d\\n", g);\n    return 0;\n}`;
+   out=`${A+D}\n${A+D}\n${A+2*D}`;expl='<p>Funkcia h mení globálnu premennú g. Funkcia k má parameter g, ktorý zatieňuje globálnu premennú, takže sa zmení iba jeho kópia.</p>'}
+  return outQ('Rozsah platnosti premenných','Globálna premenná je dostupná v celom programe, lokálna iba v bloku (funkcii), v ktorom je definovaná.',src,out,expl)},
+ ()=>{ // zložené volania
+  const names=shuf(Object.keys(LIB));
+  const f1=LIB[names[0]],f2=LIB[names[1]],f3=LIB[names[2]];
+  const g=shuf(Object.keys(LIB)).slice(0,3).map(k=>({k,...LIB[k]}));
+  // vonkajšia dvojparametrová funkcia
+  const two=['add','sub','mx','mn'].filter(k=>true);const outer=pick(two);
+  const inner=shuf(['sq','dbl','inc','ab']).slice(0,2);
+  const a=R(-6,9),b=R(-6,9);
+  const arg=(fn,x)=>`${fn}(${x})`;
+  const used=new Set([outer,...inner]);
+  const defs=[...used].map(k=>LIB[k].def).join('\n\n');
+  const v1=LIB[inner[0]].f([a]),v2=LIB[inner[1]].f([b]),res=LIB[outer].f([v1,v2]);
+  const src=`${defs}\n\nint main() {\n    int a = ${a}, b = ${b};\n    printf("%d\\n", ${outer}(${inner[0]}(a), ${inner[1]}(b)));\n    return 0;\n}`;
+  return outQ('Volanie funkcií',`Argumenty funkcie sa vyhodnotia pred jej volaním, zložené volania sa vyhodnocujú zvnútra von.`,src,String(res),
+   `<p>${inner[0]}(${a}) = ${v1}, ${inner[1]}(${b}) = ${v2}, potom ${outer}(${v1}, ${v2}) = ${res}.</p>`)},
+ ()=>{ // globálny počítadlo
+  const N=R(3,6),K=R(1,3);let cnt=0;const o=[];
+  for(let i=1;i<=N;i++){cnt+=i*K;o.push(cnt)}
+  const src=`int cnt = 0;\n\nvoid pridaj(int n) {\n    cnt += n * ${K};\n}\n\nint main() {\n    int i;\n    for (i = 1; i <= ${N}; i++) {\n        pridaj(i);\n        printf("%d ", cnt);\n    }\n    printf("\\n");\n    return 0;\n}`;
+  return outQ('Globálna premenná a funkcia',`Globálna premenná nezaniká medzi volaniami funkcií.`,src,o.join(' '),`<p>Pri každom volaní sa k cnt pripočíta n · ${K}. Priebežné hodnoty: ${o.join(', ')}.</p>`)},
+ bank([
+  ['Čo znamená void pri návratovom type funkcie (void f(int a);)?','Funkcia nevracia žiadnu hodnotu',['Funkcia nemá parametre','Funkcia vracia 0','Funkcia nemôže volať iné funkcie'],'void ako návratový typ: funkcia nevracia hodnotu (procedúra). void v zozname parametrov (int f(void)) znamená, že funkcia nemá parametre.'],
+  ['Ako sa v C odovzdávajú argumenty do funkcie (bez použitia ukazovateľov)?','Hodnotou (kópiou)',['Odkazom','Podľa názvu premennej','Vždy cez globálne premenné'],'Parametre sú lokálne premenné inicializované hodnotou argumentu. Na zmenu premennej volajúceho treba ukazovateľ.'],
+  ['Prečo sa pred funkciu main uvádza prototyp funkcie, ak je jej definícia až za main?','Kompilátor musí poznať meno, počet a typy argumentov a návratový typ pred jej použitím',['Aby sa funkcia vykonala skôr','Aby mala funkcia pridelenú pamäť','Nie je potrebný, funkcie sa volajú v ľubovoľnom poradí vždy'],'Funkcia musí byť pred volaním definovaná, alebo musí byť pred volajúcou funkciou aspoň jej deklarácia (prototyp).'],
+  ['Môže byť jedna funkcia definovaná vo vnútri druhej funkcie v štandardnom C?','Nie, vnorené funkcie sa v C nepoužívajú',['Áno, vždy','Iba funkcia main','Iba funkcie typu void'],'Funkcie nemôžu byť vnorené. Do tela funkcie môžeme dať iba jej volanie.'],
+  ['Aké je poradie vyhodnocovania argumentov vo volaní fn(i++, i += 2)?','Štandard ho nešpecifikuje, závisí od prekladača',['Zľava doprava','Sprava doľava','Najprv argument s ++'],'Argumenty by mali obsahovať iba výrazy, ktoré hodnoty čítajú. Zmeny hodnôt sa majú vykonať pred volaním.'],
+  ['Čo spraví funkcia exit(EXIT_FAILURE)?','Ukončí celý program s chybovým kódom',['Ukončí iba aktuálnu funkciu','Vráti 0 volajúcemu','Reštartuje program'],'return končí funkciu, exit končí celý program (funkcia zo stdlib.h).'],
+  ['Ako možno vrátiť z funkcie viac hodnôt?','Cez ukazovatele na výstupné parametre alebo štruktúru',['Príkazom return a, b;','Dvomi príkazmi return','Nedá sa to v žiadnom jazyku'],'return vráti jednu hodnotu. Viac hodnôt: modifikácia parametrov cez ukazovatele, štruktúrovaný typ, globálne premenné (nepoužívať).'],
+  ['Čo je to funkčný prototyp?','Deklarácia funkcie: meno, počet a typ parametrov a návratový typ, bez tela',['Telo funkcie bez hlavičky','Volanie funkcie','Predvolená hodnota parametra'],'Prototyp (hlavička s bodkočiarkou) napr. int sucet(int, int);']])
+];
+'use strict';
+/* ===== 7. Súbory a štandardný vstup ===== */
+const MODES=[
+ ['otvoriť existujúci textový súbor iba na čítanie','"r"',['"w"','"a"','"rb"'],'r je čítanie textového súboru. Ak súbor neexistuje, fopen vráti NULL.'],
+ ['vytvoriť nový textový súbor na zápis (existujúci obsah sa zmaže)','"w"',['"r"','"a"','"r+"'],'w vytvorí nový súbor alebo vynuluje existujúci.'],
+ ['pridávať text na koniec existujúceho súboru','"a"',['"w"','"r"','"r+"'],'a (append) zapisuje na koniec súboru, pôvodný obsah zostane.'],
+ ['zapísať údaje do binárneho súboru','"wb"',['"w"','"rb"','"a"'],'Pri práci v binárnom režime sa pridáva b: "wb", "rb".'],
+ ['načítať údaje z binárneho súboru','"rb"',['"r"','"wb"','"w+"'],'rb je čítanie binárneho súboru.'],
+ ['čítať aj zapisovať do už existujúceho textového súboru (bez zmazania obsahu)','"r+"',['"w+"','"w"','"a"'],'r+ otvorí existujúci súbor na čítanie aj zápis, w+ by súbor vynuloval.'],
+ ['vytvoriť nový textový súbor na čítanie aj zápis','"w+"',['"r"','"r+"','"rb"'],'w+ vytvorí nový súbor (alebo vynuluje) a dovolí čítať aj zapisovať.']];
+const rnd=(a,b)=>R(a,b);
+const G7=[
+ ()=>{const [p,c,w,e]=pick(MODES);return{kind:'Režim fopen',prompt:`Ktorý režim použiješ vo fopen(„súbor“, …), ak chceš ${p}?`,...mcq3(c,w),solution:`<p>${e}</p><p>Režimy: r čítanie, w zápis (nový), a pridávanie, r+ čítanie a zápis (existujúci), w+ čítanie a zápis (nový), pre binárne súbory prípona b.</p>`}},
+ ()=>{ // fscanf slučka
+  const kind=pick(['sum','feof','feof']);
+  const nums=Array.from({length:R(3,5)},()=>R(1,30)),nl=Math.random()<.5||kind==='sum'&&false;
+  const txt=(Math.random()<.5?nums.join(' '):nums.join('\n'))+(nl?'\n':'');
+  if(kind==='sum'){
+   const s=nums.reduce((a,b)=>a+b,0);
+   const src=`int main() {\n    FILE *fr = fopen("vstup.txt", "r");\n    int x, n = 0, s = 0;\n    while (fscanf(fr, "%d", &x) == 1) {\n        s += x;\n        n++;\n    }\n    fclose(fr);\n    printf("%d %d\\n", n, s);\n    return 0;\n}`;
+   return outQ('Čítanie súboru: fscanf',`fscanf vráti počet úspešne načítaných položiek, pri konci súboru EOF. Slučka sa tak ukončí na konci dát bez ohľadu na rozloženie čísel do riadkov.`,src,`${nums.length} ${s}`,`<p>Počet čísel v súbore: ${nums.length}, súčet ${s}. fscanf vráti 1, kým číta čísla, a potom nie je 1 (EOF).</p>`,{files:{'vstup.txt':{text:txt,note:nl?'končí znakom nového riadku':'nekončí novým riadkom'}}})}
+  const o=nums.slice();if(nl)o.push(nums[nums.length-1]);
+  const src=`int main() {\n    FILE *fr = fopen("vstup.txt", "r");\n    int x = 0;\n    while (!feof(fr)) {\n        fscanf(fr, "%d", &x);\n        printf("%d ", x);\n    }\n    printf("\\n");\n    fclose(fr);\n    return 0;\n}`;
+  return outQ('Čítanie súboru: chyba s feof',`feof(f) je pravda až vtedy, keď sa pokus o čítanie dostal za koniec súboru. Skúmaj, čo urobí posledný fscanf.`,src,o.join(' '),
+   `<p>${nl?'Súbor končí znakom nového riadku. Po načítaní posledného čísla ešte feof nie je pravda (čítanie sa zastavilo na \\n). Cyklus sa vykoná ešte raz, fscanf už nič nenačíta (narazí na koniec súboru) a <b>x ostane nezmenené</b>, preto sa posledná hodnota vypíše dvakrát.':'Súbor nekončí novým riadkom. fscanf pri čítaní posledného čísla narazí na koniec súboru, feof sa nastaví hneď a cyklus skončí. Posledná hodnota sa vypíše jedenkrát.'}</p><p>Správnejšie je testovať návratovú hodnotu: <code class="ic">while (fscanf(fr, "%d", &x) == 1)</code>.</p>`,{files:{'vstup.txt':{text:txt,note:nl?'končí znakom nového riadku':'nekončí novým riadkom'}}})},
+ ()=>{ // getc: počty znakov
+  const words=['ahoj','svet','kod','pole','test','abc','x1y2','42','prvy','2026'];
+  const lines=Array.from({length:R(2,4)},()=>Array.from({length:R(1,3)},()=>pick(words)).join(' '));
+  const fin=Math.random()<.5;const txt=lines.join('\n')+(fin?'\n':'');
+  let n=0,l=0,d=0;for(const ch of txt){n++;if(ch==='\n')l++;if(ch>='0'&&ch<='9')d++}
+  const src=`int main() {\n    FILE *fr = fopen("vstup.txt", "r");\n    int c, n = 0, l = 0, d = 0;\n    while ((c = getc(fr)) != EOF) {\n        n++;\n        if (c == '\\n')\n            l++;\n        if (c >= '0' && c <= '9')\n            d++;\n    }\n    fclose(fr);\n    printf("%d %d %d\\n", n, l, d);\n    return 0;\n}`;
+  return outQ('Čítanie súboru po znakoch',`getc vráti ďalší znak súboru alebo EOF. Premenná c musí byť typu int, aby sa dala odlíšiť hodnota EOF (-1) od znaku. Do počtu znakov patria aj znaky nového riadku.`,src,`${n} ${l} ${d}`,
+   `<p>Všetkých znakov ${n} (vrátane ${l}× znaku nového riadku), z toho číslic ${d}. Premenná l počíta znaky '\\n'${fin?'':', takže posledný riadok bez \\n sa do nej nezapočíta'}.</p>`,{files:{'vstup.txt':{text:txt,note:fin?'končí znakom nového riadku':'nekončí novým riadkom'}}})},
+ ()=>{ // najdlhší riadok, konverzia na veľké písmená
+  const words=['ahoj','svet','kod','pole','test','abc','prva','cyklus'];
+  const lines=Array.from({length:R(2,3)},()=>Array.from({length:R(1,3)},()=>pick(words)).join(' '));
+  const fin=Math.random()<.5;const txt=lines.join('\n')+(fin?'\n':'');
+  let dl=0,mx=0,out='';
+  for(let ch of txt){dl++;if(ch>='a'&&ch<='z')ch=ch.toUpperCase();out+=ch;if(ch==='\n'){if(mx<dl)mx=dl;dl=0}}
+  if(mx<dl)mx=dl;
+  const src=`int main() {\n    FILE *fr = fopen("vstup.txt", "r");\n    int c, dlzka = 0, max = 0;\n    while ((c = getc(fr)) != EOF) {\n        dlzka++;\n        if (c >= 'a' && c <= 'z')\n            c += 'A' - 'a';\n        putchar(c);\n        if (c == '\\n') {\n            if (max < dlzka)\n                max = dlzka;\n            dlzka = 0;\n        }\n    }\n    if (max < dlzka)\n        max = dlzka;\n    printf("max: %d\\n", max);\n    fclose(fr);\n    return 0;\n}`;
+  return outQ('Spracovanie súboru po riadkoch',`Program prepíše malé písmená na veľké a zistí dĺžku najdlhšieho riadku (vrátane znaku nového riadku, ak tam je).`,src,out+`max: ${mx}`,
+   `<p>c += 'A' − 'a' zmení malé písmeno na veľké (rozdiel kódov je 32). Dĺžka riadku sa počíta vrátane '\\n'. Najdlhší riadok má ${mx} znakov.</p>`,{files:{'vstup.txt':{text:txt,note:fin?'končí znakom nového riadku':'nekončí novým riadkom'}}})},
+ ()=>{ // fprintf: veľkosť súboru
+  const N=R(3,12),K=pick([1,5,10,25]);let bytes=0;for(let i=1;i<=N;i++)bytes+=String(i*K).length+1;
+  const src=`int main() {\n    FILE *fw = fopen("vystup.txt", "w");\n    int i;\n    for (i = 1; i <= ${N}; i++)\n        fprintf(fw, "%d\\n", i * ${K});\n    printf("%ld\\n", ftell(fw));\n    fclose(fw);\n    return 0;\n}`;
+  const nums=[];for(let i=1;i<=N;i++)nums.push(i*K);
+  return numQ('Zápis do textového súboru','Program zapíše čísla do súboru po jednom na riadok. ftell vráti aktuálnu pozíciu v súbore v bajtoch (každý znak je 1 bajt, znak nového riadku tiež).',src,['pozícia ='],[bytes],
+   `<p>Zapíšu sa čísla ${nums.join(', ')}, každé s koncom riadku. Počet bajtov = súčet počtu cifier + ${N} znakov nového riadku = ${bytes}.</p>`,{expect:String(bytes)})},
+ ()=>{ // binárny súbor
+  const N=R(4,7),K=R(2,N-1);const a=Array.from({length:N},(_,i)=>(i+1)*R(3,11));
+  const d=pick([2.5,7.25,1.5]);
+  const src=`int main() {\n    FILE *f = fopen("data.bin", "wb+");\n    int a[${N}] = {${a.join(', ')}};\n    double d = ${d};\n    int x, y;\n    fwrite(a, sizeof(int), ${N}, f);\n    fwrite(&d, sizeof(double), 1, f);\n    printf("%ld\\n", ftell(f));\n    fseek(f, ${K} * sizeof(int), SEEK_SET);\n    fread(&x, sizeof(int), 1, f);\n    fseek(f, -2 * (long)sizeof(int), SEEK_CUR);\n    fread(&y, sizeof(int), 1, f);\n    printf("%d %d %ld\\n", x, y, ftell(f));\n    fseek(f, 0, SEEK_END);\n    printf("%ld\\n", ftell(f));\n    fclose(f);\n    return 0;\n}`;
+  const tot=4*N+8;
+  const expect=`${tot}\n${a[K]} ${a[K-1]} ${4*K}\n${tot}`;
+  return outQ('Binárny súbor: fwrite, fseek, ftell','Pozície sa merajú v bajtoch od začiatku súboru. int má 4 bajty, double 8. fseek(f, posun, SEEK_SET / SEEK_CUR / SEEK_END) nastaví pozíciu, fread a fwrite ju posúvajú o počet prečítaných alebo zapísaných bajtov.',src,expect,
+   `<p>Zapíše sa ${N} int-ov (${4*N} bajtov) a jeden double (8 bajtov): ${tot} bajtov.</p><p>fseek na ${K}·4 = ${4*K}: fread načíta a[${K}] = ${a[K]} (pozícia ${4*K+4}). Posun o −8 → pozícia ${4*K-4}, fread načíta a[${K-1}] = ${a[K-1]} (pozícia ${4*K}).</p><p>SEEK_END s posunom 0 je koniec súboru, ftell = ${tot}.</p>`)},
+ ()=>{ // scanf a nový riadok
+  const n=R(1,99),ch=String.fromCharCode(R(65,90));
+  const v=pick([0,1,2]);
+  const body=[`    scanf("%d", &n);\n    c = getchar();`,`    scanf("%d", &n);\n    scanf("%c", &c);`,`    scanf("%d", &n);\n    scanf(" %c", &c);`][v];
+  const res=v===2?ch.charCodeAt(0):10;
+  const src=`int main() {\n    int n;\n    char c;\n${body}\n    printf("%d %d\\n", n, c);\n    return 0;\n}`;
+  return outQ('Znak nového riadku vo vstupe',`scanf("%d") prečíta číslo a nechá vo vstupe znak nového riadku. getchar() a scanf("%c") ho potom prečítajú ako znak, ale scanf(" %c") s medzerou preskočí biele znaky.`,src,`${n} ${res}`,
+   `<p>Vstup je „${n}⏎${ch}⏎“. Po načítaní čísla zostane v ňom ⏎ (kód 10). ${v===2?'Medzera vo formáte " %c" ho preskočí a načíta sa znak '+ch+' (kód '+ch.charCodeAt(0)+').':'Nasledujúce čítanie znaku vráti práve ⏎, teda 10.'}</p>`,{stdin:`${n}\n${ch}\n`})},
+ bank([
+  ['Čo sa stane s výstupom, ak program spustíme ./program > vystup.txt?','Štandardný výstup (stdout) sa zapíše do súboru, chybový (stderr) zostane na obrazovke',['Na obrazovke sa nič nezobrazí, ani chybové hlásenia','Súbor vystup.txt sa použije ako vstup','Program sa nespustí'],'Presmerovanie > ovplyvní iba štandardný výstup. stderr je samostatný prúd.'],
+  ['Čo robí ./program < vstup.txt?','Štandardný vstup (stdin) sa číta zo súboru namiesto klávesnice',['Výstup sa zapíše do súboru vstup.txt','Súbor sa otvorí funkciou fopen','Program sa spustí s argumentom vstup.txt'],'Program nevie, odkiaľ jeho vstup pochádza. Operačný systém ho môže presmerovať.'],
+  ['Čo vráti fopen, ak súbor nemožno otvoriť?','NULL',['0 ako int s chybovým kódom','EOF','Prázdny súbor'],'Vždy treba testovať, či fopen nevrátil NULL (napr. súbor neexistuje v režime r).'],
+  ['Prečo má byť premenná c v while ((c = getc(f)) != EOF) typu int?','Aby sa dala rozlíšiť hodnota EOF (-1) od platného znaku',['Pretože getc vracia reálne číslo','Pretože char nemôže uchovať písmeno','Nie je to potrebné, platí aj char'],'EOF je celé číslo (zvyčajne -1). Pri typu char by sa niektorý znak mohol zameniť s EOF (alebo by EOF nikdy neplatilo, ak je char bez znamienka).'],
+  ['Čo spraví fflush(stdout)?','Vynúti vypísanie dát z vyrovnávacej pamäte',['Zmaže obrazovku','Zatvorí štandardný výstup','Zmaže vstupný buffer'],'Výstup sa ukladá do vyrovnávacej pamäte a zapíše sa až pri zaplnení, konci riadku alebo fflush.'],
+  ['Prečo je na konci práce so súborom dôležité volať fclose?','Zapíše zvyšok dát z vyrovnávacej pamäte a uvoľní prostriedky',['Aby sa súbor zmazal','Aby sa program ukončil','Nie je dôležité, súbor sa vždy zatvorí sám pred zápisom'],'fclose zapíše nezapísané dáta z bufferu a uvoľní súbor. fclose vráti EOF, ak zlyhal.'],
+  ['V reťazci cesty chceme zapísať cestu C:\\subor.txt. Ako ju správne zapíšeme v C?','"C:\\\\subor.txt"',['"C:\\subor.txt"','"C:/subor.txt\\"','\'C:\\subor.txt\''],'Spätné lomítko je v reťazci špeciálny znak, preto sa zapisuje dvojitým \\\\ (escape sekvencia).'],
+  ['Ktorá funkcia zapíše údaje do textového súboru v tvare podobnom ako printf?','fprintf',['fwrite','fputs','getc'],'fprintf(f, formát, …) je printf do súboru. fwrite zapisuje bajty (binárne súbory).']])
+];
+
+/* ===== 8. Typová konverzia ===== */
+const G8=[
+ ()=>{ // delenie int/double
+  const a=R(7,40),b=pick([2,3,4,5,6,7]);
+  const T=[
+   {c:`a / b`,t:'double',v:tdiv(a,b),e:'a a b sú int, deli sa celočíselne, výsledok sa až potom prevedie na double'},
+   {c:`(double) a / b`,t:'double',v:a/b,e:'(double) a sa vzťahuje na a, deliteľ b sa tiež prevedie na double: reálne delenie'},
+   {c:`(double) (a / b)`,t:'double',v:tdiv(a,b),e:'najprv celočíselné delenie v zátvorke, potom prevod na double'},
+   {c:`a / (double) b`,t:'double',v:a/b,e:'deliteľ je double, preto sa deli reálne'},
+   {c:`a * (1 / b)`,t:'double',v:a*tdiv(1,b),e:'1 / b je celočíselné delenie (= 0 pre b > 1), preto je výsledok 0'},
+   {c:`a / 2.0`,t:'double',v:a/2,e:'2.0 je double, reálne delenie'},
+   {c:`(float) a / b`,t:'double',v:Math.fround(Math.fround(a)/b),e:'reálne delenie v type float'}];
+  const ch=shuf(T).slice(0,4);
+  const src=`int main() {\n    int a = ${a}, b = ${b};\n${ch.map((x,i)=>`    double d${i+1} = ${x.c};`).join('\n')}\n${ch.map((x,i)=>`    printf("%.2f\\n", d${i+1});`).join('\n')}\n    return 0;\n}`;
+  return outQ('Typová konverzia pri delení',`Ak sú oba operandy delenia celé čísla, delí sa celočíselne (desatinná časť sa odreže). Ak je aspoň jeden operand reálny, deli sa reálne. Pretypovanie (typ) výraz sa vzťahuje len na najbližší operand.`,src,ch.map(x=>cprintf('%.2f',x.v)).join('\n'),
+   `<p>a = ${a}, b = ${b}:</p><ul>${ch.map((x,i)=>`<li><code class="ic">double d${i+1} = ${esc(x.c)};</code> → ${cprintf('%.2f',x.v)}: ${x.e}</li>`).join('')}</ul>`)},
+ ()=>{ // priradenie a skratenie
+  const T=[
+   ()=>{const x=R(2,9),d=R(1,9);return{c:`int p = ${x}.${d};`,f:'%d',v:x,e:`pri priradení do int sa desatinná časť odreže: ${x}.${d} → ${x}`}},
+   ()=>{const x=R(2,9),d=R(1,9);return{c:`int q = -${x}.${d};`,f:'%d',v:-x,e:`odrezanie smerom k nule: −${x}.${d} → −${x}`}},
+   ()=>{const a=R(3,9),b=R(2,4);return{c:`double r = ${a} / ${b};`,f:'%.1f',v:tdiv(a,b),e:`${a} / ${b} sú int, výsledok ${tdiv(a,b)} sa prevedie na double`}},
+   ()=>{const a=R(3,9),b=pick([2,4,5]);return{c:`double s = ${a} / ${b}.0;`,f:'%.2f',v:a/b,e:`${b}.0 je double, deli sa reálne`}},
+   ()=>{const k=R(0,20);return{c:`char t = 'a' + ${k};`,f:'%c',v:String.fromCharCode(97+k),e:`'a' = 97, 97 + ${k} = ${97+k} je kód znaku '${String.fromCharCode(97+k)}'`}},
+   ()=>{const n=R(2,5);return{c:`double v = 1 / ${n} * ${n}.0;`,f:'%.1f',v:0,e:`1 / ${n} je celočíselné delenie = 0, ${n===1?'':'0 * '+n+'.0 = 0.0'}`}},
+   ()=>{const k=pick([3,5,7]);return{c:`int w = 2.5 * ${k};`,f:'%d',v:Math.trunc(2.5*k),e:`2.5 * ${k} = ${2.5*k}, do int sa odreže na ${Math.trunc(2.5*k)}`}}];
+  const ch=shuf(T).slice(0,4).map(f=>f());const names=['p','q','r','s','t','v','w'];
+  const nm=ch.map(x=>x.c.match(/\b(?:int|double|char) (\w)/)[1]);
+  const src=`int main() {\n${ch.map(x=>'    '+x.c).join('\n')}\n${ch.map((x,i)=>`    printf("${x.f}\\n", ${nm[i]});`).join('\n')}\n    return 0;\n}`;
+  return outQ('Implicitná konverzia pri priradení',`Pri priradení sa hodnota prevedie na typ premennej na ľavej strane. Prevod reálneho čísla na celé číslo odreže desatinnú časť (smerom k nule).`,src,ch.map(x=>cprintf(x.f,x.v)).join('\n'),`<ul>${ch.map(x=>`<li><code class="ic">${esc(x.c)}</code>: ${x.e}</li>`).join('')}</ul>`)},
+ ()=>{ // promócia unsigned char
+  const a=R(150,250),b=R(60,120);
+  const sum=a+b;
+  const src=`int main() {\n    unsigned char a = ${a}, b = ${b};\n    int s = a + b;\n    unsigned char t = a + b;\n    printf("%d %d %d\\n", s, t, a > b ? a - b : b - a);\n    return 0;\n}`;
+  return outQ('Rozšírenie char na int',`Pri aritmetike sa operandy typu char a short najprv rozšíria na int. Výsledok sa pri uložení do menšieho typu zredukuje na jeho rozsah.`,src,`${sum} ${sum%256} ${Math.abs(a-b)}`,
+   `<p>a + b sa počíta v type int: ${a} + ${b} = ${sum}. Do int s sa uloží ${sum}. Do unsigned char t sa zmestia iba hodnoty 0 až 255, preto ${sum} mod 256 = ${sum%256}. Rozdiel je ${Math.abs(a-b)}.</p>`)},
+ ()=>{ // pretypovanie, zaokrúhlenie
+  const x=pick([2.3,2.5,2.7,3.6,7.5,9.99,1.4,6.2,-1.4,-2.8,-4.5]);
+  const src=`int main() {\n    double x = ${x};\n    printf("%d\\n", (int) x);\n    printf("%d\\n", (int) (x + 0.5));\n    printf("%.1f\\n", (int) x + 0.5);\n    printf("%d\\n", (int) -x);\n    return 0;\n}`;
+  const o=[Math.trunc(x),Math.trunc(x+0.5),Math.trunc(x)+0.5,Math.trunc(-x)].map((v,i)=>i===2?cprintf('%.1f',v):String(v===0?0:v));
+  return outQ('Explicitné pretypovanie',`(int) x odreže desatinnú časť smerom k nule (nie je to zaokrúhlenie). Zaokrúhlenie kladného čísla na najbližšie celé dáva (int)(x + 0.5).`,src,o.join('\n'),
+   `<p>x = ${x}.</p><ul><li>(int) x = ${o[0]}</li><li>(int)(x + 0.5) = (int) ${x+0.5} = ${o[1]}</li><li>(int) x + 0.5 = ${o[0]} + 0.5 = ${o[2]} (pretypovanie sa týka len x)</li><li>(int) -x = (int) ${-x} = ${o[3]}</li></ul>`)},
+ ()=>{ // typ výrazu
+  const T=['char','short','int','unsigned int','float','double'];
+  const rank=t=>({char:0,short:0,int:1,'unsigned int':2,float:3,double:4}[t]);
+  const nm=['int','unsigned int','float','double'];
+  const t1=pick(T),t2=pick(T),op=pick(['+','*','-','/']);
+  const r=Math.max(rank(t1),rank(t2));const res=nm[Math.max(0,r-1)];
+  const v1={char:'c',short:'h',int:'i','unsigned int':'u',float:'f',double:'d'};
+  const decl=`${t1} a;\n${t2} b;`.replace(/(\w+(?: int)?) (\w);\n(\w+(?: int)?) (\w);/,(m,x,y,z,w)=>`${x} a;\n${z} b;`);
+  return{kind:'Typ výrazu',prompt:`Aký je typ výrazu a ${op} b, ak sú deklarované premenné:${code(`${t1} a;\n${t2} b;`)}`,...mcq(nm,res),
+   solution:`<p>Operandy typu char a short sa najprv rozšíria na int. Ak majú operandy rôzny typ, ten s nižšou prioritou sa prevedie na vyšší podľa poradia: int → unsigned int → float → double.</p><p>Výsledný typ: <b>${res}</b>.</p>`}}
+];
+
+/* ===== 9. Ukazovatele ===== */
+const G9=[
+ ()=>{ // ptrTrace
+  const s={i:R(1,9),j:R(1,9)},init={...s};const P={p:pick(['i','j']),q:pick(['i','j'])};const p0={...P};
+  const stm=[],rows=[];
+  const T=[
+   ()=>{const x=pick(['i','j']);return{c:`p = &${x};`,f:()=>{P.p=x}}},
+   ()=>{const x=pick(['i','j']);return{c:`q = &${x};`,f:()=>{P.q=x}}},
+   ()=>({c:`q = p;`,f:()=>{P.q=P.p}}),
+   ()=>{const k=R(1,9);return{c:`*p = ${k};`,f:()=>{s[P.p]=k}}},
+   ()=>{const k=R(1,5);return{c:`*q += ${k};`,f:()=>{s[P.q]+=k}}},
+   ()=>({c:`(*p)++;`,f:()=>{s[P.p]++}}),
+   ()=>{const k=R(1,5);return{c:`*q = *p + ${k};`,f:()=>{s[P.q]=s[P.p]+k}}},
+   ()=>({c:`i = *q * 2;`,f:()=>{s.i=s[P.q]*2}}),
+   ()=>({c:`j = *p + *q;`,f:()=>{s.j=s[P.p]+s[P.q]}})];
+  for(let n=0;n<5;n++){const t=pick(T)();t.f();stm.push(t.c);rows.push([t.c,s.i,s.j,'&'+P.p,'&'+P.q])}
+  const src=`int main() {\n    int i = ${init.i}, j = ${init.j};\n    int *p = &${p0.p}, *q = &${p0.q};\n    ${stm.join('\n    ')}\n    printf("%d %d %d %d\\n", i, j, *p, *q);\n    return 0;\n}`;
+  return outQ('Ukazovatele: sledovanie hodnôt','&x je adresa premennej x, *p je hodnota, na ktorú ukazuje p. Priradenie p = &x zmení, kam p ukazuje, priradenie *p = k zmení hodnotu premennej, na ktorú p ukazuje.',src,`${s.i} ${s.j} ${s[P.p]} ${s[P.q]}`,
+   `<p>Začiatok: i = ${init.i}, j = ${init.j}, p ukazuje na ${p0.p}, q na ${p0.q}.</p>${trace(['príkaz','i','j','p →','q →'],rows)}`)},
+ ()=>{ // ukazovateľ na ukazovateľ
+  const s={i:R(1,9),j:R(1,9)},init={...s};let P=pick(['i','j']);const P0=P;const stm=[],rows=[];
+  const T=[
+   ()=>{const k=R(1,9);return{c:`**pp = ${k};`,f:()=>{s[P]=k}}},
+   ()=>{const x=pick(['i','j']);return{c:`*pp = &${x};`,f:()=>{P=x}}},
+   ()=>{const k=R(1,5);return{c:`**pp += ${k};`,f:()=>{s[P]+=k}}},
+   ()=>{const x=pick(['i','j']);return{c:`p = &${x};`,f:()=>{P=x}}},
+   ()=>{const k=R(2,6);return{c:`*p = ${k};`,f:()=>{s[P]=k}}}];
+  for(let n=0;n<4;n++){const t=pick(T)();t.f();stm.push(t.c);rows.push([t.c,s.i,s.j,'&'+P])}
+  const src=`int main() {\n    int i = ${init.i}, j = ${init.j};\n    int *p = &${P0};\n    int **pp = &p;\n    ${stm.join('\n    ')}\n    printf("%d %d %d\\n", i, j, *p);\n    return 0;\n}`;
+  return outQ('Ukazovateľ na ukazovateľ','pp ukazuje na p (teda *pp je p) a **pp je hodnota premennej, na ktorú ukazuje p. Priradenie *pp = &x mení ukazovateľ p.',src,`${s.i} ${s.j} ${s[P]}`,
+   `<p>pp vždy ukazuje na p. Zmena *pp je zmena p, zmena **pp je zmena premennej, na ktorú p ukazuje.</p>${trace(['príkaz','i','j','p →'],rows)}`)},
+ ()=>{ // swap
+  const x=R(1,9),y=R(10,19),k=R(2,5);
+  const kind=pick([0,1]);let src,out,expl;
+  if(kind===0){
+   src=`void vymen(int *a, int *b) {\n    int pom = *a;\n    *a = *b;\n    *b = pom;\n}\n\nvoid zle(int a, int b) {\n    int pom = a;\n    a = b;\n    b = pom;\n}\n\nint main() {\n    int x = ${x}, y = ${y};\n    zle(x, y);\n    printf("%d %d\\n", x, y);\n    vymen(&x, &y);\n    printf("%d %d\\n", x, y);\n    return 0;\n}`;
+   out=`${x} ${y}\n${y} ${x}`;expl='<p>zle dostane kópie hodnôt, výmena sa týka len kópií. vymen dostane adresy premenných x a y a mení ich cez dereferenciu.</p>'}
+  else{
+   src=`void pridaj(int *p, int n) {\n    *p += n;\n}\n\nvoid pridaj2(int p, int n) {\n    p += n;\n}\n\nint main() {\n    int x = ${x}, y = ${y};\n    pridaj(&x, ${k});\n    pridaj2(y, ${k});\n    pridaj(&y, x);\n    printf("%d %d\\n", x, y);\n    return 0;\n}`;
+   out=`${x+k} ${y+x+k}`;expl=`<p>pridaj(&x, ${k}): x = ${x+k}. pridaj2(y, ${k}) mení len kópiu, y zostane ${y}. pridaj(&y, x): y = ${y} + ${x+k} = ${y+x+k}.</p>`}
+  return outQ('Odovzdanie odkazom (ukazovateľom)','Ak funkcia má zmeniť premennú volajúceho, dostane jej adresu a mení ju cez dereferenciu *p.',src,out,expl)},
+ ()=>{ // aritmetika s poľom
+  const N=6,a=Array.from({length:N},()=>R(1,50));
+  const k1=R(1,2),adv=R(2,3);
+  let p=0;const o=[];
+  o.push(`${a[p]} ${a[p+k1]} ${a[1]}`);
+  p+=adv;o.push(`${a[p]} ${a[p-1]}`);
+  p--;o.push(`${a[p]} ${p}`);
+  o.push(String((N-1)-1));
+  const src=`int main() {\n    int a[${N}] = {${a.join(', ')}};\n    int *p = a;\n    printf("%d %d %d\\n", *p, *(p + ${k1}), a[1]);\n    p += ${adv};\n    printf("%d %d\\n", *p, p[-1]);\n    p--;\n    printf("%d %ld\\n", *p, (long)(p - a));\n    printf("%ld\\n", (long)(&a[${N-1}] - &a[1]));\n    return 0;\n}`;
+  return outQ('Aritmetika s ukazovateľmi',`Meno poľa je adresa jeho prvého prvku. p + k posunie ukazovateľ o k prvkov (nie bajtov), *(p + k) je p[k]. Rozdiel dvoch ukazovateľov na to isté pole je počet prvkov medzi nimi.`,src,o.join('\n'),
+   `<p>Prvky poľa: ${a.map((v,i)=>`a[${i}] = ${v}`).join(', ')}.</p><ul><li>*p = a[0] = ${a[0]}, *(p + ${k1}) = a[${k1}] = ${a[k1]}, a[1] = ${a[1]}</li><li>p += ${adv}: p ukazuje na a[${adv}] = ${a[adv]}, p[-1] = a[${adv-1}] = ${a[adv-1]}</li><li>p--: p ukazuje na a[${adv-1}], p − a = ${adv-1}</li><li>&amp;a[${N-1}] − &amp;a[1] = ${N-2}</li></ul>`)},
+ ()=>{ // ukazovateľ na funkciu
+  const F={add:['int add(int a, int b) {\n    return a + b;\n}',(a,b)=>a+b],sub:['int sub(int a, int b) {\n    return a - b;\n}',(a,b)=>a-b],mul:['int mul(int a, int b) {\n    return a * b;\n}',(a,b)=>a*b],mx:['int mx(int a, int b) {\n    return a > b ? a : b;\n}',(a,b)=>a>b?a:b]};
+  const ks=shuf(Object.keys(F)).slice(0,3);const a=R(2,9),b=R(2,9);
+  const src=`${ks.map(k=>F[k][0]).join('\n\n')}\n\nint main() {\n    int (*op)(int, int);\n    op = &${ks[0]};\n    printf("%d\\n", (*op)(${a}, ${b}));\n    op = ${ks[1]};\n    printf("%d\\n", op(${a}, ${b}));\n    op = &${ks[2]};\n    printf("%d\\n", op(op(${a}, ${b}), ${b}));\n    return 0;\n}`;
+  const f=k=>F[k][1];
+  return outQ('Ukazovateľ na funkciu','int (*op)(int, int) je ukazovateľ na funkciu s dvomi int parametrmi a návratovou hodnotou int. Funkciu volíme zmenou ukazovateľa, volanie je (*op)(…) alebo op(…).',src,`${f(ks[0])(a,b)}\n${f(ks[1])(a,b)}\n${f(ks[2])(f(ks[2])(a,b),b)}`,
+   `<p>op ukazuje postupne na ${ks.join(', ')}. Tretí výpis volá ${ks[2]} dvakrát: ${ks[2]}(${a}, ${b}) = ${f(ks[2])(a,b)}, potom ${ks[2]}(${f(ks[2])(a,b)}, ${b}).</p>`)},
+ ()=>{ // sizeof ukazovateľov
+  const T=[['char',1],['int',4],['double',8],['short',2]];const t=shuf(T).slice(0,2);
+  const src=`char *a;\nint *b;\ndouble *c;`;
+  return{kind:'Veľkosť ukazovateľa',prompt:`Na 64-bitovom systéme (adresa má 8 bajtov, int má 4, char 1, double 8) je deklarované:${code(src)}Zisti hodnoty:`,
+   input:linesIn([['sizeof(a) =',NUL],['sizeof(*b) =',NUL],['sizeof(*c) =',NUL]]),answer:[8,4,8],
+   solution:`<p>Ukazovateľ má vždy rovnakú veľkosť (na 64-bitovom systéme 8 bajtov), nezávisle od typu, na ktorý ukazuje. sizeof(*b) je veľkosť typu int (4), sizeof(*c) je veľkosť double (8).</p>`}},
+ bank([
+  ['Aké typy majú premenné p a q v deklarácii int *p, q;?','p je ukazovateľ na int, q je obyčajné int',['Obe sú ukazovatele na int','p je int, q je ukazovateľ na int','Obe sú int'],'Hviezdička patrí iba k najbližšej premennej. Na deklaráciu dvoch ukazovateľov treba int *p, *q;.'],
+  ['Čo vypíše printf("%d", *p), ak je p == NULL?','Nedefinované správanie, program zvyčajne spadne (segmentation fault)',['0','NULL','Nič'],'Dereferencia NULL (alebo neinicializovaného ukazovateľa) vedie k pádu programu. Pred dereferenciou treba overiť, či ukazovateľ nie je NULL.'],
+  ['Ako sa v C inicializuje ukazovateľ, ktorý zatiaľ nikam neukazuje?','int *p = NULL;',['int *p = 0x0 &;','int *p = void;','int *p = -1;'],'NULL označuje ukazovateľ, ktorý nikam neukazuje.'],
+  ['Čo je to operátor & v výraze &x?','Operátor adresy, vracia adresu premennej x',['Bitové AND','Dereferencia ukazovateľa','Logický súčin'],'& (referenčný operátor) vráti adresu premennej. * (dereferenčný operátor) vráti hodnotu na adrese.'],
+  ['Akým formátom vypíšeme adresu v printf?','%p',['%a','%d','%addr'],'%p vypíše ukazovateľ v hexadecimálnom tvare, argument pretypujeme na (void *).'],
+  ['Čo musíme urobiť pred dereferenciou ukazovateľa typu void *?','Pretypovať ho na konkrétny typ, napr. *(int *)p',['Nič, void * sa dereferencuje priamo','Zavolať free(p)','Priradiť mu NULL'],'void * nemá typ, preto kompilátor nevie, koľko bajtov a ako interpretovať. Treba pretypovať.'],
+  ['Na čo ukazuje ukazovateľ p po priradení p = &i; i = 7;?','Na premennú i, takže *p má hodnotu 7',['Na hodnotu 7 uloženú inde','Na kópiu premennej i','Na NULL'],'Ukazovateľ obsahuje adresu premennej, nie jej hodnotu. Zmena i je viditeľná cez *p.'],
+  ['Čo je výsledok p++ pre ukazovateľ int *p?','p sa posunie na nasledujúci int (o 4 bajty)',['p sa zväčší o 1 bajt','Hodnota *p sa zväčší o 1','Nedefinované správanie'],'Aritmetika s ukazovateľmi sa mení v jednotkách veľkosti typu. (*p)++ zväčšuje hodnotu, na ktorú p ukazuje.'],
+  ['Prečo je zápis *p++ iný než (*p)++?','*p++ posunie ukazovateľ, (*p)++ zmení hodnotu, na ktorú ukazuje',['Sú úplne rovnaké','*p++ je chyba prekladu','(*p)++ posunie ukazovateľ'],'Operátor ++ má vyššiu prioritu ako *, preto *p++ znamená *(p++). Zátvorky zmenia význam.']])
+];
+'use strict';
+/* ===== 10. Reťazce a const ===== */
+const WORDS=['Ahoj','svet','Kod','pole','Test','abc','Prvy','cyklus','data','Zoznam','nula','Mapa'];
+const mkChars=s=>[...s.split('').map(c=>c.charCodeAt(0)),0];
+const fromChars=(a,i=0)=>{let r='';for(let k=i;k<a.length&&a[k]!==0;k++)r+=String.fromCharCode(a[k]);return r};
+const scmp=(a,b)=>a<b?-1:a>b?1:0;
+const G10=[
+ ()=>{ // sizeof vs strlen
+  const w=pick(WORDS),n=w.length+R(3,8),w2=pick(WORDS);
+  const T=[
+   {d:`char a[] = "${w}";`,v:'a',sz:w.length+1,len:w.length,e:`pole sa vytvorí presne na dĺžku textu plus ukončovací znak '\\0': ${w.length} + 1 = ${w.length+1} bajtov`},
+   {d:`char b[${n}] = "${w2}";`,v:'b',sz:n,len:w2.length,e:`pole má pevnú veľkosť ${n}, text zaberá ${w2.length} znakov a '\\0', zvyšok je vyplnený nulami`},
+   {d:`char *c = "${w}";`,v:'c',sz:8,len:w.length,e:`c je ukazovateľ (8 bajtov na 64-bitovom systéme), nie pole; strlen meria dĺžku textu`}];
+  const ch=shuf(T).slice(0,2);
+  const src=`int main() {\n    ${ch.map(x=>x.d).join('\n    ')}\n${ch.map(x=>`    printf("%zu %zu\\n", sizeof(${x.v}), strlen(${x.v}));`).join('\n')}\n    return 0;\n}`;
+  return outQ('sizeof a strlen','strlen vráti počet znakov pred ukončovacím znakom \\0 (bez neho). sizeof vráti veľkosť premennej v bajtoch (u poľa vrátane \\0 a nevyužitých prvkov, u ukazovateľa 8).',src,ch.map(x=>`${x.sz} ${x.len}`).join('\n'),`<ul>${ch.map(x=>`<li><code class="ic">${esc(x.d)}</code>: sizeof = ${x.sz}, strlen = ${x.len}. ${x.e}</li>`).join('')}</ul>`)},
+ ()=>{ // zmena reťazca a ukazovateľ do neho
+  const w=pick(['Ahoj!','Hallo','svetlo','cyklus','Pointer']);const a=mkChars(w);
+  const k=R(0,w.length-1),m=R(2,w.length-2),j=R(1,w.length-1);
+  a[k]='.'.charCodeAt(0);
+  const o1=fromChars(a);
+  a[m]=0;const o2=fromChars(a);const o3=fromChars(a,j);
+  const src=`int main() {\n    char s[] = "${w}";\n    char *r;\n    s[${k}] = '.';\n    printf("%s\\n", s);\n    *(s + ${m}) = 0;\n    printf("%s\\n", s);\n    r = s + ${j};\n    printf("%s\\n", r);\n    return 0;\n}`;
+  return outQ('Reťazec ako pole znakov','Reťazec je pole znakov ukončené znakom 0 (\\0). printf("%s") vypisuje znaky od zadanej adresy až po prvé \\0. Zápis 0 do poľa reťazec skráti. s + j je adresa j-teho znaku, teda zvyšok reťazca od neho.',src,`${o1}\n${o2}\n${o3}`,
+   `<p>s[${k}] = '.' prepíše znak na indexe ${k}: „${o1}“.</p><p>*(s + ${m}) = 0 je to isté ako s[${m}] = 0, reťazec sa tam končí: „${o2}“.</p><p>r = s + ${j} ukazuje na znak s indexom ${j}, vypíše sa od neho po prvé \\0: „${o3}“${j>=m?' (prázdny reťazec, lebo \\0 je skôr)':''}.</p>`)},
+ ()=>{ // strcpy, strcat, strcmp
+  const w=shuf(WORDS).slice(0,4);let a=w[0],b='';
+  const stm=[],trace2=[];
+  const T=[()=>{const x=pick(w);return{c:`strcat(a, "${x}");`,f:()=>{a+=x}}},()=>({c:`strcpy(b, a);`,f:()=>{b=a}}),()=>{const x=pick(w);return{c:`strcpy(a, "${x}");`,f:()=>{a=x}}},()=>{const x=pick(w);return{c:`strcat(b, "${x}");`,f:()=>{b+=x}}}];
+  for(let n=0;n<3;n++){const t=pick(T)();t.f();stm.push(t.c);trace2.push([t.c,a,b])}
+  const src=`int main() {\n    char a[60] = "${w[0]}", b[60] = "";\n    ${stm.join('\n    ')}\n    printf("%s|%s\\n", a, b);\n    printf("%d %zu\\n", strcmp(a, b) < 0, strlen(a) + strlen(b));\n    return 0;\n}`;
+  const c=scmp(a,b);
+  return outQ('Funkcie string.h','strcpy(cieľ, zdroj) skopíruje reťazec, strcat(cieľ, zdroj) ho pripojí na koniec, strlen vráti dĺžku, strcmp vráti 0 pre rovnaké reťazce, zápornú hodnotu ak je prvý lexikograficky menší (podľa kódov znakov, veľké písmená sú pred malými), kladnú ak väčší.',src,`${a}|${b}\n${c<0?1:0} ${a.length+b.length}`,
+   `<p>Začiatok: a = „${w[0]}“, b = „“.</p>${trace(['príkaz','a','b'],trace2.map(r=>[r[0],`„${r[1]}“`,`„${r[2]}“`]))}<p>strcmp(a, b) ${c<0?'< 0':c===0?'= 0':'> 0'}, preto výraz strcmp(a, b) &lt; 0 je ${c<0?1:0}. Súčet dĺžok je ${a.length} + ${b.length} = ${a.length+b.length}.</p>`)},
+ ()=>{ // strchr, strstr
+  const pool=['programovanie','banana','abrakadabra','mississippi','pointer','cyklus a cykly'];
+  const s=pick(pool);const chs=[...new Set(s.replace(/ /g,'').split(''))];const ch=pick(chs);
+  const pos=s.indexOf(ch);
+  const st=R(0,s.length-3),ln=R(2,3),sub=s.slice(st,st+ln);const spos=s.indexOf(sub);
+  let t=s.slice(0,pos)+'X'+s.slice(pos+1);
+  const src=`int main() {\n    char s[] = "${s}";\n    char *p = strchr(s, '${ch}');\n    char *q;\n    printf("%s\\n", p);\n    *p = 'X';\n    printf("%s %ld\\n", s, (long)(p - s));\n    q = strstr(s, "${sub}");\n    if (q != NULL)\n        printf("%s\\n", q);\n    else\n        printf("nenajdene\\n");\n    return 0;\n}`;
+  const qpos=t.indexOf(sub);
+  return outQ('strchr a strstr',`strchr(s, c) vráti ukazovateľ na prvý výskyt znaku c v s (alebo NULL), strstr(s, t) ukazovateľ na prvý výskyt podreťazca t (alebo NULL). Rozdiel p − s je index nájdeného znaku.`,src,`${s.slice(pos)}\n${t} ${pos}\n${qpos>=0?t.slice(qpos):'nenajdene'}`,
+   `<p>Prvý výskyt '${ch}' je na indexe ${pos}, p ukazuje na „${s.slice(pos)}“. Zápis *p = 'X' zmení ten znak: „${t}“.</p><p>${qpos>=0?`strstr nájde „${sub}“ na indexe ${qpos} (už po zmene reťazca): „${t.slice(qpos)}“.`:`Podreťazec „${sub}“ v zmenenom reťazci už nie je (znak X ho prerušil), strstr vráti NULL.`}</p>`)},
+ ()=>{ // ctype
+  const s=pick(['Ahoj Svet 2026!','C je 1 z 3 jazykov','Test: 7 + 8 = 15','PrPr 2026/27 ok']);
+  const kind=pick([0,1]);
+  if(kind===0){let a=0,d=0,u=0;for(const c of s){if(/[A-Za-z]/.test(c))a++;if(/[0-9]/.test(c))d++;if(/[A-Z]/.test(c))u++}
+   const src=`int main() {\n    char s[] = "${s}";\n    int i, a = 0, d = 0, u = 0;\n    for (i = 0; s[i] != 0; i++) {\n        if (isalpha(s[i]))\n            a++;\n        if (isdigit(s[i]))\n            d++;\n        if (isupper(s[i]))\n            u++;\n    }\n    printf("%d %d %d\\n", a, d, u);\n    return 0;\n}`;
+   return outQ('Znaky a ctype.h','isalpha testuje písmeno, isdigit číslicu, isupper veľké písmeno (hlavička ctype.h).',src,`${a} ${d} ${u}`,`<p>Reťazec „${s}“ má ${a} písmen, ${d} číslic a ${u} veľkých písmen. Medzery a ostatné znaky sa nepočítajú.</p>`)}
+  const o=[...s].map(c=>/[A-Z]/.test(c)?c.toLowerCase():/[a-z]/.test(c)?c.toUpperCase():c).join('');
+  const src=`int main() {\n    char s[] = "${s}";\n    int j = 0;\n    while (s[j]) {\n        if (isupper(s[j]))\n            putchar(tolower(s[j]));\n        else\n            putchar(toupper(s[j]));\n        j++;\n    }\n    printf("\\n");\n    return 0;\n}`;
+  return outQ('toupper a tolower','toupper prevedie malé písmeno na veľké, tolower naopak, ostatné znaky nemení. Cyklus while (s[j]) beží, kým nenarazí na ukončovací znak (hodnota 0 je nepravda).',src,o,`<p>Každé veľké písmeno sa zmení na malé a každé iné znak sa prevedie toupper (písmená na veľké, ostatné zostanú).</p>`)},
+ ()=>{ // sprintf / atoi / sscanf
+  const v=pick([0,1,2]);
+  if(v===0){const a=R(1,99),b=R(1,9),xs=pick(['1.5','2.25','10.0','0.5']),x=+xs;
+   const src=`int main() {\n    char buf[50];\n    sprintf(buf, "%d-%02d: %.1f", ${a}, ${b}, ${xs});\n    puts(buf);\n    printf("%zu\\n", strlen(buf));\n    return 0;\n}`;
+   const o=cprintf('%d-%02d: %.1f',a,b,x);
+   return outQ('sprintf','sprintf zapíše výstup rovnako ako printf, ale do reťazca (poľa znakov). puts vypíše reťazec a pridá nový riadok.',src,`${o}\n${o.length}`,`<p>Vznikne reťazec „${o}“, má ${o.length} znakov.</p>`)}
+  if(v===1){
+   const pool=[['12abc',12],['x5',0],['  7',7],['-40',-40],['3.9',3],['+8z',8],['0042',42],['abc',0]];const pk=shuf(pool).slice(0,3);
+   const src=`int main() {\n    printf("%d\\n", atoi("${pk[0][0]}"));\n    printf("%d\\n", atoi("${pk[1][0]}"));\n    printf("%d\\n", atoi("${pk[2][0]}") + 1);\n    return 0;\n}`;
+   return outQ('atoi','atoi prevedie začiatok reťazca na int: preskočí biele znaky, načíta znamienko a číslice a pri prvom inom znaku skončí. Ak reťazec nezačína číslom, vráti 0.',src,`${pk[0][1]}\n${pk[1][1]}\n${pk[2][1]+1}`,`<ul>${pk.map(x=>`<li>atoi("${x[0]}") = ${x[1]}</li>`).join('')}</ul>`)}
+  const city=pick(['Bratislava','Kosice','Nitra','Zilina']),psc=R(10000,99999);
+  const src=`int main() {\n    char retazec[40] = "Adresa: ${city} ${psc}";\n    char mesto[20];\n    int psc;\n    sscanf(retazec, "%*s %s %d", mesto, &psc);\n    printf("%s;%d\\n", mesto, psc + 1);\n    return 0;\n}`;
+  return outQ('sscanf','sscanf číta z reťazca ako scanf zo vstupu. %*s slovo načíta a zahodí (nič sa neuloží).',src,`${city};${psc+1}`,`<p>%*s preskočí „Adresa:“, %s načíta „${city}“ a %d číslo ${psc}. Vypíše sa ${city} a ${psc} + 1 = ${psc+1}.</p>`)},
+ ()=>{ // const
+  const forms=[
+   {d:'const int *p = &a;',r:[1,0],n:'ukazovateľ na konštantu: hodnotu cez p meniť nemožno, ukazovateľ možno presmerovať'},
+   {d:'int const *p = &a;',r:[1,0],n:'int const * je to isté ako const int *: ukazovateľ na konštantu'},
+   {d:'int *const p = &a;',r:[0,1],n:'konštantný ukazovateľ: ukazovať stále na to isté, ale hodnotu meniť možno'},
+   {d:'const int *const p = &a;',r:[1,1],n:'konštantný ukazovateľ na konštantu: nemožno meniť ani jedno'},
+   {d:'int *p = &a;',r:[0,0],n:'bežný ukazovateľ: možno meniť hodnotu aj ukazovať inam'}];
+  const f=pick(forms);
+  return{kind:'Kľúčové slovo const',prompt:`Dané sú deklarácie:${code(`int a = 1, b = 2;\n${f.d}`)}Ktoré z uvedených príkazov sa dajú preložiť bez chyby?`,
+   input:{t:'rows',rows:[{label:`<code class="ic">*p = 5;</code>`,opts:['prejde','chyba prekladu']},{label:`<code class="ic">p = &b;</code>`,opts:['prejde','chyba prekladu']}]},answer:[f.r[0],f.r[1]],
+   solution:`<p>${f.n}.</p><p>Čítaj deklaráciu sprava: <code class="ic">const int *p</code> = p je ukazovateľ na (int, ktorý je const), <code class="ic">int *const p</code> = p je const ukazovateľ na int.</p>`}},
+ bank([
+  ['Čo musí obsahovať pole znakov, aby bolo platným reťazcom v C?','Ukončovací znak \'\\0\'',['Dĺžku reťazca na začiatku','Znak nového riadku na konci','Nič, každé pole znakov je reťazec'],'Reťazec je pole znakov ukončené nulovým znakom. Funkcie ako strlen, printf("%s") sa podľa neho riadia.'],
+  ['Aký je rozdiel medzi \'A\' a "A"?','\'A\' je znak (jedno číslo), "A" je reťazec s dvomi znakmi (A a \\0)',['Žiadny','\'A\' je reťazec, "A" je znak','Oba sú reťazce'],'Apostrofy označujú znak (typ char), úvodzovky reťazcový literál (pole znakov s \\0 na konci).'],
+  ['Čo porovnáva výraz r1 == r2, ak r1 a r2 sú reťazce (polia znakov)?','Adresy polí, nie ich obsah',['Obsah reťazcov','Dĺžky reťazcov','Je to chyba prekladu vždy'],'Na porovnanie obsahu slúži strcmp. Výraz strcmp(r1, r2) == 0 platí pre rovnaké reťazce.'],
+  ['Čo spôsobí char *r = "Ahoj"; r[0] = \'a\';?','Nedefinované správanie: reťazcový literál nemožno meniť (zvyčajne pád programu)',['Zmení sa prvé písmeno na malé a)','Chyba prekladu','Reťazec sa skopíruje a zmení'],'Reťazcové konštanty sú v pamäti iba na čítanie. Na zmenu použijeme pole: char r[] = "Ahoj";'],
+  ['Čo vráti sizeof("abc")?','4',['3','2','8'],'Reťazcový literál obsahuje aj ukončovací znak, spolu 4 bajty.'],
+  ['Čo môže spôsobiť strcpy(kam, zdroj), ak je pole kam menšie než zdroj?','Pretečenie pamäte (zápis mimo poľa), nedefinované správanie',['Reťazec sa automaticky skráti','Funkcia vráti NULL','Pole sa zväčší'],'strcpy nekontroluje veľkosť cieľa. Treba zabezpečiť dostatok miesta (vrátane \\0).'],
+  ['Aký je rozdiel medzi puts(s) a printf("%s", s)?','puts vypíše reťazec a pridá znak nového riadku, bez formátovania',['puts vypíše iba prvý znak','puts čaká na vstup','Žiadny rozdiel'],'puts je efektívnejšia pre výpis reťazca bez formátovania a pridáva \\n.'],
+  ['Čo je výsledok strcmp("ahoj", "ahoj")?','0',['1','-1','Nenulové číslo'],'strcmp vráti 0, ak sú reťazce rovnaké. Presná veľkosť nenulového výsledku nie je určená, dôležité je len znamienko.'],
+  ['Prečo sa nedá priradiť reťazec poľu takto: char s[10]; s = "ahoj";?','Pole nemožno priradiť, na kopírovanie treba strcpy',['Pretože "ahoj" je kratší než 10','Pretože chýba const','Dá sa, ak je s globálna'],'Meno poľa je konštantná adresa. Na kopírovanie reťazca použijeme strcpy(s, "ahoj");']])
+];
+
+/* ===== 11. Polia ===== */
+const G11=[
+ ()=>{ // naplnenie poľa
+  const N=R(5,8),F=pick([
+   {t:'i * i',f:i=>i*i},{t:'2 * i + 1',f:i=>2*i+1},{t:'i % 3',f:i=>i%3},{t:`${N} - i`,f:i=>N-i},{t:`i * ${R(2,4)} - 3`,f:null}]);
+  if(!F.f){const k=+/i \* (\d) - 3/.exec(F.t)[1];F.f=i=>i*k-3}
+  const x=Array.from({length:N},(_,i)=>F.f(i));const a=R(0,N-1),b=R(0,N-1);
+  const src=`int main() {\n    int x[${N}], i, s = 0;\n    for (i = 0; i < ${N}; i++)\n        x[i] = ${F.t};\n    for (i = 0; i < ${N}; i++)\n        s += x[i];\n    printf("%d %d %d\\n", x[${a}], x[${b}], s);\n    return 0;\n}`;
+  return outQ('Pole: naplnenie a súčet','Pole x[N] má prvky x[0] až x[N-1]. Index prvého prvku je 0.',src,`${x[a]} ${x[b]} ${x.reduce((p,c)=>p+c,0)}`,`<p>Pole po naplnení: ${x.map((v,i)=>`x[${i}]=${v}`).join(', ')}.</p><p>x[${a}] = ${x[a]}, x[${b}] = ${x[b]}, súčet = ${x.reduce((p,c)=>p+c,0)}.</p>`)},
+ ()=>{ // inicializácia
+  const N=R(5,7),m=R(1,3),M=R(3,5);
+  const av=Array.from({length:m},()=>R(1,9)),bv=Array.from({length:M},()=>R(1,9));
+  const a=Array.from({length:N},(_,i)=>i<m?av[i]:0);
+  const i1=R(0,m-1),i2=R(m,N-1),i3=R(0,M-1);
+  const src=`int main() {\n    int a[${N}] = {${av.join(', ')}};\n    int b[] = {${bv.join(', ')}};\n    printf("%d %d %d\\n", a[${i1}], a[${i2}], a[${i1}] + b[${i3}]);\n    printf("%zu %zu\\n", sizeof(b), sizeof(b) / sizeof(b[0]));\n    return 0;\n}`;
+  return outQ('Inicializácia poľa','Ak je v zátvorke menej hodnôt než prvkov poľa, zvyšné prvky sa vynulujú. Pole bez udanej veľkosti má toľko prvkov, koľko je hodnôt. sizeof(pole) / sizeof(pole[0]) je počet prvkov.',src,`${a[i1]} ${a[i2]} ${a[i1]+bv[i3]}\n${4*M} ${M}`,
+   `<p>a = {${a.join(', ')}} (zvyšok dopĺňajú nuly), b má ${M} prvkov po 4 bajtoch: sizeof(b) = ${4*M}, počet prvkov ${M}.</p>`)},
+ ()=>{ // algoritmy na poli
+  const n=R(5,6),a=Array.from({length:n},()=>R(1,20));const k=pick(['rev','rot','bub','pre','shr','half']);
+  const c=a.slice();let body,desc;
+  if(k==='rev'){body=`    for (i = 0; i < n / 2; i++) {\n        t = a[i];\n        a[i] = a[n - 1 - i];\n        a[n - 1 - i] = t;\n    }`;for(let i=0;i<Math.floor(n/2);i++){const t=c[i];c[i]=c[n-1-i];c[n-1-i]=t}desc='Obráti poradie prvkov (výmena prvého s posledným, druhého s predposledným, …).'}
+  else if(k==='rot'){body=`    t = a[0];\n    for (i = 0; i < n - 1; i++)\n        a[i] = a[i + 1];\n    a[n - 1] = t;`;const t=c[0];for(let i=0;i<n-1;i++)c[i]=c[i+1];c[n-1]=t;desc='Posunie prvky o jedno miesto doľava, prvý prvok sa dostane na koniec.'}
+  else if(k==='bub'){body=`    for (i = 0; i < n - 1; i++)\n        if (a[i] > a[i + 1]) {\n            t = a[i];\n            a[i] = a[i + 1];\n            a[i + 1] = t;\n        }`;for(let i=0;i<n-1;i++)if(c[i]>c[i+1]){const t=c[i];c[i]=c[i+1];c[i+1]=t}desc='Jeden prechod bublinkového triedenia: najväčší prvok „prebubláva“ na koniec.'}
+  else if(k==='pre'){body=`    for (i = 1; i < n; i++)\n        a[i] += a[i - 1];`;for(let i=1;i<n;i++)c[i]+=c[i-1];desc='Priebežné súčty: každý prvok sa zväčší o už upravený predchádzajúci.'}
+  else if(k==='shr'){body=`    for (i = n - 1; i > 0; i--)\n        a[i] = a[i - 1];`;for(let i=n-1;i>0;i--)c[i]=c[i-1];desc='Posunie prvky doprava, prvý prvok zostane, posledný sa stratí.'}
+  else{body=`    for (i = 0; i < n; i++)\n        if (a[i] % 2 == 0)\n            a[i] /= 2;`;for(let i=0;i<n;i++)if(c[i]%2===0)c[i]/=2;desc='Párne prvky sa vydelia dvomi.'}
+  const src=`int main() {\n    int a[${n}] = {${a.join(', ')}};\n    int n = ${n}, i, t;\n${body}\n    for (i = 0; i < n; i++)\n        printf("%d ", a[i]);\n    printf("\\n");\n    return 0;\n}`;
+  return outQ('Algoritmus na poli',desc,src,c.join(' '),`<p>Pôvodné pole: ${a.join(' ')}. Po vykonaní: <b>${c.join(' ')}</b>.</p>`)},
+ ()=>{ // pole ako parameter
+  if(Math.random()<.5){
+   const n=R(3,5),x=Array.from({length:n},()=>R(1,9)),K=R(10,99);
+   const src=`void f(int a[], int n) {\n    a[0] = ${K};\n    n = 0;\n}\n\nint main() {\n    int x[${n}] = {${x.join(', ')}};\n    int n = ${n};\n    f(x, n);\n    printf("%d %d %d\\n", x[0], x[1], n);\n    return 0;\n}`;
+   return outQ('Pole ako parameter funkcie','Pole sa do funkcie odovzdáva ako adresa jeho prvého prvku, takže funkcia mení pôvodné prvky. Obyčajný int parameter je kópia.',src,`${K} ${x[1]} ${n}`,`<p>a[0] = ${K} zmení prvok poľa x[0] v main (pole sa neprekopíruje). n = 0 mení len kópiu parametra, n v main ostane ${n}.</p>`)}
+  const n=R(3,9);
+  const src=`int velkost(int a[]) {\n    return sizeof(a);\n}\n\nint main() {\n    int x[${n}];\n    printf("%zu %d\\n", sizeof(x), velkost(x));\n    return 0;\n}`;
+  return outQ('sizeof poľa v parametri','Parameter int a[] je v skutočnosti ukazovateľ int *a. V tele funkcie preto sizeof(a) je veľkosť ukazovateľa (8), nie veľkosť poľa. Veľkosť poľa treba odovzdať ako samostatný parameter.',src,`${4*n} 8`,`<p>V main je x pole, sizeof(x) = ${n} · 4 = ${4*n}. Vo funkcii je a ukazovateľ: sizeof(a) = 8 (64-bitový systém).</p>`)},
+ ()=>{ // maximum cez ukazovateľ
+  const n=R(5,7),a=Array.from({length:n},()=>R(1,40));const off=R(1,2),m=R(2,n-off);
+  const mx=(arr)=>{let k=0;for(let i=1;i<arr.length;i++)if(arr[i]>arr[k])k=i;return arr[k]};
+  const src=`int maximum(int pole[], int n) {\n    int *p_max = pole, *p;\n    for (p = pole + 1; p < pole + n; p++) {\n        if (*p > *p_max)\n            p_max = p;\n    }\n    return *p_max;\n}\n\nint main() {\n    int a[${n}] = {${a.join(', ')}};\n    printf("%d\\n", maximum(a, ${n}));\n    printf("%d\\n", maximum(&a[${off}], ${m}));\n    return 0;\n}`;
+  return outQ('Maximum cez ukazovateľ','Funkcia hľadá maximum pomocou ukazovateľa p, ktorý prechádza pole. &a[k] je adresa k-teho prvku, funkcia teda spracuje len časť poľa od neho.',src,`${mx(a)}\n${mx(a.slice(off,off+m))}`,`<p>Prvé volanie spracuje celé pole: maximum ${mx(a)}. Druhé volanie spracuje ${m} prvkov od indexu ${off}: ${a.slice(off,off+m).join(', ')}, maximum ${mx(a.slice(off,off+m))}.</p>`)},
+ bank([
+  ['Čo sa stane pri zápise pole[-567] = 5; v C?','Kompilátor ani program nekontroluje rozsah, zápis mimo poľa je nedefinované správanie',['Chyba prekladu','Výnimka IndexOutOfRange','Zápis sa ignoruje'],'C nemá range-checking. Prístup mimo poľa môže prepísať iné premenné alebo spôsobiť pád.'],
+  ['Aký je index posledného prvku poľa int x[10]?','9',['10','11','1'],'Indexy sú 0 až N − 1.'],
+  ['Aké hodnoty majú prvky lokálneho poľa int x[5]; bez inicializácie?','Nedefinované (náhodné)',['Samé nuly','Samé jednotky','Hodnoty 0 až 4'],'Pole sa automaticky nenuluje. Nuly sú pri inicializácii int x[5] = {0}; alebo pri statickom poli.'],
+  ['Prečo je zápis int B[4]; B = {1, 2, 3, 4}; nesprávny?','Zoznam hodnôt možno použiť len pri definícii (inicializácii) poľa',['Pole sa nedá priradiť inak než cez cyklus pri každej inicializácii','Pretože B má len 4 prvky','Je správny'],'Pri definícii: int B[4] = {1, 2, 3, 4};. Neskôr: B[0] = 1; B[1] = 2; …'],
+  ['Čo porovnáva výraz a == b, ak a, b sú polia?','Adresy začiatkov polí (nie obsah)',['Obsah prvok po prvku','Veľkosti polí','Je to chyba prekladu'],'Polia sa porovnávajú cyklom po prvkoch, kopírujú sa cyklom alebo funkciou memcpy.'],
+  ['Čo musí byť pri statickom poli TYP x[N]; známe v čase prekladu?','Počet prvkov N',['Hodnoty prvkov','Adresa poľa','Meno funkcie'],'Veľkosť statického poľa musí byť konštanta známa pri preklade. Pre veľkosť určenú za behu slúži dynamická alokácia.'],
+  ['Ako sa pole odovzdáva do funkcie?','Odovzdá sa adresa prvého prvku, funkcia môže meniť prvky',['Skopíruje sa celé pole','Iba hodnoty prvého prvku','Pole sa nedá odovzdať'],'Pole sa „rozpadne“ na ukazovateľ na prvý prvok. Preto treba odovzdať aj počet prvkov.']])
+];
+
+/* ===== 12. Dynamická alokácia pamäte ===== */
+const BUGS=[
+ {k:'sizeof',l:'Alokuje sa n bajtov namiesto n · sizeof(int), chýba sizeof',f:v=>`int n = ${v.n}, i;\nint *${v.p} = (int *) malloc(n);\nfor (i = 0; i < n; i++)\n    ${v.p}[i] = i;\nfree(${v.p});`},
+ {k:'leak',l:'Chýba free: únik pamäte',f:v=>`int n = ${v.n}, i;\nint *${v.p} = (int *) malloc(n * sizeof(int));\nfor (i = 0; i < n; i++)\n    ${v.p}[i] = i;\nprintf("%d\\n", ${v.p}[n - 1]);\nreturn 0;`},
+ {k:'uaf',l:'Prístup k pamäti po jej uvoľnení',f:v=>`int *${v.p} = (int *) malloc(${v.n} * sizeof(int));\n${v.p}[0] = 1;\nfree(${v.p});\n${v.p}[1] = 2;`},
+ {k:'eq',l:'V podmienke je priradenie = namiesto porovnania ==',f:v=>`int *${v.p} = (int *) malloc(${v.n} * sizeof(int));\nif (${v.p} = NULL) {\n    printf("Alokacia zlyhala\\n");\n    exit(EXIT_FAILURE);\n}\n${v.p}[0] = 5;\nfree(${v.p});`},
+ {k:'local',l:'Funkcia vracia adresu lokálnej premennej, ktorá po skončení funkcie zaniká',f:v=>`int *vytvor(void) {\n    int x = ${v.n};\n    return &x;\n}`},
+ {k:'dfree',l:'Dvojité uvoľnenie tej istej pamäte',f:v=>`int *${v.p} = (int *) malloc(${v.n} * sizeof(int));\n${v.p}[0] = 1;\nfree(${v.p});\nfree(${v.p});`},
+ {k:'oob',l:'Zápis mimo alokovaného poľa (podmienka <= namiesto <)',f:v=>`int n = ${v.n}, i;\nint *${v.p} = (int *) malloc(n * sizeof(int));\nfor (i = 0; i <= n; i++)\n    ${v.p}[i] = i;\nfree(${v.p});`}];
+const G12=[
+ ()=>{ // veľkosť alokácie
+  const N=R(3,20),M=R(2,12),K=R(5,60);
+  const src=`int *a = (int *) malloc(${N} * sizeof(int));\ndouble *d = (double *) calloc(${M}, sizeof(double));\nchar *s = (char *) malloc(${K});`;
+  return{kind:'Veľkosť alokovanej pamäte',prompt:`Na 64-bitovom systéme (int má 4 bajty, double 8, ukazovateľ 8) je dané:${code(src)}`,
+   input:linesIn([['Koľko bajtov alokuje a:',NUL],['Koľko bajtov alokuje d:',NUL],['Koľko bajtov alokuje s:',NUL],['sizeof(a) =',NUL]]),answer:[N*4,M*8,K,8],
+   solution:`<p>malloc(n) pridelí n bajtov, calloc(počet, veľkosť) počet · veľkosť bajtov (a vynuluje ich). Preto: a: ${N}·4 = ${N*4}, d: ${M}·8 = ${M*8}, s: ${K}.</p><p>sizeof(a) je veľkosť ukazovateľa (8), nie alokovaného bloku.</p>`}},
+ ()=>{ // memset
+  const n=R(3,6),b=R(1,9),mode=pick([0,1]);
+  const v=b*16843009;
+  const src=`int main() {\n    int n = ${n};\n    int *p = (int *) calloc(n, sizeof(int));\n    printf("%d\\n", p[${R(0,n-1)}]);\n    memset(p, ${b}, n * sizeof(int));\n    printf("%d\\n", p[1]);\n    printf("%x\\n", p[1]);\n    free(p);\n    return 0;\n}`;
+  return outQ('calloc a memset','calloc vynuluje alokovanú pamäť. memset(p, b, počet_bajtov) nastaví každý BAJT na hodnotu b, nie každý int.',src,`0\n${v}\n${cprintf('%x',v)}`,
+   `<p>calloc vynuluje všetky prvky, prvý výpis je 0. memset nastaví každý z 4 bajtov na ${b}, takže int má bajty ${b},${b},${b},${b}, v šestnástkovej sústave ${cprintf('%x',v)} = ${v}.</p>`)},
+ ()=>{ // realloc
+  const n=R(3,6),k=R(1,4),grow=Math.random()<.5,m=grow?n+R(1,3):R(1,n-1);
+  const src=`int main() {\n    int n = ${n}, m = ${m}, i, s = 0;\n    int *p = (int *) calloc(n, sizeof(int));\n    for (i = 0; i < n; i++)\n        p[i] = (i + 1) * ${k};\n    p = (int *) realloc(p, m * sizeof(int));\n    for (i = n; i < m; i++)\n        p[i] = -i;\n    for (i = 0; i < m; i++)\n        s += p[i];\n    printf("%d\\n", s);\n    free(p);\n    return 0;\n}`;
+  let s=0;for(let i=0;i<m;i++)s+=i<n?(i+1)*k:-i;
+  return outQ('realloc','realloc zmení veľkosť bloku. Pôvodné prvky sa zachovajú (pri zmenšení iba prvých m), nové prvky pri zväčšení nie sú inicializované (preto si ich v programe nastavíme).',src,String(s),
+   `<p>Pole je najprv ${Array.from({length:n},(_,i)=>(i+1)*k).join(', ')}. ${grow?`Po zväčšení na ${m} prvkov pribudnú ${Array.from({length:m-n},(_,i)=>-(n+i)).join(', ')}.`:`Po zmenšení na ${m} prvkov zostane prvých ${m}.`} Súčet je ${s}.</p>`)},
+ ()=>{ // hľadanie chyby
+  const p=pick(['p','pole','arr']),n=R(5,20);const bug=pick(BUGS);
+  const others=shuf(BUGS.filter(b=>b.k!==bug.k)).slice(0,3);
+  const opts=shuf([bug,...others]);
+  const body=bug.f({p,n});
+  return{kind:'Hľadanie chyby',prompt:`V ktorom z nasledujúcich bodov je chyba v tomto úseku programu?${code(body)}`,input:{t:'choice',opts:opts.map(o=>o.l)},answer:[opts.indexOf(bug)],
+   solution:`<p>Správna odpoveď: <b>${bug.l}</b>.</p><p>Typické chyby pri dynamickej alokácii: zabudnutý sizeof, neuvoľnená pamäť (leak), použitie pamäte po free, dvojité free, zápis mimo bloku, vrátenie adresy lokálnej premennej, = namiesto ==.</p>`}},
+ ()=>{ // dynamické pole: program
+  const n=R(4,8),k=R(1,9),kind=pick([0,1]);
+  if(kind===0){let s=0;for(let i=0;i<n;i++)s+=i*i+k;
+   const src=`int main() {\n    int n = ${n}, i, s = 0;\n    int *pole = (int *) malloc(n * sizeof(int));\n    if (pole == NULL)\n        exit(EXIT_FAILURE);\n    for (i = 0; i < n; i++)\n        pole[i] = i * i + ${k};\n    for (i = 0; i < n; i++)\n        s += *(pole + i);\n    printf("%d\\n", s);\n    free(pole);\n    pole = NULL;\n    return 0;\n}`;
+   return outQ('Dynamické pole','malloc vráti ukazovateľ na blok pamäte, s ktorým pracujeme ako s poľom (pole[i] alebo *(pole + i)). Na konci blok uvoľníme voľbou free.',src,String(s),`<p>Prvky: ${Array.from({length:n},(_,i)=>i*i+k).join(', ')}. Súčet ${s}.</p>`)}
+  const m=R(1,n-1);const a=Array(n).fill(0);for(let i=0;i<m;i++)a[i]=(i+1)*k;
+  const src=`int main() {\n    int n = ${n}, i;\n    int *pole = (int *) calloc(n, sizeof(int));\n    for (i = 0; i < ${m}; i++)\n        pole[i] = (i + 1) * ${k};\n    for (i = 0; i < n; i++)\n        printf("%d ", pole[i]);\n    printf("\\n");\n    free(pole);\n    return 0;\n}`;
+  return outQ('calloc: nulové prvky','calloc alokuje pamäť a vynuluje ju. Prvky, ktorým sme nič nepriradili, majú hodnotu 0 (pri malloc by mali náhodné hodnoty).',src,a.join(' '),`<p>Priradí sa prvých ${m} prvkov, zvyšok zostane 0.</p>`)},
+ bank([
+  ['Prečo void alokuj(int *p, int n) { p = (int *) malloc(n * sizeof(int)); } z main nezíska alokované pole?','Parameter p je kópia ukazovateľa, zmena sa neprejaví v main (treba int ** alebo návratovú hodnotu)',['malloc sa nedá volať vo funkcii','Chýba free','Ukazovateľ sa nedá odovzdať funkcii'],'Pri zmene samotného ukazovateľa treba odovzdať jeho adresu (ukazovateľ na ukazovateľ int **), alebo funkcia vráti ukazovateľ cez return.'],
+  ['Kde sa nachádzajú lokálne premenné funkcie?','Na zásobníku (stack)',['Na halde (heap)','V statických dátach','V inštrukciách programu'],'Zásobník: volania funkcií a lokálne premenné. Halda: dynamicky alokovaná pamäť (malloc). Statické dáta: globálne premenné.'],
+  ['Kde sa nachádza pamäť pridelená funkciou malloc?','Na halde (heap)',['Na zásobníku (stack)','V statických dátach','V registroch procesora'],'Pamäť na halde zostáva, kým ju neuvoľníme voľbou free (alebo neskončí program).'],
+  ['Čo vráti malloc, ak nemá dostatok pamäte?','NULL',['0 bajtov alokovaných','Náhodnú adresu','Program sa vždy ukončí'],'Preto treba po každom malloc kontrolovať, či výsledok nie je NULL.'],
+  ['Aký je rozdiel medzi malloc a calloc?','calloc alokuje a vynuluje pamäť, malloc ju nechá neinicializovanú',['Žiadny','malloc nuluje, calloc nie','calloc alokuje len char'],'calloc(n, veľkosť) = n prvkov, všetky bajty nulové.'],
+  ['Čo je dobré urobiť s ukazovateľom po free(p)?','Priradiť mu NULL, aby sa nepoužil omylom',['Zavolať free(p) ešte raz','Nič, p je platné ďalej','Priradiť mu hodnotu 0 bajtov'],'Po free ukazovateľ stále obsahuje starú adresu (visiaci ukazovateľ). Priradenie NULL predchádza použitiu po uvoľnení.'],
+  ['Čo je únik pamäte (memory leak)?','Alokovaná pamäť, ktorú program neuvoľní a stratí na ňu ukazovateľ',['Zápis mimo poľa','Pretečenie zásobníka','Dvojité volanie malloc'],'Neuvoľnená pamäť zostane zaberať miesto, kým program beží.'],
+  ['Čo vráti sizeof(p), ak je p ukazovateľ na dynamicky alokované pole?','Veľkosť ukazovateľa (8 bajtov), nie veľkosť poľa',['Veľkosť alokovaného bloku','Počet prvkov','0'],'Veľkosť bloku si treba pamätať samostatne (premenná n).']])
+];
+
+/* ===== 13. Programy z cvičení ===== */
+const SMALLP=[2,3,5,7,11,13,17,19,23,29,31,37,41,43,47];
+const G13=[
+ ()=>{ // prvočísla
+  const a=R(1,30),b=a+R(0,18);
+  const src=`int zisti_prvocislo(int cislo) {\n    int i;\n    if (cislo < 2)\n        return -1;\n    for (i = 2; i * i <= cislo; i++)\n        if (cislo % i == 0)\n            return -1;\n    return 1;\n}\n\nint main() {\n    int a, b, i, n = 0;\n    scanf("%d %d", &a, &b);\n    for (i = a; i <= b; i++)\n        if (zisti_prvocislo(i) == 1) {\n            printf("%d\\n", i);\n            n++;\n        }\n    if (n == 0)\n        printf("Prvocislo neexistuje\\n");\n    return 0;\n}`;
+  const o=[];for(let i=a;i<=b;i++)if(SMALLP.includes(i))o.push(i);
+  return outQ('Prvočísla v intervale (cvičenie 4.1)','Funkcia vráti 1 pre prvočíslo, inak -1. Číslo je prvočíslo, ak nemá deliteľ od 2 do odmocniny.',src,o.length?o.join('\n'):'Prvocislo neexistuje',`<p>Interval ${a} až ${b}. ${o.length?'Prvočísla v ňom: '+o.join(', ')+'.':'Žiadne prvočíslo v ňom nie je.'}</p>`,{stdin:`${a} ${b}`})},
+ ()=>{ // reverzné číslo
+  const nums=shuf([12345,12321,907,4004,5,2002,6789,1010]).slice(0,R(2,3));
+  const rev=x=>+String(x).split('').reverse().join('');
+  const src=`long reverzne_cislo(long x) {\n    long r = 0;\n    while (x > 0) {\n        r = r * 10 + x % 10;\n        x /= 10;\n    }\n    return r;\n}\n\nint main() {\n    long x, r;\n    while (scanf("%ld", &x) == 1) {\n        r = reverzne_cislo(x);\n        printf("%ld\\n", r);\n        if (r == x)\n            printf("Cislo %ld je palindrom\\n", x);\n        else\n            printf("Cislo %ld nie je palindrom\\n", x);\n    }\n    return 0;\n}`;
+  const out=nums.map(x=>`${rev(x)}\nCislo ${x} ${rev(x)===x?'je':'nie je'} palindrom`).join('\n');
+  return outQ('Reverzné číslo a palindróm (cvičenie 4.3)','Slučka while (scanf(…) == 1) číta čísla, kým sú na vstupe. Palindróm je číslo, ktoré sa číta rovnako zľava aj sprava. Pozor: čísla ako 4004 sa pri otočení nemenia, ale napr. 1010 sa otočí na 101.',src,out,`<p>${nums.map(x=>`${x} → ${rev(x)} (${rev(x)===x?'palindróm':'nie je palindróm'})`).join('<br>')}</p>`,{stdin:nums.join('\n')})},
+ ()=>{ // tabuľka mocnín
+  const x=pick([2,3,4,5,10]),n=R(3,5);let p=1;const o=[];
+  const src=`void mocnina(double x, int n) {\n    int i;\n    double y = 1.0;\n    for (i = 1; i <= n; i++) {\n        y *= x;\n        printf("%.2f^%d = %.2f\\n", x, i, y);\n    }\n}\n\nint main() {\n    mocnina(${x}.0, ${n});\n    return 0;\n}`;
+  for(let i=1;i<=n;i++){p*=x;o.push(`${cprintf('%.2f',x)}^${i} = ${cprintf('%.2f',p)}`)}
+  return outQ('Tabuľka mocnín (cvičenie 3.6)','Formát %.2f vypíše reálne číslo na 2 desatinné miesta, napr. 3.00. Celé číslo i sa vypisuje ako %d.',src,o.join('\n'),`<p>Postupne sa násobí y · x pre exponenty 1 až ${n}.</p>`)},
+ ()=>{ // hviezda
+  const n=pick([5,7]),h=Math.floor(n/2);const lines=[];
+  for(let r=0;r<n;r++){let s='';for(let c=0;c<n;c++)s+=(r===c||r+c===n-1||r===h||c===h)?'*':'-';lines.push(s)}
+  const src=`int main() {\n    int n = ${n}, r, c;\n    for (r = 0; r < n; r++) {\n        for (c = 0; c < n; c++) {\n            if (r == c || r + c == n - 1 || r == n / 2 || c == n / 2)\n                printf("*");\n            else\n                printf("-");\n        }\n        printf("\\n");\n    }\n    return 0;\n}`;
+  return outQ('Hviezda (cvičenie 3.5)','Podmienka vyberá hlavnú diagonálu (r == c), vedľajšiu (r + c == n − 1), stredný riadok a stredný stĺpec.',src,lines.join('\n'),`<p>Hviezda ${n}×${n}, stred je riadok a stĺpec ${h}.</p>${outbox(lines.join('\n'))}`)},
+ ()=>{ // trojuholník čísel
+  const n=R(3,5);const lines=[];
+  for(let r=1;r<=n;r++){let s=`${r}:`;for(let k=n-r+1;k>=1;k--)s+=cprintf(' %2d',k);lines.push(s)}
+  const src=`int main() {\n    int n = ${n}, r, k;\n    for (r = 1; r <= n; r++) {\n        printf("%d:", r);\n        for (k = n - r + 1; k >= 1; k--)\n            printf(" %2d", k);\n        printf("\\n");\n    }\n    return 0;\n}`;
+  return outQ('Klesajúce čísla (cvičenie 3.4)','Formát %2d vypíše celé číslo zarovnané vpravo na šírku 2 znaky (jednociferné číslo dostane vpredu medzeru). Pred každým číslom je navyše medzera z reťazca " %2d".',src,lines.join('\n'),`<p>V r-tom riadku sa vypíšu čísla od ${n} − r + 1 po 1, každé s medzerou a šírkou 2.</p>${outbox(lines.join('\n'))}`)},
+ ()=>{ // týždenná mzda
+  const n=R(2,3);const rows=Array.from({length:n},()=>({m:R(8,25),h:R(30,60)}));
+  const wage=(m,h)=>h<=40?m*h:m*40+(h-40)*m*1.5;
+  let tot=0;const o=rows.map(r=>{const w=wage(r.m,r.h);tot+=w;return `Hod. mzda: ${cprintf('%.2f',r.m)}, hodin: ${cprintf('%.2f',r.h)}, spolu: ${cprintf('%.2f',w)}`});
+  const src=`double tyzdenna_mzda(double h_mzda, double hod) {\n    if (hod <= 40)\n        return h_mzda * hod;\n    return h_mzda * 40 + (hod - 40) * h_mzda * 1.5;\n}\n\nint main() {\n    int n, i;\n    double m, h, w, spolu = 0;\n    scanf("%d", &n);\n    for (i = 0; i < n; i++) {\n        scanf("%lf %lf", &m, &h);\n        w = tyzdenna_mzda(m, h);\n        spolu += w;\n        printf("Hod. mzda: %.2f, hodin: %.2f, spolu: %.2f\\n", m, h, w);\n    }\n    printf("Celkova mzda: %.2f\\n", spolu);\n    return 0;\n}`;
+  return outQ('Týždenná mzda (cvičenie 4.2)','Hodiny nad 40 sa platia 1,5-násobne.',src,o.join('\n')+`\nCelkova mzda: ${cprintf('%.2f',tot)}`,`<p>${rows.map(r=>`${r.m} €/h, ${r.h} h: ${r.h<=40?`${r.m}·${r.h}`:`${r.m}·40 + ${r.h-40}·${r.m}·1,5`} = ${cprintf('%.2f',wage(r.m,r.h))}`).join('<br>')}</p>`,{stdin:`${n}\n`+rows.map(r=>`${r.m} ${r.h}`).join('\n')})},
+ ()=>{ // minimum a maximum
+  const n=R(3,5),v=Array.from({length:n},()=>+(R(10,2000)/100).toFixed(2));
+  const src=`int main() {\n    int n, i;\n    double x, min, max;\n    scanf("%d", &n);\n    scanf("%lf", &x);\n    min = max = x;\n    for (i = 1; i < n; i++) {\n        scanf("%lf", &x);\n        if (x < min)\n            min = x;\n        if (x > max)\n            max = x;\n    }\n    printf("Minimum: %.2f\\n", min);\n    printf("Maximum: %.2f\\n", max);\n    return 0;\n}`;
+  return outQ('Minimum a maximum (cvičenie 2.8)','Prvé načítané číslo je počiatočné minimum aj maximum, ďalšie sa s nimi porovnávajú.',src,`Minimum: ${cprintf('%.2f',Math.min(...v))}\nMaximum: ${cprintf('%.2f',Math.max(...v))}`,`<p>Čísla: ${v.join(', ')}.</p>`,{stdin:`${n}\n`+v.join('\n')})},
+ ()=>{ // postupnosť (cvičenie 2.9)
+  const n=R(4,6);let a=[R(0,10)];for(let i=1;i<n;i++){const p=a[i-1];a.push(R(Math.max(0,Math.ceil(p/2)),2*p+1))}
+  if(Math.random()<.5){const k=R(0,n-1);a[k]=pick([a[k]+R(5,15),a[k]+30,-1])}
+  let ok=1;if(a[0]<0||a[0]>10)ok=0;for(let i=1;i<n;i++)if(a[i]>2*a[i-1]||2*a[i]<a[i-1])ok=0;
+  const src=`int main() {\n    int a[${n}], i, ok = 1;\n    for (i = 0; i < ${n}; i++)\n        scanf("%d", &a[i]);\n    if (a[0] < 0 || a[0] > 10)\n        ok = 0;\n    for (i = 1; i < ${n}; i++)\n        if (a[i] > 2 * a[i - 1] || 2 * a[i] < a[i - 1])\n            ok = 0;\n    if (ok)\n        printf("Postupnost je spravna\\n");\n    else\n        printf("Postupnost nie je spravna\\n");\n    return 0;\n}`;
+  const bad=[];if(a[0]<0||a[0]>10)bad.push('prvé číslo mimo <0, 10>');for(let i=1;i<n;i++){if(a[i]>2*a[i-1])bad.push(`${a[i]} je viac než dvojnásobok ${a[i-1]}`);else if(2*a[i]<a[i-1])bad.push(`${a[i]} je menej než polovica ${a[i-1]}`)}
+  return outQ('Kontrola postupnosti (cvičenie 2.9)','Každý prvok musí byť najviac dvojnásobok predchádzajúceho a aspoň jeho polovica, prvý prvok má byť z intervalu <0, 10>.',src,ok?'Postupnost je spravna':'Postupnost nie je spravna',`<p>Postupnosť ${a.join(', ')}: ${ok?'všetky podmienky platia.':'porušená podmienka: '+bad.join('; ')+'.'}</p>`,{stdin:a.join('\n')})},
+ ()=>{ // kalkulačka
+  const ops=['+','-','*','/','%'];const op=pick(['+','-','*','/','+','-','*','/','%']);const x=R(1,40),y=R(1,9);
+  const src=`int main() {\n    int a, b;\n    char op;\n    scanf("%d %d %c", &a, &b, &op);\n    switch (op) {\n        case '+':\n            printf("%d + %d = %d\\n", a, b, a + b);\n            break;\n        case '-':\n            printf("%d - %d = %d\\n", a, b, a - b);\n            break;\n        case '*':\n            printf("%d * %d = %d\\n", a, b, a * b);\n            break;\n        case '/':\n            printf("%d / %d = %d\\n", a, b, a / b);\n            break;\n        default:\n            printf("Zle zadana volba.\\n");\n    }\n    return 0;\n}`;
+  const o=op==='%'?'Zle zadana volba.':`${x} ${op} ${y} = ${op==='+'?x+y:op==='-'?x-y:op==='*'?x*y:tdiv(x,y)}`;
+  return outQ('Kalkulačka (cvičenie 2.6)','Príkaz switch vyberie vetvu podľa znaku operácie, default sa vykoná pri neznámej voľbe. Delenie dvoch int je celočíselné.',src,o,`<p>Operácia '${op}'.</p>`,{stdin:`${x} ${y} ${op}`})},
+ ()=>{ // faktoriál s opakovaním načítania
+  const bad=Array.from({length:R(0,2)},()=>-R(1,9));const n=R(0,9);
+  const src=`int main() {\n    int n, i, f = 1;\n    do {\n        scanf("%d", &n);\n    } while (n < 0);\n    for (i = 2; i <= n; i++)\n        f *= i;\n    printf("%d\\n", f);\n    return 0;\n}`;
+  let f=1;for(let i=2;i<=n;i++)f*=i;
+  return outQ('Faktoriál (cvičenie 3.2)','Cyklus do-while opakuje načítanie, kým nie je zadané nezáporné číslo. Faktoriál n! = 1·2·…·n, 0! = 1.',src,String(f),`<p>Záporné čísla sa zahodia, potom n = ${n}: ${n}! = ${f}.</p>`,{stdin:[...bad,n].join('\n')})},
+ ()=>{ // násobky troch
+  const f=R(-6,10),g=f+R(6,20);const o=[];for(let i=f;i<=g;i++)if(i%3===0)o.push(i);
+  const src=`int main() {\n    int f, g, i;\n    scanf("%d %d", &f, &g);\n    for (i = f; i <= g; i++)\n        if (i % 3 == 0)\n            printf("%d ", i);\n    printf("\\n");\n    return 0;\n}`;
+  return outQ('Násobky tromi (cvičenie 3.3)','Platí aj pre záporné čísla a nulu: i % 3 == 0 znamená, že i je deliteľné tromi. Výstup má čísla oddelené medzerami.',src,o.join(' '),`<p>V intervale <${f}, ${g}> sú deliteľné tromi: ${o.join(', ')}.</p>`,{stdin:`${f} ${g}`})},
+ ()=>{ // počet čísel v intervale (0,100>
+  const n=R(3,6),v=Array.from({length:n},()=>pick([R(-20,0),R(1,100),R(101,500),R(1,100)]));
+  const src=`int main() {\n    int n, x, i, k = 0;\n    scanf("%d", &n);\n    for (i = 0; i < n; i++) {\n        scanf("%d", &x);\n        if (x > 0 && x <= 100)\n            k++;\n    }\n    printf("%d\\n", k);\n    return 0;\n}`;
+  const k=v.filter(x=>x>0&&x<=100).length;
+  return outQ('Počet čísel v intervale (cvičenie 3.1)','Interval (0, 100> je zľava otvorený (0 nepatrí) a sprava uzavretý (100 patrí).',src,String(k),`<p>Do intervalu (0, 100> patria čísla: ${v.filter(x=>x>0&&x<=100).join(', ')||'žiadne'}. Počet ${k}.</p>`,{stdin:`${n}\n`+v.join('\n')})}
+];
+'use strict';
+/* ================= teória ================= */
+const tsec=(h,b)=>`<section class="tsec"><h4>${h}</h4>${b}</section>`;
+const tex=b=>`<div class="tex">${b}</div>`;
+const FULL={},SUM={};
+FULL.kom=
+ tsec('Kompilovanie programu v C',`<p>Zdrojový súbor <code class="ic">program.c</code> sa preloží do spustiteľného súboru v niekoľkých fázach. Príkaz <code class="ic">gcc program.c -o program</code> vykoná všetky, prepínače zastavia preklad skôr.</p>${tbl(['Fáza','Príkaz','Čo sa stane'],[['Predspracovanie','gcc -E program.c','odstránia sa komentáre, vložia sa hlavičkové súbory (#include), rozvinú sa makrá'],['Kompilácia','gcc -S program.c','kontrola syntaxe, preklad do asemblerového kódu (.s)'],['Zostavovanie','gcc -c program.c','asembler → strojový kód, objektový súbor .o s relatívnymi adresami'],['Linkovanie','gcc program.o','spojenie objektových súborov a knižníc, vznikne spustiteľný súbor (a.out)']])}<p>Prepínač <code class="ic">-o meno</code> určí meno výstupného súboru. Ladenie (debugger) slúži na krokovanie programu.</p>`)+
+ tsec('Najjednoduchší program',code(`#include <stdio.h>\n\nint main(void) {\n    printf("Hello world\\n");\n    return 0;\n}`)+`<p><code class="ic">#include</code> vloží hlavičkový súbor s deklaráciami funkcií (tu printf). Program začína funkciou <b>main</b>, návratová hodnota 0 znamená, že nenastala chyba.</p>`)+
+ tsec('Vlastnosti jazyka C',`<ul><li>procedurálny jazyk nízkej úrovne, štrukturovaný, rýchly, prenositeľný (ANSI C, C89, C99, …)</li><li>C <b>nepodporuje</b>: výnimky, kontrolu rozsahu indexov (range-checking), automatickú správu pamäte (garbage collection), objekty, polymorfizmus</li><li>komentáre: <code class="ic">/* … */</code>, nevnárajú sa; v C99 aj <code class="ic">// …</code></li></ul>`)+
+ tsec('Názvy premenných',`<ul><li>začínajú písmenom alebo _, obsahujú len písmená, číslice a _</li><li>rozlišujú sa veľké a malé písmená (pom, Pom, POM sú rôzne)</li><li>nesmú byť kľúčovým slovom (int, for, while, return …)</li><li>názvy začínajúce _ sú systémové, nepoužívať</li></ul><p><b>Definícia</b> premennej (int i;) pridelí pamäť, <b>deklarácia</b> len oznámi typ. Neinicializovaná lokálna premenná má náhodnú hodnotu.</p>`);
+SUM.kom='<ul><li>Fázy: preprocesor (-E), kompilátor (-S), assembler (-c), linker; -o meno.</li><li>C nemá range-checking, výnimky ani garbage collection.</li><li>Komentáre sa nevnárajú. Neinicializovaná lokálna premenná je náhodná.</li><li>Názov: písmeno alebo _, potom písmená, číslice, _; nie kľúčové slovo.</li></ul>';
+
+FULL.typ=
+ tsec('Dátové typy',tbl(['Typ','Typická veľkosť (64-bit gcc)','Poznámka'],[['char','1 B','znak, ASCII kód, signed/unsigned podľa prekladača'],['short','2 B',''],['int','4 B','celé číslo so znamienkom'],['long, long long','8 B','dlhšie celé čísla (pod 64-bit Windows long = 4 B)'],['float','4 B','reálne číslo'],['double','8 B','reálne číslo s dvojitou presnosťou'],['ukazovateľ','8 B','adresa v pamäti']])+`<p>Modifikátory: <code class="ic">unsigned</code> (iba nezáporné, väčší kladný rozsah), <code class="ic">signed</code>, <code class="ic">short</code>, <code class="ic">long</code>. Veľkosť zistíš operátorom <code class="ic">sizeof</code>. Pri uložení väčšej hodnoty do unsigned typu sa zvyšok po delení 2<sup>bitov</sup> zachová (unsigned char: mod 256).</p>`)+
+ tsec('printf: formáty',tbl(['Formát','Význam','Príklad (hodnota → výstup)'],[['%d','celé číslo (int)','42 → 42'],['%5d / %-5d / %05d','šírka 5: vpravo / vľavo / doplnené nulami','42 → "   42" / "42   " / 00042'],['%c','znak','65 → A'],['%x, %X, %o','šestnástková malými / veľkými, osmičková','255 → ff, FF, 377'],['%f, %.2f, %8.3f','reálne číslo, počet desatinných miest, šírka','3.14159 → 3.141590, 3.14, "   3.142"'],['%g','kratší zápis reálneho čísla bez zbytočných núl','0.5 → 0.5, 100.0 → 100'],['%e','vedecký zápis','1234.5 → 1.234500e+03'],['%s, %p, %%','reťazec, adresa, znak %','']])+`<p>Počet argumentov musí súhlasiť s počtom %. Pre long sa používa %ld, pre size_t %zu. Pri <b>scanf</b> sa pre <b>double</b> používa <b>%lf</b>, pre float %f a vždy sa odovzdáva <b>adresa</b> (&i).</p>`)+
+ tsec('scanf a vstup',`<p><code class="ic">scanf</code> vráti počet úspešne načítaných položiek (pri konci vstupu EOF). Pri %d, %f sa biele znaky (medzera, nový riadok) preskakujú. Pri <b>%c</b> sa nepreskakujú: po <code class="ic">scanf("%d", &n)</code> zostane vo vstupe znak nového riadku, ktorý by %c prečítal. Medzera vo formáte (<code class="ic">" %c"</code>) preskočí biele znaky.</p>${code(`int n;\nchar c;\nscanf("%d", &n);   /* vo vstupe zostane \\n */\nscanf(" %c", &c);  /* medzera preskočí \\n */`)}<p>Na jeden znak je pohodlnejšie <code class="ic">getchar()</code>. Escape sekvencie: \\n nový riadok, \\t tabulátor, \\\\ spätné lomítko, \\" úvodzovky, \\' apostrof, %% znak %.</p>`)+
+ tsec('Znaky a ASCII',`<p>Znak je číslo: 'A' = 65, 'a' = 97, '0' = 48. Veľké písmená 65–90, malé 97–122 (rozdiel 32). Preto <code class="ic">c + 'a' - 'A'</code> zmení veľké písmeno na malé.</p>`);
+SUM.typ='<ul><li>char 1, short 2, int 4, long 8, float 4, double 8, ukazovateľ 8 bajtov.</li><li>scanf: &adresa, double %lf. printf: %d %c %f %.2f %5d %x %s %%.</li><li>unsigned pretečie modulo 2<sup>n</sup>. scanf("%c") neignoruje biele znaky.</li><li>\'A\' = 65, \'a\' = 97, \'0\' = 48.</li></ul>';
+
+FULL.op=
+ tsec('Aritmetické operátory',`<ul><li><b>/</b>: int / int je celočíselné delenie (odreže sa desatinná časť), ak je aspoň jeden operand reálny, deli sa reálne.</li><li><b>%</b> je zvyšok po delení: a = (a / b)·b + a % b. Znamienko zvyšku je znamienko a.</li><li>Rozšírené priradenie: <code class="ic">x += y</code> je x = x + y, podobne -=, *=, /=, %=.</li></ul>${code(`int i = 5, j = 13;\nj = j / 4;   /* 3 */\nj = i % 3;   /* 2 */`)}`)+
+ tsec('Priorita a asociativita',`<p>Od najvyššej: <b>++ -- !</b>, potom <b>* / %</b>, <b>+ -</b>, <b>&lt; &gt; &lt;= &gt;=</b>, <b>== !=</b>, <b>&amp;&amp;</b>, <b>||</b>, <b>=</b>. Väčšina operátorov sa vyhodnocuje zľava doprava, výnimky sú ! ++ -- a priradenie (a = b = c sa vyhodnotí sprava). Ak si nie si istý, použi zátvorky.</p>`)+
+ tsec('Inkrement a dekrement',code(`int i = 5, j = 1, k;\ni++;         /* i = 6 */\nj = ++i;     /* i = 7, j = 7  (najprv zväčší) */\nj = i++;     /* j = 7, i = 8  (najprv použije) */\nk = --j + 2; /* j = 6, k = 8 */`)+`<p>Prefix (++x) zmení hodnotu pred jej použitím, postfix (x++) po použití.</p>`)+
+ tsec('Relačné a logické operátory',`<p>Výsledok porovnania je 1 (pravda) alebo 0 (nepravda). Nenulová hodnota je pravda. Pozor: <b>=</b> je priradenie, <b>==</b> porovnanie (<code class="ic">if (x = 5)</code> je vždy pravda).</p><p><b>Skrátené vyhodnocovanie</b>: pri <code class="ic">&&</code> sa druhý operand nevyhodnotí, ak je prvý nepravda, pri <code class="ic">||</code>, ak je prvý pravda. Vedľajšie účinky druhého operandu (++, --) sa potom nevykonajú.</p>`)+
+ tsec('Bitové operátory',`<p><b>&</b> AND, <b>|</b> OR, <b>^</b> XOR, <b>~</b> negácia bitov, <b>&lt;&lt;</b> posun doľava (× 2<sup>k</sup>), <b>&gt;&gt;</b> posun doprava (÷ 2<sup>k</sup>). Nezamieňaj && s &, || s |.</p>`)+
+ tsec('Ternárny operátor a čiarka',`<p><code class="ic">podmienka ? výraz1 : výraz2</code>, napr. <code class="ic">k = (i > j) ? i : j;</code> je maximum. Viaže sa sprava: a ? b : c ? d : e = a ? b : (c ? d : e). Čiarka vyhodnotí výrazy zľava doprava, hodnotou je posledný (používa sa v hlavičke cyklu for).</p>`);
+SUM.op='<ul><li>int / int celočíselne, % zvyšok (znamienko podľa delenca).</li><li>Priorita: ++ -- !, * / %, + -, relačné, == !=, &&, ||, =.</li><li>Prefix ++x pred použitím, postfix x++ po použití.</li><li>&& a || sa vyhodnocujú skrátene. = nie je ==.</li><li>& | ^ ~ << >> sú bitové.</li></ul>';
+
+FULL.vet=
+ tsec('if, else if, else',code(`if (podmienka)\n    prikaz_1;\nelse if (podmienka_2)\n    prikaz_2;\nelse {\n    prikaz_3;\n    prikaz_4;\n}`)+`<p>Podmienky sa testujú zhora nadol, vykoná sa prvá vetva, ktorej podmienka platí. <b>else patrí vždy k najbližšiemu if</b>, ktoré ešte nemá else (odsadenie kompilátor ignoruje). Vnorené if bez else možno spojiť cez &&.</p>`)+
+ tsec('switch',code(`switch (vyraz) {\n    case 1:\n    case 2:\n        printf("jedna alebo dva");\n        break;\n    case 3:\n        printf("tri");\n        break;\n    default:\n        printf("ine");\n}`)+`<p>Výraz musí byť celočíselný (int, char, …). Vykonávanie začína pri zodpovedajúcej vetve a pokračuje do ďalších, kým nenarazí na <b>break</b> alebo koniec switch. Vetva default sa vykoná, ak nesedí žiadna iná.</p>`)+
+ tsec('Ternárny operátor',`<p><code class="ic">podmienka ? výraz1 : výraz2</code> je výraz s hodnotou. Príklad: <code class="ic">printf("%c\\n", c < d ? c : d);</code> vypíše menší znak.</p>`);
+SUM.vet='<ul><li>else patrí k najbližšiemu if bez else.</li><li>switch: bez break sa prepadáva do ďalšej vetvy; default sa vykoná, keď nič nesedí.</li><li>podmienka ? a : b, sprava asociatívny.</li><li>if (x = 5) je priradenie, vždy pravda.</li></ul>';
+
+FULL.cyk=
+ tsec('Tri cykly',tbl(['Cyklus','Kedy sa testuje podmienka','Použitie'],[['for (inic; podm; zmena)','pred každou iteráciou','poznáme počet prechodov'],['while (podm)','pred každou iteráciou, telo sa nemusí vykonať','opakovanie, kým platí podmienka'],['do { … } while (podm);','po každej iterácii, telo aspoň raz','opakuj, kým nie je vstup správny']])+code(`for (i = 1; i <= n; i++)\n    printf("%d\\n", i);\n\ni = 1;\nwhile (i <= n) {\n    printf("%d\\n", i);\n    i++;\n}\n\ndo {\n    scanf("%d", &n);\n} while (n < 0);`))+
+ tsec('break, continue, čiarka',`<ul><li><b>break</b> ukončí najvnútornejší cyklus (alebo switch), <b>continue</b> preskočí zvyšok tela a pokračuje ďalšou iteráciou.</li><li>V hlavičke for môžeme zreťaziť výrazy čiarkou: <code class="ic">for (i = 1, s = 0; i <= 10; s += i, i++)</code>.</li><li>Nekonečné cykly: <code class="ic">while (1)</code>, <code class="ic">for ( ; ; )</code>. Pozor na <code class="ic">while (i < 5);</code> (bodkočiarka = prázdne telo).</li></ul>`)+
+ tsec('Typické algoritmy s číslami',`<p>Posledná cifra: <code class="ic">n % 10</code>, číslo bez poslednej cifry: <code class="ic">n / 10</code>.</p>${code(`while (n != 0) {            /* otočenie čísla */\n    r = r * 10 + n % 10;\n    n = n / 10;\n}`)}<p>Obrazce sa kreslia vnorenými cyklmi: vonkajší cyklus riadky, vnútorný stĺpce, po každom riadku <code class="ic">printf("\\n")</code>.</p>`);
+SUM.cyk='<ul><li>for: inicializácia, podmienka, zmena. while testuje pred telom, do-while po tele (aspoň raz).</li><li>break končí cyklus, continue ide na ďalšiu iteráciu.</li><li>n % 10 je posledná cifra, n / 10 zvyšok čísla.</li><li>Pozor na ; za while/for a nekonečné cykly.</li></ul>';
+
+FULL.fun=
+ tsec('Definícia a volanie funkcie',code(`int sucet(int a, int b);        /* prototyp */\n\nint main(void) {\n    int c = sucet(2, 3);        /* volanie */\n    return 0;\n}\n\nint sucet(int a, int b) {       /* definícia */\n    return a + b;\n}`)+`<ul><li>Spracovanie programu začína funkciou main. Funkcie sa nesmú vnárať.</li><li>Funkcia musí byť pred volaním definovaná, alebo musí byť pred ňou aspoň <b>prototyp</b> (deklarácia: meno, počet a typy parametrov, návratový typ).</li><li><b>void</b> ako návratový typ: nevracia hodnotu; void v zozname parametrov: nemá parametre.</li><li>return ukončí funkciu, exit ukončí celý program.</li></ul>`)+
+ tsec('Argumenty hodnotou',`<p>Parametre sú lokálne premenné, do ktorých sa skopíruje hodnota argumentu. Zmena parametra sa neprejaví v premennej volajúceho. Pre zmenu treba ukazovateľ (pozri Ukazovatele). Viac hodnôt možno vrátiť cez ukazovatele alebo štruktúru. Poradie vyhodnotenia argumentov štandard nešpecifikuje, preto v nich nemeň premenné.</p>`)+
+ tsec('Rozsah platnosti',`<ul><li><b>Lokálna</b> premenná platí v bloku { }, v ktorom je definovaná, a na konci bloku zaniká.</li><li><b>Globálna</b> premenná je definovaná mimo funkcií a platí v celom programe (nepoužívať).</li><li>Lokálna premenná rovnakého mena <b>zatieni</b> globálnu.</li></ul>`);
+SUM.fun='<ul><li>Parametre sa odovzdávajú hodnotou (kópia).</li><li>Prototyp: meno, typy parametrov, návratový typ.</li><li>Lokálna premenná zatieni globálnu a zaniká na konci bloku.</li><li>Funkcie sa nevnárajú. exit končí program, return funkciu.</li></ul>';
+
+FULL.sub=
+ tsec('Práca so súborom',code(`FILE *fr, *fw;\nfr = fopen("vstup.txt", "r");\nif (fr == NULL) {\n    printf("Subor sa nepodarilo otvorit.\\n");\n    return 1;\n}\nwhile (fscanf(fr, "%d", &x) == 1)\n    s += x;\nfclose(fr);`)+`<p><code class="ic">fopen</code> vráti ukazovateľ <code class="ic">FILE *</code> alebo <b>NULL</b>, ak sa súbor nepodarilo otvoriť.</p>${tbl(['Režim','Význam'],[['r','čítanie textového súboru'],['w','zápis, nový súbor (existujúci sa zmaže)'],['a','pridávanie na koniec'],['r+, w+, a+','čítanie aj zápis'],['rb, wb','binárne súbory (pridá sa b)']])}`)+
+ tsec('Čítanie a zápis',`<ul><li>Text: <code class="ic">fprintf(f, …)</code>, <code class="ic">fscanf(f, …)</code>, <code class="ic">getc(f)</code>, <code class="ic">putc(c, f)</code>, <code class="ic">fgets</code>, <code class="ic">fputs</code>.</li><li><code class="ic">fscanf</code> vráti počet načítaných položiek, pri konci súboru EOF.</li><li><code class="ic">getc</code> vráti znak alebo <b>EOF</b>; premenná má byť <b>int</b>.</li><li><b>feof(f)</b> je pravda až po neúspešnom pokuse čítať za koniec súboru. Cyklus <code class="ic">while (!feof(f))</code> preto často spracuje posledný údaj dvakrát.</li><li>Cestu <code class="ic">"C:\\\\subor.txt"</code> zapisujeme s dvojitým \\\\.</li></ul>`)+
+ tsec('Binárne súbory',code(`FILE *f = fopen("vystup.dat", "wb+");\nint i = 10;\nfwrite(&i, sizeof(i), 1, f);      /* zapíše 4 bajty */\nfseek(f, 0, SEEK_SET);            /* na začiatok */\nfread(&i, sizeof(i), 1, f);\nprintf("%ld", ftell(f));          /* pozícia v bajtoch */`)+`<p>fseek(f, posun, SEEK_SET / SEEK_CUR / SEEK_END) nastaví pozíciu od začiatku, aktuálnej pozície alebo konca. fread a fwrite posúvajú pozíciu o počet prečítaných alebo zapísaných bajtov.</p>`)+
+ tsec('Štandardné prúdy',`<p>stdin (klávesnica), stdout (obrazovka), stderr (chyby). Operačný systém ich môže presmerovať: <code class="ic">./program &lt; vstup.txt &gt; vystup.txt</code>. Výstup sa ukladá do vyrovnávacej pamäte, <code class="ic">fflush(stdout)</code> ju vyprázdni. fclose zapíše zvyšok dát.</p>`);
+SUM.sub='<ul><li>fopen: r, w, a, r+, w+, rb, wb; NULL pri chybe. fclose na konci.</li><li>fscanf vracia počet načítaných položiek; getc vracia int (EOF).</li><li>while (!feof) spracuje posledný údaj zvyčajne dvakrát.</li><li>fwrite/fread/fseek/ftell pre binárne súbory (pozícia v bajtoch).</li></ul>';
+
+FULL.typk=
+ tsec('Implicitná konverzia',`<ul><li>char a short sa pri aritmetike rozšíria na <b>int</b>.</li><li>Pri rôznych typoch sa operand s nižšou prioritou prevedie na vyšší: int → unsigned int → long → unsigned long → float → double → long double.</li><li>Pri priradení sa hodnota prevedie na typ premennej vľavo: <code class="ic">double x = 5;</code> je 5.0, <code class="ic">int i = 5.9;</code> je 5 (odreže sa desatinná časť).</li></ul>`)+
+ tsec('Explicitná konverzia (pretypovanie)',code(`int a = 7, b = 2;\ndouble d1 = a / b;            /* 3.0   (najprv celočíselne) */\ndouble d2 = (double) a / b;   /* 3.5   */\ndouble d3 = (double) (a / b); /* 3.0   */\nint z = (int) 3.99;           /* 3 */\nint r = (int) (x + 0.5);      /* zaokrúhlenie kladného x */`)+`<p>Pretypovanie (typ) výraz sa týka len najbližšieho operandu. (int) odreže desatinnú časť smerom k nule. Pozor: <code class="ic">1 / 2 * 3.0</code> je 0.0, lebo 1 / 2 je celočíselné delenie.</p>`);
+SUM.typk='<ul><li>int / int je celočíselné. Aspoň jeden reálny operand → reálne delenie.</li><li>(double) a / b: pretypovanie sa týka len a.</li><li>(int) odreže desatinnú časť smerom k nule; zaokrúhlenie (int)(x + 0.5).</li><li>char, short → int; hierarchia int, unsigned, long, float, double.</li></ul>';
+
+FULL.ptr=
+ tsec('Premenná a ukazovateľ',code(`int i = -10;\nint *p_i = &i;     /* p_i obsahuje adresu premennej i */\n*p_i = 5;          /* zmení i na 5 */\nint **pp = &p_i;   /* ukazovateľ na ukazovateľ */\n**pp = 7;          /* zmení i na 7 */\nint *q = NULL;     /* nikam neukazuje */`)+`<ul><li><b>&</b> je operátor adresy, <b>*</b> operátor dereferencie (hodnota na adrese).</li><li>Dereferencia <b>NULL</b> alebo neinicializovaného ukazovateľa → pád (segmentation fault).</li><li>V <code class="ic">int *p, q;</code> je p ukazovateľ, q len int.</li><li>Ukazovateľ má 8 bajtov, bez ohľadu na typ, na ktorý ukazuje. <code class="ic">%p</code> vypíše adresu.</li><li>Pamäť programu: inštrukcie, statické dáta (globálne premenné), zásobník (lokálne premenné), halda (malloc).</li></ul>`)+
+ tsec('Aritmetika s ukazovateľmi',code(`int a[5] = {10, 20, 30, 40, 50};\nint *p = a;          /* a je adresa a[0] */\n*(p + 2);            /* a[2] = 30, p sa nemení */\np++;                 /* p ukazuje na a[1] */\np[1];                /* a[2] */\n&a[4] - &a[1];       /* 3 prvky */\n*p++;                /* *(p++): hodnota, potom posun */\n(*p)++;              /* zväčší hodnotu */`)+`<p>p + k posunie ukazovateľ o k <b>prvkov</b> (nie bajtov). *(p + k) je to isté ako p[k].</p>`)+
+ tsec('Odovzdanie odkazom, void *, funkcie',code(`void vymen(int *a, int *b) {\n    int pom = *a;\n    *a = *b;\n    *b = pom;\n}\n...\nvymen(&x, &y);            /* zmení x aj y */\n\nvoid *pv = &k;\n*(int *) pv = -1;         /* void * treba pretypovať */\n\nint (*op)(int, int) = &add;\nprintf("%d", (*op)(2, 3));  /* ukazovateľ na funkciu */`)+`<p>Pri zmene hodnoty v inej funkcii odovzdáme jej adresu premennej. Signatúra funkcie (typy parametrov a návratový typ) musí zodpovedať typu ukazovateľa.</p>`);
+SUM.ptr='<ul><li>&x adresa, *p hodnota. p = &x zmení cieľ, *p = k zmení hodnotu.</li><li>p + k posúva o k prvkov, *(p + k) = p[k].</li><li>NULL nedereferencovať. void * pretypovať.</li><li>Zmena premennej vo funkcii: odovzdať &x a použiť *p. int *p, q; → q je int.</li></ul>';
+
+FULL.ret=
+ tsec('Reťazec ako pole znakov',code(`char r[] = "Ahoj!";     /* 6 bajtov: A h o j ! \\0 */\nr[4] = '.';             /* menime znak */\n*(r + 2) = 0;           /* skráti reťazec na "Ah" */\nchar *s = r + 1;        /* ukazuje na "h" */\nchar *lit = "Ahoj";     /* literál, nemeň ho! */`)+`<ul><li>Reťazec je pole znakov ukončené znakom <b>\\0</b>. 'A' je znak, "A" je reťazec (2 bajty).</li><li><b>strlen</b> nerátá \\0, <b>sizeof</b> pola áno (a rátať treba aj nevyužité prvky).</li><li>Reťazcový literál nemožno meniť. Poľu nemožno priradiť reťazec (r = "x"), kopíruje sa strcpy.</li><li>Pole znakov sa neporovnáva ==, ale strcmp.</li></ul>`)+
+ tsec('Funkcie z string.h, stdlib.h a ctype.h',tbl(['Funkcia','Čo robí'],[['strlen(s)','dĺžka reťazca'],['strcpy(kam, odkial)','skopíruje reťazec (pozor na veľkosť cieľa)'],['strcat(kam, co)','pripojí reťazec na koniec'],['strcmp(a, b)','0 ak sú rovnaké, < 0 ak a < b, > 0 ak a > b'],['strchr(s, c)','ukazovateľ na prvý výskyt znaku, inak NULL'],['strstr(s, t)','ukazovateľ na prvý výskyt podreťazca, inak NULL'],['sprintf / sscanf','printf do reťazca / scanf z reťazca (%*s preskočí slovo)'],['atoi(s)','začiatok reťazca ako int, inak 0'],['puts(s)','vypíše reťazec a nový riadok'],['isalpha, isdigit, isupper, toupper, tolower','klasifikácia a zmena znakov (ctype.h)']]))+
+ tsec('Kľúčové slovo const',code(`const int *p = &a;       /* nemožno *p = ..., možno p = ... */\nint *const p = &a;       /* možno *p = ..., nemožno p = ... */\nconst int *const p = &a; /* nemožno ani jedno */`)+`<p>Čítaj deklaráciu sprava: <code class="ic">int *const p</code> = p je konštantný ukazovateľ na int, <code class="ic">const int *p</code> = p je ukazovateľ na konštantný int.</p>`);
+SUM.ret='<ul><li>Reťazec = pole znakov ukončené \\0. strlen bez \\0, sizeof s ním.</li><li>strcpy, strcat, strcmp (0 = rovnaké), strchr, strstr, atoi, sprintf, sscanf.</li><li>Literál nemeň, porovnávaj strcmp.</li><li>const int *p: nemeň *p. int *const p: nemeň p.</li></ul>';
+
+FULL.pol=
+ tsec('Statické jednorozmerné pole',code(`int x[5];                 /* 5 prvkov, x[0] až x[4], nenulované */\nint a[5] = {1, 2};        /* a = {1, 2, 0, 0, 0} */\nint b[] = {3, 1, 4};      /* 3 prvky */\nint n = sizeof(b) / sizeof(b[0]);\nx[0] = 1;                 /* prístup k prvku */`)+`<ul><li>Dolná hranica je vždy 0, horná N − 1. Veľkosť N musí byť známa pri preklade.</li><li>Kompilátor <b>nekontroluje</b> rozsah indexov (<code class="ic">pole[-567] = 5</code> prejde, správanie je nedefinované).</li><li>Zoznam {…} možno použiť len pri definícii. <code class="ic">B[4] = {1,2,3,4};</code> neskôr je chyba.</li><li>Polia sa neporovnávajú ani nekopírujú operátormi == a =, ale cyklom (alebo memcpy).</li></ul>`)+
+ tsec('Pole ako parameter funkcie',code(`int maximum(int pole[], int n) {\n    int *p_max = pole, *p;\n    for (p = pole + 1; p < pole + n; p++)\n        if (*p > *p_max)\n            p_max = p;\n    return *p_max;\n}\n/* volanie: maximum(a, 5)  alebo  maximum(&a[1], 3) */`)+`<p>Funkcia dostane adresu prvého prvku (pole sa nekopíruje), preto môže prvky meniť. V parametri <code class="ic">int a[]</code> je a v skutočnosti ukazovateľ a <code class="ic">sizeof(a)</code> je 8, takže počet prvkov treba odovzdať samostatne.</p>`);
+SUM.pol='<ul><li>Indexy 0 až N − 1, rozsah sa nekontroluje.</li><li>int a[5] = {1,2} doplní nuly. Počet prvkov: sizeof(a) / sizeof(a[0]).</li><li>Pole sa neporovnáva ani nepriraďuje ==, =.</li><li>Do funkcie ide adresa prvého prvku, sizeof tam nepomôže.</li></ul>';
+
+FULL.mem=
+ tsec('Pamäť programu',`<p><b>Zásobník</b> (stack): volania funkcií a lokálne premenné, uvoľňujú sa automaticky. <b>Halda</b> (heap): dynamicky alokovaná pamäť, žije, kým ju neuvoľníme. <b>Statické dáta</b>: globálne premenné.</p>`)+
+ tsec('Funkcie pre dynamickú alokáciu',code(`int *pole = (int *) malloc(n * sizeof(int));\nif (pole == NULL) {\n    printf("Pole sa nepodarilo vytvorit.\\n");\n    exit(EXIT_FAILURE);\n}\n/* pole[i] ... */\npole = (int *) realloc(pole, m * sizeof(int));\nfree(pole);\npole = NULL;`)+tbl(['Funkcia','Čo robí'],[['malloc(bajty)','pridelí blok, neinicializovaný; NULL pri zlyhaní'],['calloc(n, veľkosť)','pridelí n prvkov a vynuluje ich'],['realloc(p, bajty)','zmení veľkosť bloku, pôvodný obsah zachová'],['free(p)','uvoľní blok (nie dvakrát, nie použiť po free)'],['memset(p, b, bajty)','nastaví každý BAJT na b (memset(p, 1, …) pre int dá 0x01010101)']]))+
+ tsec('Typické chyby',`<ul><li><b>malloc(n)</b> namiesto <b>n * sizeof(int)</b>.</li><li>Zabudnuté <b>free</b> (únik pamäte), dvojité free, použitie po free.</li><li>Zápis mimo bloku (<code class="ic">i &lt;= n</code>).</li><li><code class="ic">if (p = NULL)</code> namiesto ==.</li><li>Vrátenie adresy lokálnej premennej (<code class="ic">return &x;</code>).</li><li><code class="ic">sizeof(p)</code> pre ukazovateľ je 8, nie veľkosť bloku.</li><li>Funkcia, ktorá má vytvoriť pole pre volajúceho, musí vrátiť ukazovateľ alebo dostať <code class="ic">int **</code>.</li></ul>`);
+SUM.mem='<ul><li>malloc(n * sizeof(T)), calloc nuluje, realloc mení veľkosť, free uvoľní.</li><li>Kontroluj NULL, po free nastav NULL.</li><li>Chyby: bez sizeof, leak, použitie po free, dvojité free, zápis mimo.</li><li>Halda ≠ zásobník. sizeof(p) je 8.</li></ul>';
+
+FULL.pri=
+ tsec('Ako čítať programy z cvičení',`<p>V tejto téme sú programy podobné úlohám z cvičení (prvočísla, otočenie čísla, tabuľka mocnín, hviezda, mzda, kalkulačka). Program zadanej vstupnej postupnosti odkrokuj a napíš presný výstup vrátane formátovania (%.2f, %2d) a znakov nového riadku.</p>`)+
+ tsec('Postup',`<ol><li>Zapíš si hodnoty premenných pred cyklom.</li><li>Pri každej iterácii aktualizuj premenné v tabuľke.</li><li>Pozor na formát výpisu (počet desatinných miest, šírka, medzery).</li><li>Skontroluj ukončovaciu podmienku a to, čo sa vypisuje až po cykle.</li></ol>`)+
+ tsec('Zaujímavé miesta',`<ul><li><code class="ic">while (scanf(…) == 1)</code> číta vstup, kým sú dáta.</li><li>Celočíselné delenie pri pretypovaní a pri %.</li><li>Zaokrúhlenie pri %.2f (3.14159 → 3.14).</li><li>Medzery vo formáte: <code class="ic">" %2d"</code> vypíše medzeru a číslo na šírku 2.</li></ul>`);
+SUM.pri='<ul><li>Odkrokuj program s daným vstupom a napíš presný výstup.</li><li>while (scanf(…) == 1) číta do konca vstupu.</li><li>Formáty %.2f, %2d, počty medzier a \\n sú súčasťou odpovede.</li></ul>';
+
+const TOPICS=[
+ {id:'kom',name:'Kompilácia a základy',short:'gcc, fázy, názvy',gens:G1},
+ {id:'typ',name:'Typy a vstup/výstup',short:'printf, scanf, char, sizeof',gens:G2},
+ {id:'op',name:'Operátory a výrazy',short:'priorita, ++, &&, bity',gens:G3},
+ {id:'vet',name:'Vetvenie',short:'if, switch, ?:',gens:G4},
+ {id:'cyk',name:'Cykly',short:'for, while, do-while',gens:G5},
+ {id:'fun',name:'Funkcie',short:'parametre, rozsah, prototyp',gens:G6},
+ {id:'sub',name:'Súbory a vstup',short:'fopen, fscanf, binárne',gens:G7},
+ {id:'typk',name:'Typová konverzia',short:'implicitná, (typ)',gens:G8},
+ {id:'ptr',name:'Ukazovatele',short:'&, *, aritmetika, funkcie',gens:G9},
+ {id:'ret',name:'Reťazce a const',short:'string.h, \\0, const',gens:G10},
+ {id:'pol',name:'Polia',short:'indexy, inicializácia',gens:G11},
+ {id:'mem',name:'Dynamická pamäť',short:'malloc, free, realloc',gens:G12},
+ {id:'pri',name:'Programy z cvičení',short:'prvočísla, mzda, obrazce',gens:G13}
+];
+TOPICS.forEach(t=>{t.full=FULL[t.id];t.theory=SUM[t.id]});
+/* ---------- stav a uloženie ---------- */
+const KEY='prpr-cvicebnica-v1';
+let ST={stats:{},streak:0,best:0};
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.stats)ST=s}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(ST))}catch(e){}};
+let S={view:'practice',topic:'mix',q:null,qt:null,sel:null,rows:[],counted:false,done:false,shown:false};
+const $=s=>document.querySelector(s);
+const tstat=id=>ST.stats[id]||(ST.stats[id]={ok:0,total:0});
+const totals=()=>Object.values(ST.stats).reduce((a,s)=>({ok:a.ok+s.ok,total:a.total+s.total}),{ok:0,total:0});
+
+/* ---------- parsovanie polí ---------- */
+function parseNum(s){s=String(s).trim().replace(/[−–]/g,'-').replace(/,/g,'.').replace(/\s+/g,'');if(!s)return null;
+  let m=s.match(/^([+-]?)(\d+)\/(\d+)$/);if(m){const d=+m[3];if(!d)return null;return(m[1]==='-'?-1:1)*(+m[2])/d}
+  m=s.match(/^([+-]?)(\d+)(?:\.(\d+))?$/);if(m)return(m[1]==='-'?-1:1)*parseFloat(m[2]+(m[3]?'.'+m[3]:''));return null}
+function parseTok(s){s=String(s).trim().toLowerCase();if(s==='-'||s==='×')s='x';return['0','1','x'].includes(s)?s:null}
+function parseSet(s){s=String(s).trim();if(s===''||s==='-'||s==='∅'||s==='–'){return s===''?null:[]}
+  const p=s.split(/[\s,;]+/).filter(Boolean);if(!p.every(x=>/^\d+$/.test(x)))return null;return uniq(p.map(Number)).sort((a,b)=>a-b)}
+const PARSE={num:parseNum,tok:parseTok,set:parseSet};
+const same=(m,u,a)=>m==='num'?Math.abs(u-a)<1e-9:m==='set'?JSON.stringify(u)===JSON.stringify(a):u===a;
+const showVal=(m,a)=>m==='set'?(a.length?a.join(', '):'-'):m==='num'?String(Math.round(a*1e6)/1e6).replace('-','−'):String(a);
+
+/* ---------- navigácia ---------- */
+function renderNav(){
+  const all=totals();
+  const btn=(id,name,short,st)=>`<button class="tbtn" data-id="${id}" aria-pressed="${S.topic===id}"><span class="n"><span>${name}</span><em>${st.ok}/${st.total}</em></span><span class="s">${short}</span><div class="bar"><i style="width:${st.total?Math.round(100*st.ok/st.total):0}%"></i></div></button>`;
+  $('#nav').innerHTML=(S.view==='theory'?'':btn('mix','Všetko dokopy','náhodná téma',all))+TOPICS.map(t=>btn(t.id,t.name,t.short,tstat(t.id))).join('')+`<button class="reset" id="reset">Vynulovať štatistiku</button>`;
+  $('#nav').querySelectorAll('.tbtn').forEach(b=>b.onclick=()=>{S.topic=b.dataset.id;renderTheory();if(S.view==='theory')window.scrollTo({top:0});next()});
+  $('#reset').onclick=()=>{ST={stats:{},streak:0,best:0};save();renderNav()};
+  renderScore()}
+function renderScore(){const a=totals();
+  $('#score').innerHTML=`<div><b>${a.ok}/${a.total}</b><span>správne na 1. pokus</span></div><div><b>${ST.streak}</b><span>v rade</span></div><div><b>${ST.best}</b><span>najlepšia séria</span></div>`}
+function renderTheory(){
+  const t=TOPICS.find(x=>x.id===S.topic),d=$('#theory'),p=$('#tpane');
+  if(!t){d.hidden=true;p.innerHTML='';return}
+  d.hidden=false;d.querySelector('summary').textContent='Zhrnutie z prednášok: '+t.name;d.querySelector('.in').innerHTML=t.theory;
+  p.innerHTML=`<h3>${t.name}</h3>${t.full}`}
+function setView(v){
+  S.view=v;$('#app').dataset.view=v;
+  document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v));
+  if(v==='theory'&&S.topic==='mix'){S.topic='arch';renderTheory();next()}else{renderTheory();renderNav()}
+  $('#tpane').scrollTop=0}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setView(b.dataset.v));
+
+/* ---------- otázky ---------- */
+function next(){
+  const pool=S.topic==='mix'?TOPICS:TOPICS.filter(t=>t.id===S.topic);
+  let q=null,t=null;
+  for(let k=0;k<8&&!q;k++){try{t=pick(pool);q=pickGen(t)()}catch(e){q=null}}
+  S={...S,q,qt:t,sel:null,rows:q&&q.input.t==='rows'?q.input.rows.map(()=>null):[],counted:false,done:false,shown:false};
+  renderNav();renderCard();
+  const cd=$('#card');if(cd.getBoundingClientRect().top<0)cd.scrollIntoView({block:'start',behavior:'auto'});
+  const f=$('#card input.cell,#card textarea.cell');if(f&&matchMedia('(hover:hover)').matches)f.focus({preventScroll:true})}
+const CELL='autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"';
+const cellHtml=(k,m,label)=>`<input class="cell ${m==='set'?'wide':''}" id="c${k}" data-m="${m}" aria-label="${label}" ${CELL} inputmode="text">`;
+function inputsHtml(inp){
+  if(inp.t==='grid'){let k=0;const rows=[];const hasL=inp.colLabels;
+    if(hasL)rows.push(`<tr>${inp.rowLabels?'<th></th>':''}${inp.colLabels.map(c=>`<th>${c}</th>`).join('')}</tr>`);
+    for(let i=0;i<inp.r;i++){let tds=inp.rowLabels?`<th>${inp.rowLabels[i]}</th>`:'';for(let j=0;j<inp.c;j++){tds+=`<td>${cellHtml(k,inp.m,`riadok ${i+1}, stĺpec ${j+1}`)}</td>`;k++}rows.push(`<tr>${tds}</tr>`)}
+    return`<div class="answer"><span class="lbl2">Tvoja odpoveď</span><div class="ttwrap"><span class="mx in"><table>${rows.join('')}</table></span></div></div>`}
+  if(inp.t==='lines'){let k=0;return`<div class="answer"><span class="lbl2">Tvoja odpoveď</span>${inp.lines.map(l=>`<div class="ln">${l.map(x=>{if(x===null)return cellHtml(k++,'num','pole '+k);if(typeof x==='object')return cellHtml(k++,x.m,'pole '+k);return`<span class="t">${x}</span>`}).join('')}</div>`).join('')}</div>`}
+  if(inp.t==='expr'){return`<div class="answer"><span class="lbl2">Tvoja odpoveď</span><div class="ln"><input class="cell expr" id="c0" data-m="expr" aria-label="výraz" ${CELL} inputmode="text" placeholder="napr. a'b + c"></div>
+    <div class="insbar" aria-label="Vloženie znaku">${["'",'+','·','(',')','⊕'].map(c=>`<button type="button" class="ib" data-ins="${c}" aria-label="vložiť ${c}">${c}</button>`).join('')}</div>
+    <div class="muted">Premenné: ${inp.names.map(dispName).join(', ')}. Negácia apostrofom (a'), súčet +, súčin · alebo bez znaku. Konštanty 0 a 1.</div></div>`}
+  if(inp.t==='out')return`<div class="answer"><span class="lbl2">Tvoja odpoveď: výstup programu</span><textarea class="cell out" id="c0" rows="${inp.rows}" aria-label="výstup programu" ${CELL}></textarea><div class="muted">Každý riadok výstupu napíš na samostatný riadok (Enter). Medzery na okrajoch riadkov a viacnásobné medzery sa neposudzujú.</div></div>`;
+  if(inp.t==='rows')return`<div class="rowsq">${inp.rows.map((r,i)=>`<div class="rq"><div class="rl">${r.label}</div><div class="ro" role="radiogroup">${r.opts.map((o,j)=>`<button class="opt sm" role="radio" aria-checked="false" data-r="${i}" data-i="${j}">${o}</button>`).join('')}</div></div>`).join('')}</div>`;
+  return`<div class="opts" role="radiogroup" aria-label="Možnosti">${inp.opts.map((o,i)=>`<button class="opt" role="radio" aria-checked="false" data-i="${i}">${o}</button>`).join('')}</div>`}
+function hintFor(inp){
+  if(inp.t==='choice'||inp.t==='rows'||inp.t==='expr'||inp.t==='out')return'';
+  const ms=new Set();if(inp.t==='grid')ms.add(inp.m);else inp.lines.flat().forEach(x=>{if(x===null)ms.add('num');else if(typeof x==='object')ms.add(x.m)});
+  const h=[];if(ms.has('num'))h.push('čísla (aj zlomky <kbd>2/7</kbd> alebo desatinné)');if(ms.has('tok'))h.push('hodnoty <kbd>0</kbd>, <kbd>1</kbd> alebo <kbd>x</kbd>');if(ms.has('set'))h.push('zoznam čísel oddelených čiarkou, prázdna množina <kbd>-</kbd>');
+  return`<div class="muted">Zápis: ${h.join('; ')}. Enter skočí na ďalšie pole.</div>`}
+function renderCard(){
+  const q=S.q,c=$('#card');
+  if(!q){c.innerHTML='<p>Príklad sa nepodarilo vytvoriť. Skús ďalší.</p><div class="actions"><button class="btn main" id="nx">Ďalší príklad</button></div>';$('#nx').onclick=next;return}
+  c.innerHTML=`<div class="meta"><span class="chip">${q.kind}</span><span>${S.qt.name}</span></div>
+   <div class="prompt">${q.prompt}</div>${inputsHtml(q.input)}${hintFor(q.input)}
+   <div id="fb" role="status" aria-live="polite"></div>
+   <div class="actions"><button class="btn main" id="chk">Skontrolovať</button><button class="btn" id="shw">Ukáž riešenie</button><button class="btn" id="nx">Ďalší príklad</button></div>
+   <div id="sol" class="sol" hidden></div>`;
+  $('#chk').onclick=check;$('#shw').onclick=reveal;$('#nx').onclick=next;
+  c.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(S.done||S.shown)return;
+    if(b.dataset.r!==undefined){const r=+b.dataset.r;S.rows[r]=+b.dataset.i;c.querySelectorAll(`.opt[data-r="${r}"]`).forEach(o=>{o.setAttribute('aria-checked',o===b);o.classList.remove('bad','ok')})}
+    else{S.sel=+b.dataset.i;c.querySelectorAll('.opt').forEach(o=>{o.setAttribute('aria-checked',o===b);o.classList.remove('bad','ok')})}});
+  const ins=[...c.querySelectorAll('input.cell')];
+  ins.forEach((el,i)=>el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if(S.done||S.shown)return next();if(i<ins.length-1)ins[i+1].focus();else check()}}));
+  c.querySelectorAll('.ib').forEach(b=>b.onclick=()=>{const el=$('#c0');if(!el||el.readOnly)return;const a=el.selectionStart??el.value.length,z=el.selectionEnd??a;el.value=el.value.slice(0,a)+b.dataset.ins+el.value.slice(z);el.focus();const p=a+b.dataset.ins.length;try{el.setSelectionRange(p,p)}catch(e){}})}
+function fb(cls,txt){$('#fb').innerHTML=`<div class="fb ${cls}">${txt}</div>`}
+function record(ok){const s=tstat(S.qt.id);s.total++;if(ok){s.ok++;ST.streak++;ST.best=Math.max(ST.best,ST.streak)}else ST.streak=0;S.counted=true;save();renderNav()}
+function finishOk(){S.done=true;fb('ok','Správne.');lockInputs();showSol(false);$('#chk').disabled=true;$('#nx').classList.add('main');$('#chk').classList.remove('main');$('#nx').focus({preventScroll:true})}
+function fieldSpecs(){const q=S.q.input;if(q.t==='grid')return Array(q.r*q.c).fill(q.m);return q.lines.flat().filter(x=>x===null||(x&&typeof x==='object')).map(x=>x===null?'num':x.m)}
+function check(){
+  if(S.done||S.shown)return;
+  const q=S.q,inp=q.input;
+  if(inp.t==='choice'){
+    if(S.sel==null){fb('warn','Vyber jednu možnosť.');return}
+    const ok=S.sel===q.answer[0];$('#card').querySelectorAll('.opt').forEach((o,i)=>{if(i===S.sel)o.classList.add(ok?'ok':'bad')});
+    if(!S.counted)record(ok);if(ok)finishOk();else fb('bad','Zatiaľ nie. Skús inú možnosť alebo si zobraz riešenie.');return}
+  if(inp.t==='rows'){
+    if(S.rows.some(x=>x===null)){fb('warn','Odpovedz na každý riadok.');return}
+    let hit=0;$('#card').querySelectorAll('.opt').forEach(o=>{const r=+o.dataset.r,i=+o.dataset.i;if(S.rows[r]===i)o.classList.add(i===q.answer[r]?'ok':'bad')});
+    S.rows.forEach((v,i)=>{if(v===q.answer[i])hit++});const ok=hit===q.answer.length;
+    if(!S.counted)record(ok);if(ok)finishOk();else fb('bad',`Správne ${hit} z ${q.answer.length} riadkov. Červené oprav alebo si zobraz riešenie.`);return}
+  if(inp.t==='out'){const ta=$('#c0'),us=normOut(ta.value);
+    if(!us){fb('warn','Napíš výstup programu.');return}
+    const ok=us===normOut(q.answer[0]);ta.classList.toggle('ok',ok);ta.classList.toggle('bad',!ok);
+    if(!S.counted)record(ok);if(ok)finishOk();else fb('bad','Výstup nesedí. Skontroluj hodnoty, poradie riadkov a formát (počet desatinných miest, medzery). Skús znova alebo si zobraz riešenie.');return}
+  const ins=[...$('#card').querySelectorAll('input.cell')];
+  if(inp.t==='expr'){
+    const r=q.check(ins[0].value);
+    if(r.ok){ins[0].classList.add('ok');ins[0].classList.remove('bad');if(!S.counted)record(true);finishOk();return}
+    ins[0].classList.add(r.hold?'warn':'bad');ins[0].classList.remove(r.hold?'bad':'warn');
+    if(r.hold){fb('warn',r.msg);return}
+    if(!S.counted)record(false);fb('bad',r.msg||'Výraz nesedí.');return}
+  const specs=fieldSpecs();const vals=ins.map((el,i)=>PARSE[specs[i]](el.value));
+  if(vals.some(v=>v===null)){fb('warn',{num:'Vyplň všetky polia číslom alebo zlomkom.',tok:'Vyplň všetky polia hodnotou 0, 1 alebo x.',set:'Vyplň všetky polia zoznamom čísel (prázdna množina je -).'}[specs.find((s,i)=>vals[i]===null)]);return}
+  let hit=0;vals.forEach((v,i)=>{const g=same(specs[i],v,q.answer[i]);ins[i].classList.toggle('ok',g);ins[i].classList.toggle('bad',!g);if(g)hit++});
+  const ok=hit===q.answer.length;if(!S.counted)record(ok);
+  if(ok)finishOk();else fb('bad',`Správne ${hit} z ${q.answer.length} polí. Červené polia oprav alebo si zobraz riešenie.`)}
+function lockInputs(){$('#card').querySelectorAll('input.cell,textarea.cell').forEach(i=>i.readOnly=true);$('#card').querySelectorAll('.opt').forEach(o=>o.disabled=true)}
+function showSol(open){const s=$('#sol');s.hidden=false;s.innerHTML=`<h3>Postup</h3>${S.q.solution}`;if(open)s.scrollIntoView({block:'nearest',behavior:'smooth'})}
+function reveal(){
+  if(!S.counted)record(false);
+  S.shown=true;const q=S.q,inp=q.input;
+  if(inp.t==='choice')$('#card').querySelectorAll('.opt').forEach((o,i)=>{o.disabled=true;if(i===q.answer[0])o.classList.add('ok')});
+  else if(inp.t==='rows')$('#card').querySelectorAll('.opt').forEach(o=>{o.disabled=true;if(+o.dataset.i===q.answer[+o.dataset.r])o.classList.add('ok')});
+  else if(inp.t==='out'){const ta=$('#c0');ta.value=q.answer[0];ta.readOnly=true;ta.classList.remove('bad');ta.classList.add('ok')}
+  else if(inp.t==='expr'){const el=$('#c0');el.readOnly=true;el.value='';el.placeholder='riešenie je nižšie';el.classList.remove('bad','warn')}
+  else{const ins=[...$('#card').querySelectorAll('input.cell')],specs=fieldSpecs();ins.forEach((el,i)=>{el.value=showVal(specs[i],q.answer[i]);el.classList.remove('bad');el.classList.add('ok');el.readOnly=true})}
+  if(!S.done)fb('warn','Riešenie je zobrazené, tento príklad sa počíta ako nesprávny.');
+  $('#chk').disabled=true;
+  const s=$('#sol');s.hidden=false;s.innerHTML=`<h3>Postup</h3>${inp.t==='expr'?`<div class="eq">Správna odpoveď: ${q.ref}</div>`:''}${q.solution}`;s.scrollIntoView({block:'nearest',behavior:'smooth'})}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&(S.done||S.shown)&&e.target===document.body)next()});
+renderTheory();next();
+const getS=()=>S;
+/* ===== Spoločné nadstavby pre všetky cvičebnice =====
+   Skúška s časovačom, slabé miesta, ťahák, kartičky, pracovný list, export/import štatistiky,
+   odkaz na teóriu po chybe. Spolieha sa na globály stránky: getS(), TOPICS, ST, save, tstat, next,
+   renderNav, renderCard, check, record, fb, setView, renderTheory, $ */
+const xh=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const xpick=a=>a[Math.floor(Math.random()*a.length)];
+const xshuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const xapp=document.getElementById('app');
+const xTabs=document.querySelector('.tabs');
+let LASTGI=0;
+
+/* ---------- slabé miesta: vážený výber generátora ---------- */
+const wkey=(t,i)=>t.id+'|'+i;
+function pickGen(t){
+  const w=ST.weak||(ST.weak={}),f=ST.focus?3:.7;
+  const ws=t.gens.map((g,i)=>1+f*(w[wkey(t,i)]||0));
+  let r=Math.random()*ws.reduce((a,b)=>a+b,0),i=0;
+  for(;i<ws.length-1&&r>=ws[i];i++)r-=ws[i];
+  LASTGI=i;return t.gens[i]}
+function weakUpd(ok,q,t){
+  const w=ST.weak||(ST.weak={}),k=wkey(t,LASTGI);
+  const v=ok?Math.max(0,(w[k]||0)-1):Math.min(5,(w[k]||0)+2);
+  if(v)w[k]=v;else delete w[k];
+  (ST.kinds||(ST.kinds={}))[k]=q.kind}
+
+/* ---------- úprava existujúcich funkcií stránky ---------- */
+let EX=null;
+const _record=record;
+record=function(ok){
+  const S_=getS();
+  if(EX&&EX.run){if(EX.busy)return;EX.busy=true;setTimeout(()=>examAdvance(ok,false),0);return}
+  weakUpd(ok,S_.q,S_.qt);_record(ok)};
+const _fb=fb;
+fb=function(cls,txt){
+  _fb(cls,txt);
+  if(cls==='bad'&&!(EX&&EX.run)&&getS().view!=='theory'){
+    const el=document.getElementById('fb');
+    if(el&&!el.querySelector('.golink')){const b=document.createElement('button');b.type='button';b.className='golink';b.textContent='Pozri si teóriu k tejto téme';
+      b.onclick=()=>{const S_=getS();if(S_.qt){S_.topic=S_.qt.id}renderTheory();setView('theory');window.scrollTo({top:0,behavior:'smooth'})};
+      el.firstChild.appendChild(b)}}};
+const _renderNav=renderNav;
+renderNav=function(){
+  _renderNav();
+  const n=document.getElementById('nav');if(!n)return;
+  const wk=Object.keys(ST.weak||{}).length;
+  n.insertAdjacentHTML('beforeend',`<label class="focus"><input type="checkbox" id="xfocus" ${ST.focus?'checked':''}> Viac príkladov z mojich slabých miest${wk?` (${wk})`:''}</label><div class="io"><button class="reset" id="xexp">Exportovať štatistiku</button><button class="reset" id="ximp">Importovať</button></div>`);
+  document.getElementById('xfocus').onchange=e=>{ST.focus=e.target.checked;save()};
+  document.getElementById('xexp').onclick=()=>{
+    const b=new Blob([JSON.stringify(ST)],{type:'application/json'}),a=document.createElement('a');
+    a.href=URL.createObjectURL(b);a.download='cvicebnica-statistika.json';document.body.appendChild(a);a.click();a.remove()};
+  document.getElementById('ximp').onclick=()=>{
+    const i=document.createElement('input');i.type='file';i.accept='application/json,.json';
+    i.onchange=()=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(o&&o.stats){ST=o;save();renderNav();if(typeof renderScore==='function')renderScore()}else alert_('Súbor nemá správny formát.')}catch(e){alert_('Súbor sa nepodarilo načítať.')}};r.readAsText(f)};
+    i.click()}};
+function alert_(m){const el=document.getElementById('fb');if(el)_fb('warn',m)}
+const _setView=setView;
+setView=function(v){leaveExam();_setView(v)};
+
+/* ---------- ďalšie karty (taby) ---------- */
+const XTABS=[['exam','Skúška'],['sheet','Ťahák'],['cards','Kartičky']];
+XTABS.forEach(([v,n])=>{
+  const b=document.createElement('button');b.className='tab';b.setAttribute('role','tab');b.dataset.v=v;b.textContent=n;b.setAttribute('aria-selected','false');
+  b.onclick=()=>xview(v);xTabs.appendChild(b);
+  const s=document.createElement('section');s.className='xv';s.id='xv-'+v;s.setAttribute('aria-label',n);xapp.appendChild(s)});
+const pa=document.createElement('div');pa.id='printarea';document.body.appendChild(pa);
+function xview(v){
+  if(v!=='exam')leaveExam();
+  getS().view=v;xapp.dataset.view=v;
+  document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v));
+  if(v==='exam')renderExam();else if(v==='sheet')renderSheet();else if(v==='cards')renderCards();
+  window.scrollTo({top:0})}
+
+/* ---------- skúška ---------- */
+let XCFG={topics:null,n:10,min:0};
+function topicChecks(){
+  if(!XCFG.topics)XCFG.topics=TOPICS.map(t=>t.id);
+  return TOPICS.map(t=>`<label class="chk"><input type="checkbox" data-t="${t.id}" ${XCFG.topics.includes(t.id)?'checked':''}> <span>${t.name}</span></label>`).join('')}
+function readCfg(){
+  const box=document.getElementById('xv-exam');
+  XCFG.topics=[...box.querySelectorAll('input[data-t]:checked')].map(i=>i.dataset.t);
+  XCFG.n=+box.querySelector('#xn').value;XCFG.min=+box.querySelector('#xm').value;return XCFG}
+function renderExam(){
+  const box=document.getElementById('xv-exam');
+  const w=ST.weak||{},ks=Object.keys(w).sort((a,b)=>w[b]-w[a]).slice(0,8);
+  box.innerHTML=`<div class="xcard"><h3>Skúška</h3>
+   <p class="muted">Príklady sa nekontrolujú hneď. Odpovedáš po jednom, na konci dostaneš výsledok, rozbor a postupy. Skúška sa započíta do štatistiky a slabých miest.</p>
+   <div class="xgrid"><div><h4>Témy</h4><div class="chks">${topicChecks()}</div><button class="reset" id="xall">označiť všetko / nič</button></div>
+   <div><h4>Nastavenie</h4><label class="fld">Počet príkladov<select id="xn">${[5,10,15,20,30].map(n=>`<option ${n===XCFG.n?'selected':''}>${n}</option>`).join('')}</select></label>
+   <label class="fld">Časový limit<select id="xm">${[[0,'bez limitu'],[10,'10 minút'],[20,'20 minút'],[30,'30 minút'],[45,'45 minút'],[60,'60 minút']].map(([m,l])=>`<option value="${m}" ${m===XCFG.min?'selected':''}>${l}</option>`).join('')}</select></label>
+   <div class="actions"><button class="btn main" id="xstart">Začať skúšku</button><button class="btn" id="xprint">Vytlačiť pracovný list</button></div>
+   <p class="muted">Pracovný list: príklady a prázdne riadky na odpovede, riešenia sú na konci, ďalšia strana.</p></div></div>
+   ${ks.length?`<h4>Tvoje slabé miesta</h4><ul class="weak">${ks.map(k=>`<li>${xh((ST.kinds||{})[k]||k)} <span class="muted">(váha ${w[k]})</span></li>`).join('')}</ul><p class="muted">Tieto typy sa objavujú častejšie, keď je zapnuté „Viac príkladov z mojich slabých miest“ v zozname tém.</p>`:'<p class="muted">Zatiaľ nemáš slabé miesta. Objavia sa po prvých chybách.</p>'}
+  </div><div id="xrun"></div>`;
+  box.querySelector('#xall').onclick=()=>{const cs=[...box.querySelectorAll('input[data-t]')],on=cs.some(c=>!c.checked);cs.forEach(c=>c.checked=on)};
+  box.querySelector('#xstart').onclick=()=>{readCfg();if(!XCFG.topics.length){return}startExam(XCFG)};
+  box.querySelector('#xprint').onclick=()=>{readCfg();if(!XCFG.topics.length)return;printSheet(XCFG)}}
+function genItems(cfg){
+  const ts=xshuf(cfg.topics.map(id=>TOPICS.find(t=>t.id===id)).filter(Boolean)),out=[];
+  for(let i=0;i<cfg.n;i++){
+    const t=ts[i%ts.length];let q=null,gi=0;
+    for(let k=0;k<12&&!q;k++){try{q=pickGen(t)();gi=LASTGI}catch(e){q=null}}
+    if(q)out.push({t,q,gi})}
+  return out}
+function startExam(cfg){
+  const items=genItems(cfg);if(!items.length)return;
+  EX={run:true,qs:items,i:0,log:[],start:Date.now(),limit:cfg.min*60000,busy:false};
+  const box=document.getElementById('xv-exam');
+  box.innerHTML=`<div class="xhead"><b id="xprog"></b><span id="xtime" class="xtime"></span><button class="btn" id="xend">Ukončiť skúšku</button></div><div id="xrun"></div>`;
+  box.querySelector('#xend').onclick=()=>finishExam(true);
+  EX.timer=setInterval(xtick,1000);xtick();showExamQ()}
+function xtick(){
+  if(!EX||!EX.run)return;const el=document.getElementById('xtime');
+  const el_=Date.now()-EX.start;
+  if(EX.limit){const r=EX.limit-el_;if(r<=0){finishExam(true);return}const s=Math.ceil(r/1000);if(el)el.textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;if(el)el.classList.toggle('low',r<60000)}
+  else if(el){const s=Math.floor(el_/1000);el.textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`}}
+function showExamQ(){
+  const it=EX.qs[EX.i],S_=getS();
+  Object.assign(S_,{q:it.q,qt:it.t,sel:null,rows:it.q.input.t==='rows'?it.q.input.rows.map(()=>null):[],counted:false,done:false,shown:false});
+  LASTGI=it.gi;EX.busy=false;
+  document.getElementById('xprog').textContent=`Príklad ${EX.i+1} z ${EX.qs.length}`;
+  const run=document.getElementById('xrun'),card=document.getElementById('card');
+  run.appendChild(card);renderCard();
+  const ac=card.querySelector('.actions');
+  ac.style.display='none';ac.insertAdjacentHTML('afterend','<div class="actions"><button class="btn main" id="xok">Potvrdiť a ďalej</button><button class="btn" id="xskip">Preskočiť</button></div>');
+  card.querySelector('#xok').onclick=()=>{if(EX.busy)return;getS().counted=false;check()};
+  card.querySelector('#xskip').onclick=()=>{if(EX.busy)return;EX.busy=true;examAdvance(false,true)};
+  const f=card.querySelector('input.cell');if(f&&matchMedia('(hover:hover)').matches)f.focus({preventScroll:true})}
+function examAdvance(ok,skipped){
+  if(!EX||!EX.run)return;
+  const it=EX.qs[EX.i];
+  EX.log.push({t:it.t,q:it.q,ok,skipped});
+  LASTGI=it.gi;weakUpd(ok,it.q,it.t);
+  const s=tstat(it.t.id);s.total++;if(ok)s.ok++;save();
+  EX.i++;
+  if(EX.i>=EX.qs.length)finishExam(false);else showExamQ()}
+function leaveExam(){
+  if(!EX||!EX.run)return;
+  EX.run=false;clearInterval(EX.timer);
+  const card=document.getElementById('card'),split=document.querySelector('.split');
+  if(card&&split&&card.parentNode!==split)split.appendChild(card);
+  next()}
+function finishExam(forced){
+  if(!EX||!EX.run)return;
+  const rest=EX.qs.slice(EX.log.length);
+  rest.forEach(it=>{EX.log.push({t:it.t,q:it.q,ok:false,skipped:true,missed:true});LASTGI=it.gi;weakUpd(false,it.q,it.t);const s=tstat(it.t.id);s.total++;save()});
+  const dur=Date.now()-EX.start,log=EX.log,t0=EX.qs;
+  EX.run=false;clearInterval(EX.timer);
+  const card=document.getElementById('card'),split=document.querySelector('.split');
+  if(card&&split)split.appendChild(card);
+  next();
+  const ok=log.filter(l=>l.ok).length,n=log.length,pct=Math.round(100*ok/n);
+  const by={};log.forEach(l=>{const b=by[l.t.name]||(by[l.t.name]={ok:0,n:0});b.n++;if(l.ok)b.ok++});
+  const msg=pct>=90?'Výborne.':pct>=70?'Dobre, ešte pár chýb.':pct>=50?'Zatiaľ hranica, pozri si chyby nižšie.':'Treba ešte precvičovať, ale tvoje slabé miesta sú teraz zaznamenané.';
+  const sec=Math.round(dur/1000);
+  const box=document.getElementById('xv-exam');
+  box.innerHTML=`<div class="xcard"><h3>Výsledok: ${ok} z ${n} (${pct} %)</h3><p>${msg} Čas: ${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}.</p>
+   <div class="ttwrap"><table class="tt"><thead><tr><th>Téma</th><th>Správne</th></tr></thead><tbody>${Object.entries(by).map(([k,v])=>`<tr><td style="text-align:left">${k}</td><td>${v.ok} / ${v.n}</td></tr>`).join('')}</tbody></table></div>
+   <div class="actions"><button class="btn main" id="xagain">Nová skúška</button><button class="btn" id="xwrong">Zopakovať len chybné témy</button></div></div>
+   <h4>Rozbor</h4>${log.map((l,i)=>`<details class="rev ${l.ok?'ok':'bad'}"><summary><span class="mark">${l.ok?'✓':'✗'}</span> ${i+1}. ${l.q.kind} <span class="muted">· ${l.t.name}${l.missed?' · nestihol si':l.skipped?' · preskočené':''}</span></summary><div class="prompt">${l.q.prompt}${choiceList(l.q)}</div><div class="sol"><h3>Postup</h3>${l.q.solution}</div></details>`).join('')}`;
+  box.querySelector('#xagain').onclick=renderExam;
+  box.querySelector('#xwrong').onclick=()=>{const ids=[...new Set(log.filter(l=>!l.ok).map(l=>l.t.id))];XCFG.topics=ids.length?ids:XCFG.topics;renderExam()};
+  EX=null;window.scrollTo({top:0})}
+function choiceList(q){
+  const inp=q.input;if(inp.t==='choice')return`<ul class="chl">${inp.opts.map((o,i)=>`<li class="${i===q.answer[0]?'right':''}">${o}${i===q.answer[0]?' <b>(správne)</b>':''}</li>`).join('')}</ul>`;
+  if(inp.t==='rows')return`<ul class="chl">${inp.rows.map((r,i)=>`<li>${r.label} <b>→ ${r.opts[q.answer[i]]}</b></li>`).join('')}</ul>`;
+  return''}
+
+/* ---------- pracovný list na tlač ---------- */
+function printSheet(cfg){
+  const items=genItems(cfg);if(!items.length)return;
+  const task=it=>{const inp=it.q.input;let extra='';
+    if(inp.t==='choice')extra=`<ol class="wsc" type="A">${inp.opts.map(o=>`<li>${o}</li>`).join('')}</ol>`;
+    else if(inp.t==='rows')extra=`<ul class="wsc">${inp.rows.map(r=>`<li>${r.label} (${r.opts.join(' / ')})</li>`).join('')}</ul>`;
+    else extra='<div class="wsl">Odpoveď: ______________________________</div>';
+    return extra};
+  document.getElementById('printarea').innerHTML=`<h2>Pracovný list: ${document.title}</h2><p class="muted">Meno: ______________________ &nbsp; Dátum: ____________</p>`+
+    items.map((it,i)=>`<div class="wsq"><b>${i+1}.</b> <span class="kd">(${it.q.kind})</span><div class="prompt">${stripAnswerUi(it.q.prompt)}</div>${task(it)}</div>`).join('')+
+    `<div class="pbreak"></div><h2>Riešenia</h2>`+items.map((it,i)=>`<div class="wsq"><b>${i+1}. ${it.q.kind}</b>${choiceList(it.q)}<div>${it.q.solution}</div></div>`).join('');
+  document.body.classList.add('ws');
+  const done=()=>{document.body.classList.remove('ws');window.removeEventListener('afterprint',done)};
+  window.addEventListener('afterprint',done);
+  try{window.print()}catch(e){done()}}
+function stripAnswerUi(h){return h}
+
+/* ---------- ťahák ---------- */
+function renderSheet(){
+  const box=document.getElementById('xv-sheet');
+  box.innerHTML=`<div class="xhead noprint"><b>Ťahák: najdôležitejšie z každej témy</b><button class="btn main" id="spr">Vytlačiť</button></div>
+   <div class="sheetgrid">${TOPICS.map(t=>`<section><h4>${t.name}</h4>${t.theory}</section>`).join('')}</div>`;
+  box.querySelector('#spr').onclick=()=>{try{window.print()}catch(e){}}}
+
+/* ---------- kartičky ---------- */
+let CD={topic:'all',q:null,flip:false,known:0,seen:0};
+function newCard(){
+  const pool=CD.topic==='all'?TOPICS:TOPICS.filter(t=>t.id===CD.topic);
+  CD.q=null;CD.flip=false;
+  for(let k=0;k<60&&!CD.q;k++){
+    const t=xpick(pool);let q=null;try{q=xpick(t.gens)()}catch(e){q=null}
+    if(q&&q.input&&q.input.t==='choice'){CD.q=q;CD.t=t}}
+  drawCard()}
+function renderCards(){
+  const box=document.getElementById('xv-cards');
+  box.innerHTML=`<div class="xcard"><h3>Kartičky</h3><p class="muted">Pojmy a pravidlá. Najprv si odpovedz v hlave, potom kartičku otoč.</p>
+   <label class="fld">Téma<select id="cdt"><option value="all">Všetky témy</option>${TOPICS.map(t=>`<option value="${t.id}" ${CD.topic===t.id?'selected':''}>${t.name}</option>`).join('')}</select></label>
+   <div id="cdbox"></div><p class="muted" id="cdstat"></p></div>`;
+  box.querySelector('#cdt').onchange=e=>{CD.topic=e.target.value;newCard()};
+  newCard()}
+function drawCard(){
+  const b=document.getElementById('cdbox');if(!b)return;
+  document.getElementById('cdstat').textContent=`Videl si ${CD.seen} kartičiek, vedel ${CD.known}.`;
+  if(!CD.q){b.innerHTML='<p>Pre túto tému nie sú kartičky.</p>';return}
+  const q=CD.q;
+  b.innerHTML=CD.flip?`<div class="flash back"><div class="prompt">${q.prompt}</div><div class="ans"><b>Odpoveď:</b> ${q.input.opts[q.answer[0]]}</div><div class="sol">${q.solution}</div></div>
+   <div class="actions"><button class="btn main" id="cdk">Vedel som</button><button class="btn" id="cdn">Nevedel som</button></div>`:
+   `<div class="flash"><div class="prompt">${q.prompt}</div></div><div class="actions"><button class="btn main" id="cdf">Otočiť kartičku</button><button class="btn" id="cdx">Preskočiť</button></div>`;
+  const g=id=>b.querySelector(id);
+  if(CD.flip){g('#cdk').onclick=()=>{CD.seen++;CD.known++;newCard()};g('#cdn').onclick=()=>{CD.seen++;newCard()}}
+  else{g('#cdf').onclick=()=>{CD.flip=true;drawCard()};g('#cdx').onclick=newCard}}
+</script>

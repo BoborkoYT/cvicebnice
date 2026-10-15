@@ -1,6 +1,6 @@
 # Cvičebnice
 
-Interaktívne cvičebnice na skúšky: **ADM**, **PPI** a **MA**. Otvoríš, vyberieš tému a počítaš. Každý príklad je nový, odpoveď sa hneď skontroluje a vždy si môžeš pozrieť postup.
+Interaktívne cvičebnice na skúšky: **ADM**, **PPI**, **MA** a **PRPR**. Otvoríš, vyberieš tému a počítaš. Každý príklad je nový, odpoveď sa hneď skontroluje a vždy si môžeš pozrieť postup.
 
 Statická stránka, bez servera a bez inštalácie, všetko beží v prehliadači.
 
@@ -10,10 +10,13 @@ Statická stránka, bez servera a bez inštalácie, všetko beží v prehliadač
 Matice, sústavy lineárnych rovníc, Gaussova eliminácia, inverzná matica a determinanty.
 
 ### PPI (`ppi/`)
-Booleove funkcie, MDNF a MKNF, Karnaughove mapy, logické obvody, automaty a preklápacie obvody.
+Booleove funkcie, MDNF a MKNF, Karnaughove mapy (aj nástroj „Výraz do mapy“ s postupom zoskupovania), logické obvody, automaty a preklápacie obvody.
 
 ### MA (`ma/`)
 Funkcie, polynómy a racionálne funkcie, elementárne funkcie, limity a spojitosť, derivácie, dotyčnice a diferenciál, Taylorov polynóm, l'Hospital a priebeh funkcie.
+
+### PRPR (`prpr/`)
+Procedurálne programovanie v C: premenné a kompilácia, typy a printf/scanf, operátory, vetvenie, cykly, funkcie, súbory, pretypovanie, ukazovatele, reťazce, polia, dynamická pamäť a klasické príklady z cvičení. Odpoveď typu „čo program vypíše“ sa píše do textového poľa a výstup je každému príkladu vypočítaný a overený kompilátorom gcc.
 
 ### Spoločné vlastnosti
 - Príklady sa generujú náhodne, nikdy sa nezopakujú.
