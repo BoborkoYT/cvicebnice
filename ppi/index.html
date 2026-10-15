@@ -299,48 +299,37 @@ svg.aut .e.on{stroke:var(--blue);stroke-width:3}
 /* karta sa po odpovedi nesmie zmršťovať: položky si držia výšku, karta sa skrolluje */
 .card>*{flex-shrink:0}
 .answer{flex-shrink:0;overflow-y:hidden}
-/* ===== Výraz do mapy ===== */
+/* ===== Karnaughova mapa (nástroj) ===== */
 .app[data-view="km"] #xv-km{display:block}
 .app[data-view="km"] .layout{display:none}
-#xv-km{max-width:680px;margin-inline:auto}
+#xv-km{max-width:980px;margin-inline:auto}
 .km-card{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px}
 .km-card h3{font:700 1.7rem/1.1 var(--f-display);color:var(--red);margin:0 0 6px}
 .km-card h2{font:700 1.15rem/1.2 var(--f-body);margin:0 0 10px}
-.km-expr{font-family:var(--f-mono);font-size:1.12rem;line-height:2;overflow-wrap:anywhere}
-.km-expr .term{white-space:nowrap}.km-expr .plus{color:var(--muted);padding-inline:4px}
-.km-xl{margin-top:4px;font-size:.9rem;color:var(--muted)}.km-xl b{font-family:var(--f-mono);color:var(--blue);font-weight:500}
-.km-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.km-opts{display:flex;flex-wrap:wrap;gap:12px 22px;margin-bottom:12px}
+.km-l{display:block;font:.72rem var(--f-mono);color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.km-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .km-seg{display:inline-flex;border:1.5px solid var(--line);border-radius:9px;overflow:hidden}
-.km-seg button{all:unset;cursor:pointer;padding:9px 16px;font:600 .95rem var(--f-mono);background:var(--soft)}
+.km-seg button{all:unset;cursor:pointer;padding:8px 14px;font:600 .92rem var(--f-mono);background:var(--soft)}
 .km-seg button+button{border-left:1.5px solid var(--line)}
-.km-seg button[aria-pressed="true"]{background:var(--blue);color:#fff}
-.km-axis{display:flex;justify-content:space-between;font:.74rem var(--f-mono);color:var(--muted);padding-left:44px;padding-bottom:6px}
-.km-map{display:grid;grid-template-columns:40px repeat(4,minmax(0,1fr));gap:6px;font-family:var(--f-mono)}
-.km-map .cr{display:grid;place-items:center;font-size:.68rem;color:var(--muted)}
-.km-map .h{display:grid;place-items:center;font-size:.82rem;color:var(--muted);padding-block:2px;border-radius:6px}
-.km-map .h.on{color:var(--fg);background:var(--soft);box-shadow:inset 0 0 0 1.5px var(--blue)}
-.km-c{all:unset;box-sizing:border-box;aspect-ratio:1;display:grid;place-items:center;border-radius:8px;position:relative;background:var(--bg);border:1.5px solid var(--line);color:var(--muted);font:500 1.35rem var(--f-mono)}
-.km-c.dim{background:var(--soft);color:var(--fg);border-color:transparent;opacity:.7}
-.km-c.hit{background:color-mix(in srgb,var(--pc) 38%,var(--card));border-color:var(--pc);color:var(--fg)}
-.km-c.multi{color:var(--fg);border-color:transparent}
-.km-c.xc{border:1.5px dashed var(--blue);color:var(--blue)}
-button.km-c{cursor:pointer}button.km-c:hover{border-color:var(--blue)}
-.km-c.guess{background:var(--soft);border-color:var(--blue);color:var(--fg)}
-.km-c.ok{background:var(--ok-bg);border-color:var(--green);color:var(--fg)}
-.km-c.wrong{background:var(--bad-bg);border-color:var(--red);color:var(--fg)}
-.km-c.wrong::after{content:attr(data-ans);position:absolute;top:3px;right:6px;font-size:.7rem;color:var(--muted)}
-.km-c.miss{border:1.5px dashed var(--red);color:var(--red)}
-.km-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.km-chips:empty{display:none}
-.km-chip{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:6px 14px 6px 10px;font:.95rem var(--f-mono)}
-.km-chip i{width:12px;height:12px;border-radius:4px;background:var(--pc,var(--muted));display:inline-block}
-.km-chip[aria-pressed="true"]{border-color:var(--pc,var(--blue));box-shadow:inset 0 0 0 1px var(--pc,var(--blue));background:var(--soft)}
-ol.km-steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:12px}
-ol.km-steps li{counter-increment:s;display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px}
-ol.km-steps li::before{content:counter(s);width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--soft);font:.8rem var(--f-mono)}
-ol.km-steps p{margin:0}
-.km-lits{display:flex;flex-direction:column;gap:4px;margin-top:4px}.km-lit{font:.92rem var(--f-mono)}.km-lit .ar{color:var(--muted)}
-.km-note{padding:10px 12px;border-radius:8px;background:var(--soft);margin-top:10px}
-.km-note.good{background:var(--ok-bg);color:var(--green)}.km-bad{color:var(--red)}
+.km-seg button[aria-pressed="true"],#kidx[aria-pressed="true"]{background:var(--blue);color:#fff}
+.km-seg button:focus-visible{outline:3px solid var(--blue);outline-offset:-3px}
+.kmt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:14px}
+.kmt-grid .km-card{margin:0}
+.kmt .kc{cursor:pointer;user-select:none;transition:transform .08s}
+.kmt .kc:hover{transform:scale(1.06)}
+.kmt .kc:focus-visible{outline:3px solid var(--blue);outline-offset:1px}
+.kmt .kc.one{font-weight:700;color:var(--fg)}
+.kmt-eq{margin:12px 0 4px;font:500 1.15rem var(--f-mono);overflow-wrap:anywhere}
+.kmt-d{margin:4px 0 0;font-family:var(--f-mono);font-size:.85rem}
+.kmt-b{all:unset;cursor:pointer;display:block;width:100%;text-align:center;padding:1px 6px;border-radius:5px;font:500 .95rem var(--f-mono);color:var(--muted)}
+.kmt-b:hover{background:var(--soft)}.kmt-b.one{color:var(--fg);font-weight:700}.kmt-b.dc{color:var(--amber)}
+.kmt-b:focus-visible{outline:2px solid var(--blue)}
+#kmt{margin-top:14px}
+.kmt-subs{display:grid;gap:14px 22px;justify-content:start;grid-template-columns:repeat(auto-fill,minmax(250px,max-content))}
+.kmt-subs.s2{grid-template-columns:repeat(2,max-content)}
+.kmt-sub{min-width:0}.kmt-sl{font:.78rem var(--f-mono);color:var(--muted);margin:0 0 2px 4px}
+.kmt-grid.wide{grid-template-columns:1fr}
 </style>
 <script>
 'use strict';
@@ -466,7 +455,7 @@ function ttable(names,cols,o={}){
 const GRAY=k=>k===1?[0,1]:[0,1,3,2];
 const gcol=k=>`var(--g${k%6+1})`,gmix=(k,p)=>`color-mix(in srgb,${gcol(k)} ${p}%,transparent)`;
 function kmap(vals,names,o={}){
-  const n=names.length,rv=n===2?1:n===3?1:2,cv=n-rv;const rs=GRAY(rv),cs=GRAY(cv);const cubes=o.cubes||[],dual=!!o.dual;
+  const B=o.base||0;const n=names.length,rv=n===2?1:n===3?1:2,cv=n-rv;const rs=GRAY(rv),cs=GRAY(cv);const cubes=o.cubes||[],dual=!!o.dual;
   const cols=cs.length,rows=rs.length;
   const tpl=`${'24px '.repeat(rv)}34px repeat(${cols},42px)`;
   let top='';
@@ -484,12 +473,12 @@ function kmap(vals,names,o={}){
   cs.forEach((cc,j)=>{g+=`<div class="kh" style="grid-column:${rv+2+j};grid-row:1">${bstr(cc,cv)}</div>`});
   rs.forEach((r,i)=>{
     g+=`<div class="krh" style="grid-column:${rv+1};grid-row:${i+2}">${bstr(r,rv)}</div>`;
-    cs.forEach((cc,j)=>{const idx=(r<<cv)|cc,v=vals[idx];const cov=[];cubes.forEach((cu,k)=>{if(covers(cu,idx))cov.push(k)});
+    cs.forEach((cc,j)=>{const idx=B+((r<<cv)|cc),v=vals[idx];const cov=[];cubes.forEach((cu,k)=>{if(covers(cu,idx))cov.push(k)});
       let st='';
       if(cov.length){
         if(!dual){st=cov.length===1?`background:${gmix(cov[0],30)}`:`background:linear-gradient(135deg,${cov.map((k,m)=>`${gmix(k,38)} ${m*100/cov.length}% ${(m+1)*100/cov.length}%`).join(',')})`}
         else{st=`box-shadow:inset 0 0 0 2px ${gcol(cov[0])},${cov.map(k=>`0 0 6px 1px ${gmix(k,70)}`).join(',')}`}}
-      g+=`<div class="kc ${v===1?'one':v==='x'?'dc':'zero'}" style="grid-column:${rv+2+j};grid-row:${i+2};${st}">${v}${o.idx?`<i>${idx}</i>`:''}</div>`})});
+      g+=`<div class="kc ${v===1?'one':v==='x'?'dc':'zero'}" data-i="${idx}"${o.click?' tabindex="0" role="button"':''} style="grid-column:${rv+2+j};grid-row:${i+2};${st}">${v}${o.idx?`<i>${idx}</i>`:''}</div>`})});
   g+='</div>';
   let h=`<div class="ttwrap"><div class="kmap">${top}${g}</div></div>`;
   if(cubes.length&&o.legend!==false)h+=`<div class="chips">${cubes.map((cu,k)=>`<span class="swi"><span class="sw ${dual?'ring':''}" style="--c:${gcol(k)}"></span>${cubeHtml(cu,names,dual)}</span>`).join('')}</div>`;
@@ -1418,105 +1407,91 @@ const _sol=showSol,_rev=reveal;
 showSol=function(o){_sol(o);document.querySelectorAll('#sol .apl').forEach(aplRender)};
 reveal=function(){_rev();document.querySelectorAll('#sol .apl').forEach(aplRender)};
 renderTheory();
-/* ===== Výraz do mapy: nástroj na precvičenie MDNF / MKNF ===== */
+/* ===== Karnaughova mapa: vlastná funkcia, klikaním 0/1/x, výsledok MDNF / MKNF ===== */
 (function(){
-const NAMES=['a','b','c','d'],CODES=['00','01','11','10'];
-const K={mode:'dnf',expr:[],xs:[],sel:0,practice:false,cells:[],checked:false};
-const dn=()=>K.mode==='dnf',main=()=>dn()?'1':'0',other=()=>dn()?'0':'1';
-const lit=(v,val)=>val?NAMES[v]:`<span class="ov">${NAMES[v]}</span>`;
-const clause=ls=>{const i=ls.map(l=>lit(l.v,l.val)).join(dn()?'·':' + ');return dn()?i:'('+i+')'};
-const req=ls=>dn()?ls:ls.map(l=>({v:l.v,val:1-l.val}));
-const rowOk=(r,l)=>+CODES[r][l.v]===l.val,colOk=(c,l)=>+CODES[c][l.v-2]===l.val;
-function parts(ls){const q=req(ls),rl=q.filter(l=>l.v<2),cl=q.filter(l=>l.v>=2);
-  return{q,rl,cl,rows:[0,1,2,3].filter(r=>rl.every(l=>rowOk(r,l))),cols:[0,1,2,3].filter(c=>cl.every(l=>colOk(c,l)))}}
-function cover(ls){const p=parts(ls),o=Array(16).fill(false);p.rows.forEach(r=>p.cols.forEach(c=>o[r*4+c]=true));return o}
-const rnd=()=>Math.random();
-function genExpr(){const n=2+Math.floor(rnd()*3),out=[],seen={};
-  while(out.length<n){const k=rnd()<.45?2:3;
-    const idx=[0,1,2,3].sort(()=>rnd()-.5).slice(0,k).sort();
-    const ls=idx.map(v=>({v,val:rnd()<.5?0:1}));const key=ls.map(l=>l.v+':'+l.val).join(',');
-    if(seen[key])continue;seen[key]=1;out.push(ls)}
-  return out}
-function genXs(ex){const cv={};ex.forEach(l=>cover(l).forEach((b,i)=>{if(b)cv[i]=1}));
-  const free=[];for(let i=0;i<16;i++)if(!cv[i])free.push(i);free.sort(()=>rnd()-.5);
-  const r=rnd(),n=r<.3?0:r<.7?1:2;return free.slice(0,Math.min(n,free.length)).sort((a,b)=>a-b)}
-const resetCells=()=>{K.cells=Array(16).fill(null);K.checked=false};
-function newExpr(){K.expr=genExpr();K.xs=genXs(K.expr);K.sel=0;resetCells();render()}
-const col=i=>`var(--g${i+1})`,fill=i=>`color-mix(in srgb,var(--g${i+1}) 38%,var(--card))`;
-const code=i=>CODES[Math.floor(i/4)]+CODES[i%4];
-function truth(pr){const t=[];for(let i=0;i<16;i++){if(K.xs.includes(i)){t.push('x');continue}t.push(pr.some(p=>p.cov[i])?main():other())}return t}
-const $k=s=>document.querySelector('#xv-km '+s);
+const K={n:4,m:1,mode:'dnf',nm:'abcd',idx:false,vals:[]};
+const INN={abcd:['a','b','c','d','e','f'],x:['x1','x2','x3','x4','x5','x6']};
+const names=()=>INN[K.nm].slice(0,K.n),outName=j=>K.m===1?'f':'y'+(j+1);
+const N=()=>1<<K.n,dual=()=>K.mode==='cnf';
+const NEXT={0:1,1:'x',x:0};
+function reset(fill){K.vals=Array.from({length:K.m},(_,j)=>K.vals[j]&&K.vals[j].length===N()&&!fill?K.vals[j]:Array(N()).fill(0))}
+function sizeChanged(){K.vals=[];reset(true)}
+const $=s=>document.querySelector('#xv-km '+s);
+const GR=k=>k===1?[0,1]:k===2?[0,1,3,2]:[0,1,3,2,6,7,5,4];
+/* 5 a 6 vstupov: jedna mapa; stĺpce Grayov kód (e,c,d), riadky (a,b), pri 6 vstupoch (f,a,b); najvonkajšia premenná je najďalej od mapy */
+function gmap(v,nm,mz){
+  const n=K.n,RV=n===5?[0,1]:[5,0,1],CV=[4,2,3],rv=RV.length,cv=CV.length,rs=GR(rv),cs=GR(cv),du=dual();
+  const bit=(var_,i)=>(i>>(n-1-var_))&1;
+  const idxOf=(r,c)=>{let x=0;RV.forEach((p,t)=>{x|=((r>>(rv-1-t))&1)<<(n-1-p)});CV.forEach((p,t)=>{x|=((c>>(cv-1-t))&1)<<(n-1-p)});return x};
+  const tpl=`${'24px '.repeat(rv)}34px repeat(${cs.length},42px)`;
+  let top='';
+  CV.forEach((p,vi)=>{let cells='<div></div>'.repeat(rv+1),c=0;
+    while(c<cs.length){const b=(cs[c]>>(cv-1-vi))&1;if(!b){cells+='<div></div>';c++;continue}
+      const s=c;while(c<cs.length&&((cs[c]>>(cv-1-vi))&1))c++;cells+=`<div class="kb-top" style="grid-column:span ${c-s}">${dispName(nm[p])}</div>`}
+    top+=`<div class="kgrid" style="grid-template-columns:${tpl}">${cells}</div>`});
+  let g=`<div class="kgrid" style="grid-template-columns:${tpl};grid-template-rows:auto repeat(${rs.length},42px)">`;
+  RV.forEach((p,vi)=>{let r=0;while(r<rs.length){const b=(rs[r]>>(rv-1-vi))&1;if(!b){r++;continue}
+    const s=r;while(r<rs.length&&((rs[r]>>(rv-1-vi))&1))r++;
+    g+=`<div class="kb-left" style="grid-column:${vi+1};grid-row:${s+2} / span ${r-s}">${dispName(nm[p])}</div>`}});
+  cs.forEach((cc,j)=>{g+=`<div class="kh" style="grid-column:${rv+2+j};grid-row:1">${bstr(cc,cv)}</div>`});
+  rs.forEach((r,i)=>{g+=`<div class="krh" style="grid-column:${rv+1};grid-row:${i+2}">${bstr(r,rv)}</div>`;
+    cs.forEach((cc,j)=>{const idx=idxOf(r,cc),val=v[idx],cov=[];mz.cubes.forEach((cu,q)=>{if(covers(cu,idx))cov.push(q)});
+      let st='';if(cov.length){if(!du)st=cov.length===1?`background:${gmix(cov[0],30)}`:`background:linear-gradient(135deg,${cov.map((q,m)=>`${gmix(q,38)} ${m*100/cov.length}% ${(m+1)*100/cov.length}%`).join(',')})`;
+        else st=`box-shadow:inset 0 0 0 2px ${gcol(cov[0])},${cov.map(q=>`0 0 6px 1px ${gmix(q,70)}`).join(',')}`}
+      g+=`<div class="kc ${val===1?'one':val==='x'?'dc':'zero'}" data-i="${idx}" tabindex="0" role="button" style="grid-column:${rv+2+j};grid-row:${i+2};${st}">${val}${K.idx?`<i>${idx}</i>`:''}</div>`})});
+  g+='</div>';
+  const chips=mz.cubes.length?`<div class="chips">${mz.cubes.map((cu,q)=>`<span class="swi"><span class="sw ${du?'ring':''}" style="--c:${gcol(q)}"></span>${cubeHtml(cu,nm,du)}</span>`).join('')}</div>`:'';
+  return `<div class="ttwrap"><div class="kmap">${top}${g}</div></div>${chips}`}
+function maps(v,nm,mz){
+  if(K.n<=4)return kmap(v,nm,{cubes:mz.cubes,dual:dual(),idx:K.idx,click:true});
+  return gmap(v,nm,mz)}
+function card(j){
+  const v=K.vals[j],nm=names(),mz=minimize(v,dual()),ast=minAst(mz,nm),on=v.filter(x=>x===(dual()?0:1)).length;
+  const nx=v.filter(x=>x==='x').length;
+  const ids=[];v.forEach((x,i)=>{if(x===1)ids.push(i)});
+  let h=`<div class="km-card kmt"><h2>${dispName(outName(j))}</h2>${maps(v,nm,mz)}`;
+  h+=`<div class="kmt-eq">${dispName(outName(j))} = ${exprHtml(ast)}</div>`;
+  if(!on)h+=`<p class="muted">Mapa neobsahuje žiadne ${dual()?'nuly':'jednotky'}, výsledok je konštanta${nx?' (hodnoty x netreba pokrývať)':''}.</p>`;
+  else h+=`<p class="muted">${mz.cubes.length} ${mz.cubes.length===1?'skupina':mz.cubes.length<5?'skupiny':'skupín'}, ${mz.cost} ${mz.cost===1?'písmeno':mz.cost<5&&mz.cost>1?'písmená':'písmen'}. ${dual()?'Pokrývame nuly, súčty násobíme.':'Pokrývame jednotky, súčiny sčítame.'}${nx?' Hodnoty x sú voliteľné: do skupiny ich zahrnieme, len ak ju zväčšia.':''}</p>`;
+  h+=`<p class="muted kmt-d">D(${ids.join(', ')||'∅'})${nx?' ; {'+v.map((x,i)=>x==='x'?i:null).filter(x=>x!==null).join(', ')+'}':''}</p></div>`;
+  return h}
+function table(){
+  const nm=names();let h=`<div class="km-card"><h2>Pravdivostná tabuľka</h2><div class="ttwrap"><table class="tt kmt-tt"><thead><tr><th>DE</th>${nm.map(x=>`<th>${dispName(x)}</th>`).join('')}${K.vals.map((_,j)=>`<th class="o">${dispName(outName(j))}</th>`).join('')}</tr></thead><tbody>`;
+  for(let i=0;i<N();i++)h+=`<tr><td class="de">${i}</td>${bitsOf(i,K.n).map(b=>`<td>${b}</td>`).join('')}${K.vals.map((v,j)=>`<td class="o"><button type="button" class="kmt-b ${v[i]===1?'one':v[i]==='x'?'dc':''}" data-o="${j}" data-i="${i}">${v[i]}</button></td>`).join('')}</tr>`;
+  return h+'</tbody></table></div><p class="muted" style="margin:8px 0 0">Klikaním na bunku v tabuľke alebo v mape sa hodnota mení 0 → 1 → x → 0.</p></div>'}
 function render(){
-  const pr=K.expr.map(l=>({lits:l,cov:cover(l),parts:parts(l)})),sel=K.sel,tv=truth(pr);
-  const sep=(dn()?'<span class="plus">+</span>':'<span class="plus">·</span>')+'<wbr>';
-  $k('#kx').innerHTML='<span style="color:var(--muted)">f =</span> '+pr.map(p=>`<span class="term">${clause(p.lits)}</span>`).join(sep);
-  const xl=$k('#kxl');
-  if(K.xs.length){xl.hidden=false;xl.innerHTML='Nedefinované (x) pre abcd = <b>'+K.xs.map(code).join(', ')+'</b>'}else{xl.hidden=true;xl.innerHTML=''}
-  $k('#kprac').setAttribute('aria-pressed',K.practice);
-  document.querySelectorAll('#xv-km [data-km]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.km===K.mode));
-  const sp=(!K.practice&&sel>=0)?pr[sel].parts:null;
-  let h='<div class="cr">ab \\ cd</div>';
-  CODES.forEach((c,ci)=>h+=`<div class="h${sp&&sp.cl.length&&sp.cols.includes(ci)?' on':''}">${c}</div>`);
-  for(let r=0;r<4;r++){h+=`<div class="h${sp&&sp.rl.length&&sp.rows.includes(r)?' on':''}">${CODES[r]}</div>`;for(let c=0;c<4;c++)h+=cellHTML(r*4+c,pr,sel,tv)}
-  $k('#kmap').innerHTML=h;
-  let ch='';
-  if(!K.practice){ch+=`<button type="button" class="km-chip" data-ksel="-1" aria-pressed="${sel===-1}"><i></i>všetky</button>`;
-    pr.forEach((p,i)=>ch+=`<button type="button" class="km-chip" style="--pc:${col(i)}" data-ksel="${i}" aria-pressed="${sel===i}"><i></i>${clause(p.lits)}</button>`)}
-  $k('#kchips').innerHTML=ch;
-  $k('#kinfo').innerHTML=info(pr,sel,tv)}
-function cellHTML(i,pr,sel,tv){
-  if(K.practice){const v=K.cells[i];let cls='km-c',txt=v===null?'':v,ans='';
-    if(!K.checked){if(v!==null)cls+=' guess'}else if(v===null){cls+=' miss';txt='?'}else if(v===tv[i])cls+=' ok';else{cls+=' wrong';ans=` data-ans="${tv[i]}"`}
-    return`<button type="button" class="${cls}" data-kcell="${i}"${ans} aria-label="bunka ${code(i)}">${txt}</button>`}
-  if(K.xs.includes(i))return'<div class="km-c xc">x</div>';
-  const cv=[];pr.forEach((p,k)=>{if(p.cov[i])cv.push(k)});
-  if(sel===-1){if(!cv.length)return`<div class="km-c">${other()}</div>`;const n=cv.length;
-    const bg=n===1?fill(cv[0]):'linear-gradient(135deg,'+cv.map((k,j)=>`${fill(k)} ${j*100/n}% ${(j+1)*100/n}%`).join(',')+')';
-    return`<div class="km-c multi" style="background:${bg}">${main()}</div>`}
-  if(pr[sel].cov[i])return`<div class="km-c hit" style="--pc:${col(sel)}">${main()}</div>`;
-  return cv.length?`<div class="km-c dim">${main()}</div>`:`<div class="km-c">${other()}</div>`}
-const lc=a=>a.map(x=>CODES[x]).join(', '),cw=n=>n===1?'bunka':n<5?'bunky':'buniek';
-function info(pr,sel,tv){
-  const w=dn()?'súčin':'súčet';
-  if(K.practice){let t=`<h2>Skús sám</h2><p>Zapíš do mapy celý výraz. Bunka je <b>${main()}</b>, ak ju pokrýva aspoň jeden ${w}, inak <b>${other()}</b>. Na kombináciách x nezáleží, tam zapíš x.</p><p class="muted" style="margin:8px 0 0">Každý klik na bunku zmení jej hodnotu: 1 → 0 → x → 1.</p><div class="km-row"><button type="button" class="btn main" data-kact="check">Overiť</button><button type="button" class="btn" data-kact="solve">Ukáž riešenie</button><button type="button" class="btn" data-kact="clear">Zmazať</button></div>`;
-    if(K.checked){let ok=0,wr=0,em=0;for(let i=0;i<16;i++){if(K.cells[i]===null)em++;else if(K.cells[i]===tv[i])ok++;else wr++}
-      t+=ok===16?'<div class="km-note good">Správne, všetkých 16 buniek sedí.</div>':`<div class="km-note">Správne: ${ok} z 16. ${wr?`<span class="km-bad">Nesprávne: ${wr}</span> (vpravo hore je správna hodnota). `:''}${em?`Nevyplnené: ${em} (označené ?).`:''}</div>`}
-    return t}
-  if(sel===-1){let c=0;for(let j=0;j<16;j++)if(!K.xs.includes(j)&&pr.some(p=>p.cov[j]))c++;
-    return`<h2>Celý výraz</h2><p>Bunka je ${main()}, ak ju pokrýva aspoň jeden ${w}. Kde sa skupiny prekrývajú, bunka je rozdelená do farieb. Ostatné sú ${other()}, x sú nedefinované.</p><p class="muted" style="margin:8px 0 0">Spolu ${c} ${dn()?'jednotiek':'núl'} z 16. Vyber ${w} a uvidíš jeho postup.</p>`}
-  const p=pr[sel],pt=p.parts,free=[0,1,2,3].filter(v=>!p.lits.some(l=>l.v===v)),size=pt.rows.length*pt.cols.length;
-  let h=`<h2>Postup pre <span style="font-family:var(--f-mono);color:${col(sel)}">${clause(p.lits)}</span></h2><ol class="km-steps">`;
-  h+=`<li><div><p>${dn()?'Súčin je 1, keď je každá jeho premenná 1. Premenná bez negácie je 1, s negáciou 0.':'Súčet je 0, keď je každý jeho člen 0. Premenná bez negácie musí byť 0, s negáciou 1.'}</p><div class="km-lits">${p.lits.map((l,k)=>`<div class="km-lit"><b>${lit(l.v,l.val)}</b> <span class="ar">→</span> ${NAMES[l.v]} = ${pt.q[k].val}</div>`).join('')}</div></div></li>`;
-  const sect=(ttl,ls,idx,ok,vals,all,nm)=>{let s=`<li><div><p>${ttl}</p><div class="km-lits">`;
-    if(ls.length){ls.forEach(l=>s+=`<div class="km-lit">${NAMES[l.v]} = ${l.val} <span class="ar">→</span> ${nm} ${lc([0,1,2,3].filter(x=>ok(x,l)))}</div>`);s+=`<div class="km-lit"><b>vyhovuje:</b> ${lc(vals)}</div>`}
-    else s+=`<div class="km-lit">${all}</div>`;return s+'</div></div></li>'};
-  h+=sect('Riadky (a, b):',pt.rl,0,rowOk,pt.rows,'a ani b tu nie je, preto sedia <b>všetky riadky</b>','riadky');
-  h+=sect('Stĺpce (c, d):',pt.cl,0,colOk,pt.cols,'c ani d tu nie je, preto sedia <b>všetky stĺpce</b>','stĺpce');
-  h+=`<li><div><p>Prienik: ${dn()?'jednotka':'nula'} patrí do každej bunky, ktorá je zároveň vo vyhovujúcom riadku aj stĺpci. ${pt.rows.length} × ${pt.cols.length} = <b>${size}</b> ${cw(size)}.</p>`;
-  if(free.length)h+=`<div class="km-note">Voľné premenné: ${free.map(v=>NAMES[v]).join(', ')}. Nie sú v ${dn()?'súčine':'súčte'}, preto berieme ich hodnotu 0 aj 1. Každá voľná premenná zdvojnásobí skupinu (2<sup>${free.length}</sup> = ${size}).</div>`;
-  return h+'</div></li></ol>'}
-const NEXT={null:'1','1':'0','0':'x','x':'1'};
+  reset();
+  $('#kmo').classList.toggle('wide',K.n>=5);$('#kmo').innerHTML=K.vals.map((_,j)=>card(j)).join('');
+  $('#kmt').innerHTML=table();
+  document.querySelectorAll('#xv-km [data-n]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.n===K.n));
+  document.querySelectorAll('#xv-km [data-m]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.m===K.m));
+  document.querySelectorAll('#xv-km [data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===K.mode));
+  document.querySelectorAll('#xv-km [data-nm]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.nm===K.nm));
+  $('#kidx').setAttribute('aria-pressed',K.idx)}
+function cyc(j,i){K.vals[j][i]=NEXT[K.vals[j][i]]}
 function onClick(e){
-  const t=e.target.closest('[data-ksel],[data-kcell],[data-kact],[data-km],#knew,#kprac');if(!t)return;
-  if(t.id==='knew'){newExpr();return}
-  if(t.id==='kprac'){K.practice=!K.practice;resetCells();render();return}
-  if(t.dataset.km){if(t.dataset.km!==K.mode){K.mode=t.dataset.km;newExpr()}return}
-  if(t.dataset.ksel!==undefined){K.sel=+t.dataset.ksel;render();return}
-  if(t.dataset.kcell!==undefined){const i=+t.dataset.kcell;K.checked=false;K.cells[i]=NEXT[K.cells[i]];render();return}
-  const a=t.dataset.kact;
-  if(a==='check'){K.checked=true;render()}
-  if(a==='clear'){resetCells();render()}
-  if(a==='solve'){K.cells=truth(K.expr.map(l=>({cov:cover(l)})));K.checked=false;render()}}
-/* tab + sekcia */
-const sec=document.createElement('section');sec.className='xv';sec.id='xv-km';sec.setAttribute('aria-label','Výraz do mapy');
-sec.innerHTML=`<div class="km-card"><h3>Výraz do mapy</h3><p class="muted" style="margin:0 0 10px">Výraz prepisuješ do Karnaughovej mapy po jednej skupine. Pri MDNF je skupina súčin a značí jednotky, pri MKNF je skupina súčet a značí nuly. Riadky určujú premenné a, b, stĺpce c, d.</p>
-<div class="km-expr" id="kx"></div><div class="km-xl" id="kxl" hidden></div>
-<div class="km-row"><div class="km-seg" role="group" aria-label="Tvar výrazu"><button type="button" data-km="dnf" aria-pressed="true">MDNF</button><button type="button" data-km="cnf" aria-pressed="false">MKNF</button></div><button class="btn main" id="knew" type="button">Nový výraz</button><button class="btn" id="kprac" type="button" aria-pressed="false">Skús sám</button></div></div>
-<div class="km-card"><div class="km-axis"><span>riadky: a b</span><span>stĺpce: c d</span></div><div class="km-map" id="kmap"></div></div>
-<div class="km-chips" id="kchips"></div><div class="km-card" id="kinfo" aria-live="polite"></div>`;
-xapp.appendChild(sec);sec.addEventListener('click',onClick);
-const b=document.createElement('button');b.className='tab';b.setAttribute('role','tab');b.dataset.v='km';b.textContent='Výraz do mapy';b.setAttribute('aria-selected','false');
-b.onclick=()=>{leaveExam();getS().view='km';xapp.dataset.view='km';document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x.dataset.v==='km'));if(!K.expr.length)newExpr();window.scrollTo({top:0})};
+  const t=e.target.closest('[data-n],[data-m],[data-mode],[data-nm],[data-o],.kc[data-i],#kidx,#krand,#kclr');if(!t)return;
+  if(t.dataset.n){K.n=+t.dataset.n;sizeChanged();render();return}
+  if(t.dataset.m){K.m=+t.dataset.m;K.vals=K.vals.slice(0,K.m);render();return}
+  if(t.dataset.mode){K.mode=t.dataset.mode;render();return}
+  if(t.dataset.nm){K.nm=t.dataset.nm;render();return}
+  if(t.id==='kidx'){K.idx=!K.idx;render();return}
+  if(t.id==='kclr'){sizeChanged();render();return}
+  if(t.id==='krand'){K.vals=Array.from({length:K.m},()=>randVals(K.n,{dc:true}));render();return}
+  if(t.dataset.o!==undefined){cyc(+t.dataset.o,+t.dataset.i);render();return}
+  const card=t.closest('.kmt'),j=[...document.querySelectorAll('#kmo .kmt')].indexOf(card);
+  cyc(j,+t.dataset.i);render();
+  const c=document.querySelectorAll('#kmo .kmt')[j].querySelector(`.kc[data-i="${t.dataset.i}"]`);if(c)c.focus()}
+function onKey(e){if((e.key==='Enter'||e.key===' ')&&e.target.matches('.kc[data-i]')){e.preventDefault();onClick({target:e.target})}}
+const sec=document.createElement('section');sec.className='xv';sec.id='xv-km';sec.setAttribute('aria-label','Karnaughova mapa');
+const seg=(a,items)=>`<div class="km-seg" role="group">${items.map(([v,l])=>`<button type="button" data-${a}="${v}" aria-pressed="false">${l}</button>`).join('')}</div>`;
+sec.innerHTML=`<div class="km-card"><h3>Karnaughova mapa</h3><p class="muted" style="margin:0 0 12px">Vyber počet vstupov a výstupov a klikaj do mapy: 0 → 1 → x (nedefinované) → 0. Stránka nájde minimálnu formu a ukáže skupiny.</p>
+<div class="km-opts"><div><span class="km-l">Vstupy</span>${seg('n',[[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6']])}</div><div><span class="km-l">Výstupy</span>${seg('m',[[1,'1'],[2,'2'],[3,'3'],[4,'4']])}</div><div><span class="km-l">Tvar</span>${seg('mode',[['dnf','MDNF'],['cnf','MKNF']])}</div><div><span class="km-l">Názvy</span>${seg('nm',[['abcd','a b c …'],['x','x₁ x₂ …']])}</div></div>
+<div class="km-row"><button class="btn" id="krand" type="button">Náhodná funkcia</button><button class="btn" id="kclr" type="button">Vymazať</button><button class="btn" id="kidx" type="button" aria-pressed="false">Poradové čísla</button></div></div>
+<div class="kmt-grid" id="kmo"></div><div id="kmt"></div>`;
+xapp.appendChild(sec);sec.addEventListener('click',onClick);sec.addEventListener('keydown',onKey);
+const b=document.createElement('button');b.className='tab';b.setAttribute('role','tab');b.dataset.v='km';b.textContent='Karnaughova mapa';b.setAttribute('aria-selected','false');
+b.onclick=()=>{leaveExam();getS().view='km';xapp.dataset.view='km';document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x.dataset.v==='km'));render();window.scrollTo({top:0})};
 const ex=xTabs.querySelector('.tab[data-v="exam"]');xTabs.insertBefore(b,ex||null);
 })();
 </script>
