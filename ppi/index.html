@@ -299,6 +299,48 @@ svg.aut .e.on{stroke:var(--blue);stroke-width:3}
 /* karta sa po odpovedi nesmie zmršťovať: položky si držia výšku, karta sa skrolluje */
 .card>*{flex-shrink:0}
 .answer{flex-shrink:0;overflow-y:hidden}
+/* ===== Výraz do mapy ===== */
+.app[data-view="km"] #xv-km{display:block}
+.app[data-view="km"] .layout{display:none}
+#xv-km{max-width:680px;margin-inline:auto}
+.km-card{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.km-card h3{font:700 1.7rem/1.1 var(--f-display);color:var(--red);margin:0 0 6px}
+.km-card h2{font:700 1.15rem/1.2 var(--f-body);margin:0 0 10px}
+.km-expr{font-family:var(--f-mono);font-size:1.12rem;line-height:2;overflow-wrap:anywhere}
+.km-expr .term{white-space:nowrap}.km-expr .plus{color:var(--muted);padding-inline:4px}
+.km-xl{margin-top:4px;font-size:.9rem;color:var(--muted)}.km-xl b{font-family:var(--f-mono);color:var(--blue);font-weight:500}
+.km-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.km-seg{display:inline-flex;border:1.5px solid var(--line);border-radius:9px;overflow:hidden}
+.km-seg button{all:unset;cursor:pointer;padding:9px 16px;font:600 .95rem var(--f-mono);background:var(--soft)}
+.km-seg button+button{border-left:1.5px solid var(--line)}
+.km-seg button[aria-pressed="true"]{background:var(--blue);color:#fff}
+.km-axis{display:flex;justify-content:space-between;font:.74rem var(--f-mono);color:var(--muted);padding-left:44px;padding-bottom:6px}
+.km-map{display:grid;grid-template-columns:40px repeat(4,minmax(0,1fr));gap:6px;font-family:var(--f-mono)}
+.km-map .cr{display:grid;place-items:center;font-size:.68rem;color:var(--muted)}
+.km-map .h{display:grid;place-items:center;font-size:.82rem;color:var(--muted);padding-block:2px;border-radius:6px}
+.km-map .h.on{color:var(--fg);background:var(--soft);box-shadow:inset 0 0 0 1.5px var(--blue)}
+.km-c{all:unset;box-sizing:border-box;aspect-ratio:1;display:grid;place-items:center;border-radius:8px;position:relative;background:var(--bg);border:1.5px solid var(--line);color:var(--muted);font:500 1.35rem var(--f-mono)}
+.km-c.dim{background:var(--soft);color:var(--fg);border-color:transparent;opacity:.7}
+.km-c.hit{background:color-mix(in srgb,var(--pc) 38%,var(--card));border-color:var(--pc);color:var(--fg)}
+.km-c.multi{color:var(--fg);border-color:transparent}
+.km-c.xc{border:1.5px dashed var(--blue);color:var(--blue)}
+button.km-c{cursor:pointer}button.km-c:hover{border-color:var(--blue)}
+.km-c.guess{background:var(--soft);border-color:var(--blue);color:var(--fg)}
+.km-c.ok{background:var(--ok-bg);border-color:var(--green);color:var(--fg)}
+.km-c.wrong{background:var(--bad-bg);border-color:var(--red);color:var(--fg)}
+.km-c.wrong::after{content:attr(data-ans);position:absolute;top:3px;right:6px;font-size:.7rem;color:var(--muted)}
+.km-c.miss{border:1.5px dashed var(--red);color:var(--red)}
+.km-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.km-chips:empty{display:none}
+.km-chip{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:6px 14px 6px 10px;font:.95rem var(--f-mono)}
+.km-chip i{width:12px;height:12px;border-radius:4px;background:var(--pc,var(--muted));display:inline-block}
+.km-chip[aria-pressed="true"]{border-color:var(--pc,var(--blue));box-shadow:inset 0 0 0 1px var(--pc,var(--blue));background:var(--soft)}
+ol.km-steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:12px}
+ol.km-steps li{counter-increment:s;display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px}
+ol.km-steps li::before{content:counter(s);width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--soft);font:.8rem var(--f-mono)}
+ol.km-steps p{margin:0}
+.km-lits{display:flex;flex-direction:column;gap:4px;margin-top:4px}.km-lit{font:.92rem var(--f-mono)}.km-lit .ar{color:var(--muted)}
+.km-note{padding:10px 12px;border-radius:8px;background:var(--soft);margin-top:10px}
+.km-note.good{background:var(--ok-bg);color:var(--green)}.km-bad{color:var(--red)}
 </style>
 <script>
 'use strict';
@@ -1376,4 +1418,105 @@ const _sol=showSol,_rev=reveal;
 showSol=function(o){_sol(o);document.querySelectorAll('#sol .apl').forEach(aplRender)};
 reveal=function(){_rev();document.querySelectorAll('#sol .apl').forEach(aplRender)};
 renderTheory();
+/* ===== Výraz do mapy: nástroj na precvičenie MDNF / MKNF ===== */
+(function(){
+const NAMES=['a','b','c','d'],CODES=['00','01','11','10'];
+const K={mode:'dnf',expr:[],xs:[],sel:0,practice:false,cells:[],checked:false};
+const dn=()=>K.mode==='dnf',main=()=>dn()?'1':'0',other=()=>dn()?'0':'1';
+const lit=(v,val)=>val?NAMES[v]:`<span class="ov">${NAMES[v]}</span>`;
+const clause=ls=>{const i=ls.map(l=>lit(l.v,l.val)).join(dn()?'·':' + ');return dn()?i:'('+i+')'};
+const req=ls=>dn()?ls:ls.map(l=>({v:l.v,val:1-l.val}));
+const rowOk=(r,l)=>+CODES[r][l.v]===l.val,colOk=(c,l)=>+CODES[c][l.v-2]===l.val;
+function parts(ls){const q=req(ls),rl=q.filter(l=>l.v<2),cl=q.filter(l=>l.v>=2);
+  return{q,rl,cl,rows:[0,1,2,3].filter(r=>rl.every(l=>rowOk(r,l))),cols:[0,1,2,3].filter(c=>cl.every(l=>colOk(c,l)))}}
+function cover(ls){const p=parts(ls),o=Array(16).fill(false);p.rows.forEach(r=>p.cols.forEach(c=>o[r*4+c]=true));return o}
+const rnd=()=>Math.random();
+function genExpr(){const n=2+Math.floor(rnd()*3),out=[],seen={};
+  while(out.length<n){const k=rnd()<.45?2:3;
+    const idx=[0,1,2,3].sort(()=>rnd()-.5).slice(0,k).sort();
+    const ls=idx.map(v=>({v,val:rnd()<.5?0:1}));const key=ls.map(l=>l.v+':'+l.val).join(',');
+    if(seen[key])continue;seen[key]=1;out.push(ls)}
+  return out}
+function genXs(ex){const cv={};ex.forEach(l=>cover(l).forEach((b,i)=>{if(b)cv[i]=1}));
+  const free=[];for(let i=0;i<16;i++)if(!cv[i])free.push(i);free.sort(()=>rnd()-.5);
+  const r=rnd(),n=r<.3?0:r<.7?1:2;return free.slice(0,Math.min(n,free.length)).sort((a,b)=>a-b)}
+const resetCells=()=>{K.cells=Array(16).fill(null);K.checked=false};
+function newExpr(){K.expr=genExpr();K.xs=genXs(K.expr);K.sel=0;resetCells();render()}
+const col=i=>`var(--g${i+1})`,fill=i=>`color-mix(in srgb,var(--g${i+1}) 38%,var(--card))`;
+const code=i=>CODES[Math.floor(i/4)]+CODES[i%4];
+function truth(pr){const t=[];for(let i=0;i<16;i++){if(K.xs.includes(i)){t.push('x');continue}t.push(pr.some(p=>p.cov[i])?main():other())}return t}
+const $k=s=>document.querySelector('#xv-km '+s);
+function render(){
+  const pr=K.expr.map(l=>({lits:l,cov:cover(l),parts:parts(l)})),sel=K.sel,tv=truth(pr);
+  const sep=(dn()?'<span class="plus">+</span>':'<span class="plus">·</span>')+'<wbr>';
+  $k('#kx').innerHTML='<span style="color:var(--muted)">f =</span> '+pr.map(p=>`<span class="term">${clause(p.lits)}</span>`).join(sep);
+  const xl=$k('#kxl');
+  if(K.xs.length){xl.hidden=false;xl.innerHTML='Nedefinované (x) pre abcd = <b>'+K.xs.map(code).join(', ')+'</b>'}else{xl.hidden=true;xl.innerHTML=''}
+  $k('#kprac').setAttribute('aria-pressed',K.practice);
+  document.querySelectorAll('#xv-km [data-km]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.km===K.mode));
+  const sp=(!K.practice&&sel>=0)?pr[sel].parts:null;
+  let h='<div class="cr">ab \\ cd</div>';
+  CODES.forEach((c,ci)=>h+=`<div class="h${sp&&sp.cl.length&&sp.cols.includes(ci)?' on':''}">${c}</div>`);
+  for(let r=0;r<4;r++){h+=`<div class="h${sp&&sp.rl.length&&sp.rows.includes(r)?' on':''}">${CODES[r]}</div>`;for(let c=0;c<4;c++)h+=cellHTML(r*4+c,pr,sel,tv)}
+  $k('#kmap').innerHTML=h;
+  let ch='';
+  if(!K.practice){ch+=`<button type="button" class="km-chip" data-ksel="-1" aria-pressed="${sel===-1}"><i></i>všetky</button>`;
+    pr.forEach((p,i)=>ch+=`<button type="button" class="km-chip" style="--pc:${col(i)}" data-ksel="${i}" aria-pressed="${sel===i}"><i></i>${clause(p.lits)}</button>`)}
+  $k('#kchips').innerHTML=ch;
+  $k('#kinfo').innerHTML=info(pr,sel,tv)}
+function cellHTML(i,pr,sel,tv){
+  if(K.practice){const v=K.cells[i];let cls='km-c',txt=v===null?'':v,ans='';
+    if(!K.checked){if(v!==null)cls+=' guess'}else if(v===null){cls+=' miss';txt='?'}else if(v===tv[i])cls+=' ok';else{cls+=' wrong';ans=` data-ans="${tv[i]}"`}
+    return`<button type="button" class="${cls}" data-kcell="${i}"${ans} aria-label="bunka ${code(i)}">${txt}</button>`}
+  if(K.xs.includes(i))return'<div class="km-c xc">x</div>';
+  const cv=[];pr.forEach((p,k)=>{if(p.cov[i])cv.push(k)});
+  if(sel===-1){if(!cv.length)return`<div class="km-c">${other()}</div>`;const n=cv.length;
+    const bg=n===1?fill(cv[0]):'linear-gradient(135deg,'+cv.map((k,j)=>`${fill(k)} ${j*100/n}% ${(j+1)*100/n}%`).join(',')+')';
+    return`<div class="km-c multi" style="background:${bg}">${main()}</div>`}
+  if(pr[sel].cov[i])return`<div class="km-c hit" style="--pc:${col(sel)}">${main()}</div>`;
+  return cv.length?`<div class="km-c dim">${main()}</div>`:`<div class="km-c">${other()}</div>`}
+const lc=a=>a.map(x=>CODES[x]).join(', '),cw=n=>n===1?'bunka':n<5?'bunky':'buniek';
+function info(pr,sel,tv){
+  const w=dn()?'súčin':'súčet';
+  if(K.practice){let t=`<h2>Skús sám</h2><p>Zapíš do mapy celý výraz. Bunka je <b>${main()}</b>, ak ju pokrýva aspoň jeden ${w}, inak <b>${other()}</b>. Na kombináciách x nezáleží, tam zapíš x.</p><p class="muted" style="margin:8px 0 0">Každý klik na bunku zmení jej hodnotu: 1 → 0 → x → 1.</p><div class="km-row"><button type="button" class="btn main" data-kact="check">Overiť</button><button type="button" class="btn" data-kact="solve">Ukáž riešenie</button><button type="button" class="btn" data-kact="clear">Zmazať</button></div>`;
+    if(K.checked){let ok=0,wr=0,em=0;for(let i=0;i<16;i++){if(K.cells[i]===null)em++;else if(K.cells[i]===tv[i])ok++;else wr++}
+      t+=ok===16?'<div class="km-note good">Správne, všetkých 16 buniek sedí.</div>':`<div class="km-note">Správne: ${ok} z 16. ${wr?`<span class="km-bad">Nesprávne: ${wr}</span> (vpravo hore je správna hodnota). `:''}${em?`Nevyplnené: ${em} (označené ?).`:''}</div>`}
+    return t}
+  if(sel===-1){let c=0;for(let j=0;j<16;j++)if(!K.xs.includes(j)&&pr.some(p=>p.cov[j]))c++;
+    return`<h2>Celý výraz</h2><p>Bunka je ${main()}, ak ju pokrýva aspoň jeden ${w}. Kde sa skupiny prekrývajú, bunka je rozdelená do farieb. Ostatné sú ${other()}, x sú nedefinované.</p><p class="muted" style="margin:8px 0 0">Spolu ${c} ${dn()?'jednotiek':'núl'} z 16. Vyber ${w} a uvidíš jeho postup.</p>`}
+  const p=pr[sel],pt=p.parts,free=[0,1,2,3].filter(v=>!p.lits.some(l=>l.v===v)),size=pt.rows.length*pt.cols.length;
+  let h=`<h2>Postup pre <span style="font-family:var(--f-mono);color:${col(sel)}">${clause(p.lits)}</span></h2><ol class="km-steps">`;
+  h+=`<li><div><p>${dn()?'Súčin je 1, keď je každá jeho premenná 1. Premenná bez negácie je 1, s negáciou 0.':'Súčet je 0, keď je každý jeho člen 0. Premenná bez negácie musí byť 0, s negáciou 1.'}</p><div class="km-lits">${p.lits.map((l,k)=>`<div class="km-lit"><b>${lit(l.v,l.val)}</b> <span class="ar">→</span> ${NAMES[l.v]} = ${pt.q[k].val}</div>`).join('')}</div></div></li>`;
+  const sect=(ttl,ls,idx,ok,vals,all,nm)=>{let s=`<li><div><p>${ttl}</p><div class="km-lits">`;
+    if(ls.length){ls.forEach(l=>s+=`<div class="km-lit">${NAMES[l.v]} = ${l.val} <span class="ar">→</span> ${nm} ${lc([0,1,2,3].filter(x=>ok(x,l)))}</div>`);s+=`<div class="km-lit"><b>vyhovuje:</b> ${lc(vals)}</div>`}
+    else s+=`<div class="km-lit">${all}</div>`;return s+'</div></div></li>'};
+  h+=sect('Riadky (a, b):',pt.rl,0,rowOk,pt.rows,'a ani b tu nie je, preto sedia <b>všetky riadky</b>','riadky');
+  h+=sect('Stĺpce (c, d):',pt.cl,0,colOk,pt.cols,'c ani d tu nie je, preto sedia <b>všetky stĺpce</b>','stĺpce');
+  h+=`<li><div><p>Prienik: ${dn()?'jednotka':'nula'} patrí do každej bunky, ktorá je zároveň vo vyhovujúcom riadku aj stĺpci. ${pt.rows.length} × ${pt.cols.length} = <b>${size}</b> ${cw(size)}.</p>`;
+  if(free.length)h+=`<div class="km-note">Voľné premenné: ${free.map(v=>NAMES[v]).join(', ')}. Nie sú v ${dn()?'súčine':'súčte'}, preto berieme ich hodnotu 0 aj 1. Každá voľná premenná zdvojnásobí skupinu (2<sup>${free.length}</sup> = ${size}).</div>`;
+  return h+'</div></li></ol>'}
+const NEXT={null:'1','1':'0','0':'x','x':'1'};
+function onClick(e){
+  const t=e.target.closest('[data-ksel],[data-kcell],[data-kact],[data-km],#knew,#kprac');if(!t)return;
+  if(t.id==='knew'){newExpr();return}
+  if(t.id==='kprac'){K.practice=!K.practice;resetCells();render();return}
+  if(t.dataset.km){if(t.dataset.km!==K.mode){K.mode=t.dataset.km;newExpr()}return}
+  if(t.dataset.ksel!==undefined){K.sel=+t.dataset.ksel;render();return}
+  if(t.dataset.kcell!==undefined){const i=+t.dataset.kcell;K.checked=false;K.cells[i]=NEXT[K.cells[i]];render();return}
+  const a=t.dataset.kact;
+  if(a==='check'){K.checked=true;render()}
+  if(a==='clear'){resetCells();render()}
+  if(a==='solve'){K.cells=truth(K.expr.map(l=>({cov:cover(l)})));K.checked=false;render()}}
+/* tab + sekcia */
+const sec=document.createElement('section');sec.className='xv';sec.id='xv-km';sec.setAttribute('aria-label','Výraz do mapy');
+sec.innerHTML=`<div class="km-card"><h3>Výraz do mapy</h3><p class="muted" style="margin:0 0 10px">Výraz prepisuješ do Karnaughovej mapy po jednej skupine. Pri MDNF je skupina súčin a značí jednotky, pri MKNF je skupina súčet a značí nuly. Riadky určujú premenné a, b, stĺpce c, d.</p>
+<div class="km-expr" id="kx"></div><div class="km-xl" id="kxl" hidden></div>
+<div class="km-row"><div class="km-seg" role="group" aria-label="Tvar výrazu"><button type="button" data-km="dnf" aria-pressed="true">MDNF</button><button type="button" data-km="cnf" aria-pressed="false">MKNF</button></div><button class="btn main" id="knew" type="button">Nový výraz</button><button class="btn" id="kprac" type="button" aria-pressed="false">Skús sám</button></div></div>
+<div class="km-card"><div class="km-axis"><span>riadky: a b</span><span>stĺpce: c d</span></div><div class="km-map" id="kmap"></div></div>
+<div class="km-chips" id="kchips"></div><div class="km-card" id="kinfo" aria-live="polite"></div>`;
+xapp.appendChild(sec);sec.addEventListener('click',onClick);
+const b=document.createElement('button');b.className='tab';b.setAttribute('role','tab');b.dataset.v='km';b.textContent='Výraz do mapy';b.setAttribute('aria-selected','false');
+b.onclick=()=>{leaveExam();getS().view='km';xapp.dataset.view='km';document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x.dataset.v==='km'));if(!K.expr.length)newExpr();window.scrollTo({top:0})};
+const ex=xTabs.querySelector('.tab[data-v="exam"]');xTabs.insertBefore(b,ex||null);
+})();
 </script>
